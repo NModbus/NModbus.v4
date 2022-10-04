@@ -5,5 +5,6 @@
     /// </summary>
     public interface IModbusServer
     {
+        Task ListenAsync(CancellationToken cancellationToken = default);
     }
 }
