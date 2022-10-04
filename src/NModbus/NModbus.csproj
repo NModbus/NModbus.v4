@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NModbus.EndianTools\NModbus.EndianTools.csproj" />
     <ProjectReference Include="..\NModbus.Interfaces\NModbus.Interfaces.csproj" />
   </ItemGroup>
 
