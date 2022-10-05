@@ -12,7 +12,7 @@ namespace NModbus.Tests.Functions
 
             var factory = new WriteSingleRegisterMessageFactory();
 
-            var data = await factory.GetDataFromRequestAsync(request);
+            var data = await factory.SerializeRequestAsync(request);
 
             data.ShouldBe(new byte[] { 0x00, 0x01, 0x00, 0x03 });
         }
@@ -24,7 +24,7 @@ namespace NModbus.Tests.Functions
 
             var factory = new WriteSingleRegisterMessageFactory();
 
-            var data = await factory.GetDataFromResponseAsync(response);
+            var data = await factory.SerializeResponseAsync(response);
 
             data.ShouldBe(new byte[] { 0x00, 0x01, 0x00, 0x03 });
         }

@@ -12,6 +12,12 @@
             Data = buffer.Slice(1);
         }
 
+        public ProtocolDataUnit(byte functionCode, byte[] data)
+        {
+            FunctionCode = functionCode;
+            Data = data;
+        }
+
         public byte FunctionCode { get; }
         
         public ReadOnlyMemory<byte> Data { get; }

@@ -5,6 +5,8 @@
     /// </summary>
     public static class ModbusFunctionCodes
     {
+        private const byte ErrorMask = 0b10000000;
+
         public const byte ReadCoils = 0x01;
 
         public const byte ReadDiscreteInputs = 0x02;
@@ -30,5 +32,35 @@
         public const byte MaskWriteRegister = 0x16;
 
         public const byte ReadWriteMultipleRegisters = 0x17;
+
+        /// <summary>
+        /// Sets the error bit.
+        /// </summary>
+        /// <param name="functionCode"></param>
+        /// <returns></returns>
+        public static byte SetErrorBit(byte functionCode)
+        {
+            return (byte)(functionCode | ErrorMask);
+        }
+
+        /// <summary>
+        /// Removes the error bit.
+        /// </summary>
+        /// <param name="functionCode"></param>
+        /// <returns></returns>
+        public static byte RemoveErrorBit(byte functionCode)
+        {
+            return (byte)(functionCode & 0b01111111);
+        }
+
+        /// <summary>
+        /// Determines if the error bit is set.
+        /// </summary>
+        /// <param name="functionCode"></param>
+        /// <returns></returns>
+        public static bool IsErrorBitSet(byte functionCode)
+        {
+            return (functionCode & ErrorMask) > 0;
+        }
     }
 }

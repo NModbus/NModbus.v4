@@ -1,6 +1,6 @@
 ﻿namespace NModbus.Interfaces
 {
-    public enum ModbusExceptionCodes : byte
+    public enum ModbusExceptionCode : byte
     {
         /// <summary>
         /// The function code received in the query is not an 

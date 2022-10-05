@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +13,10 @@
   <ItemGroup>
     <ProjectReference Include="..\NModbus.EndianTools\NModbus.EndianTools.csproj" />
     <ProjectReference Include="..\NModbus.Interfaces\NModbus.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Devices\" />
   </ItemGroup>
 
 </Project>

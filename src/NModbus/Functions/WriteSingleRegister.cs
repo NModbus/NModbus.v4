@@ -3,21 +3,21 @@
 namespace NModbus.Functions
 {
     public class WriteSingleRegisterMessageFactory
-        : ModbusMessageFactory<WriteSingleRegisterRequest, WriteSingleRegisterResponse>
+        : ModbusMessageSerializer<WriteSingleRegisterRequest, WriteSingleRegisterResponse>
     {
-        public override async Task CreateRequestCoreAsync(WriteSingleRegisterRequest request, EndianWriter writer, CancellationToken cancellationToken)
+        protected override async Task SerializeRequestCoreAsync(WriteSingleRegisterRequest request, EndianWriter writer, CancellationToken cancellationToken)
         {
             await writer.WriteAsync(request.Address);
             await writer.WriteAsync(request.Value);
         }
 
-        public override async Task CreateResponseCoreAsync(WriteSingleRegisterResponse response, EndianWriter writer, CancellationToken cancellationToken)
+        protected override async Task SeserializeResponseCoreAsync(WriteSingleRegisterResponse response, EndianWriter writer, CancellationToken cancellationToken)
         {
             await writer.WriteAsync(response.Address);
             await writer.WriteAsync(response.Value);
         }
 
-        public override async Task<WriteSingleRegisterRequest> GetRequestFromDataCoreAsync(EndianReader reader, CancellationToken cancellationToken)
+        protected override async Task<WriteSingleRegisterRequest> DeserializeRequestCoreAsync(EndianReader reader, CancellationToken cancellationToken)
         {
             var address = await reader.ReadUInt16Async(cancellationToken);
             var value = await reader.ReadUInt16Async(cancellationToken);
@@ -25,7 +25,7 @@ namespace NModbus.Functions
             return new WriteSingleRegisterRequest(address, value);
         }
 
-        public override async Task<WriteSingleRegisterResponse> GetResponseFromDataCoreAsync(EndianReader reader, CancellationToken cancellationToken)
+        protected override async Task<WriteSingleRegisterResponse> DeserializeResponseCoreAsync(EndianReader reader, CancellationToken cancellationToken)
         {
             var address = await reader.ReadUInt16Async(cancellationToken);
             var value = await reader.ReadUInt16Async(cancellationToken);
