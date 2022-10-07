@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Interfaces", "NModb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Tests", "NModbus.Tests\NModbus.Tests.csproj", "{B25A477F-E198-4F3E-9BE7-68FFF72104B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.EndianTools", "NModbus.EndianTools\NModbus.EndianTools.csproj", "{B2C024A5-F5F9-464D-9186-2D68E1353984}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.EndianTools", "NModbus.EndianTools\NModbus.EndianTools.csproj", "{B2C024A5-F5F9-464D-9186-2D68E1353984}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.Samples", "NModbus.Samples\NModbus.Samples.csproj", "{65B032F2-3839-481F-B54B-F283D5F9CC85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{B2C024A5-F5F9-464D-9186-2D68E1353984}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2C024A5-F5F9-464D-9186-2D68E1353984}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2C024A5-F5F9-464D-9186-2D68E1353984}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65B032F2-3839-481F-B54B-F283D5F9CC85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65B032F2-3839-481F-B54B-F283D5F9CC85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65B032F2-3839-481F-B54B-F283D5F9CC85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65B032F2-3839-481F-B54B-F283D5F9CC85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -35,12 +35,6 @@ namespace NModbus
             return clientFunction != null;
         }
 
-        public IClientFunction<TRequest, TResponse> GetClientFunction<TRequest, TResponse>(byte functionCode)
-        {
-            if (!TryGetClientFunction<TRequest, TResponse>(functionCode, out var clientFunction))
-                throw new KeyNotFoundException($"Unable to find an {nameof(IClientFunction)}<{typeof(TRequest).Name},{typeof(TResponse).Name}> with function code 0x{functionCode:X2}");
-
-            return clientFunction;
-        }
+      
     }
 }

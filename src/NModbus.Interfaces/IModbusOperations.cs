@@ -1,5 +1,6 @@
 ﻿namespace NModbus.Interfaces
 {
+    [Obsolete("Keeping this here for reference temporarily.")]
     public interface IModbusOperations
     {
         /// <summary>

@@ -17,15 +17,6 @@ namespace NModbus.Interfaces
         /// <returns></returns>
         bool TryGetClientFunction<TRequest, TResponse>(byte functionCode, out IClientFunction<TRequest, TResponse> clientFunction);
 
-        /// <summary>
-        /// Gets a <see cref="IClientFunction"/> implementation.
-        /// </summary>
-        /// <typeparam name="TRequest"></typeparam>
-        /// <typeparam name="TResponse"></typeparam>
-        /// <param name="functionCode"></param>
-        /// <returns></returns>
-        IClientFunction<TRequest, TResponse> GetClientFunction<TRequest, TResponse>(byte functionCode);
-
         IModbusTransport Transport { get; }
     }
 }

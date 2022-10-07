@@ -5,6 +5,23 @@ namespace NModbus.Extensions
 {
     public static class IModbusClientExtensions
     {
+        /// <summary>
+        /// Throws an exception of the specified function isn't available.
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="functionCode"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public static IClientFunction<TRequest, TResponse> GetClientFunction<TRequest, TResponse>(this IModbusClient client, byte functionCode)
+        {
+            if (!client.TryGetClientFunction<TRequest, TResponse>(functionCode, out var clientFunction))
+                throw new KeyNotFoundException($"Unable to find an {nameof(IClientFunction)}<{typeof(TRequest).Name},{typeof(TResponse).Name}> with function code 0x{functionCode:X2}");
+
+            return clientFunction;
+        }
+
         public static async Task<TResponse> ExecuteAsync<TRequest, TResponse>(
             this IModbusClient client,
             byte functionCode,
