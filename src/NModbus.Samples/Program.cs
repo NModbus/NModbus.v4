@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
 using NModbus;
 using NModbus.Extensions;
-using NModbus.Functions;
 using NModbus.Transports.TcpTransport;
 using System.Net.Sockets;
 
@@ -11,11 +10,18 @@ await tcpClient.ConnectAsync("localhost", 502);
 
 var transport = new ModbusTcpTransport(tcpClient, new NullLogger<ModbusTcpTransport>());
 
-var clientFunctions = new IClientFunction[]
+var modbusClient = new ModbusClient(transport, new NullLogger<ModbusClient>());
+
+await modbusClient.WriteSingleRegisterAsync(1, 0, 44);
+
+var holdingRegisters = await modbusClient.ReadHoldingRegistersAsync(1, 0, 5);
+
+var index = 0;
+
+foreach(var holdingRegister in holdingRegisters)
 {
-    new ModbusClientFunction<WriteSingleRegisterRequest, WriteSingleRegisterResponse>(ModbusFunctionCodes.WriteSingleRegister, new WriteSingleRegisterMessageFactory())
-};
+    Console.WriteLine($"[{index}]: {holdingRegister}");
 
-var modbusClient = new ModbusClient(clientFunctions, transport, new NullLogger<ModbusClient>());
+    index++;
+}
 
-await modbusClient.WriteSingleRegisterAsync(1, 0, 42);

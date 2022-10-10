@@ -2,7 +2,7 @@
 
 namespace NModbus.Functions
 {
-    public class WriteSingleRegisterMessageFactory
+    public class WriteSingleRegisterMessageSerializer
         : ModbusMessageSerializer<WriteSingleRegisterRequest, WriteSingleRegisterResponse>
     {
         protected override async Task SerializeRequestCoreAsync(WriteSingleRegisterRequest request, EndianWriter writer, CancellationToken cancellationToken)

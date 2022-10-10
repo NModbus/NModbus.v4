@@ -10,7 +10,7 @@ namespace NModbus.Tests.Functions
         {
             var request = new WriteSingleRegisterRequest(1, 3);
 
-            var factory = new WriteSingleRegisterMessageFactory();
+            var factory = new WriteSingleRegisterMessageSerializer();
 
             var data = await factory.SerializeRequestAsync(request);
 
@@ -22,7 +22,7 @@ namespace NModbus.Tests.Functions
         {
             var response = new WriteSingleRegisterResponse(1, 3);
 
-            var factory = new WriteSingleRegisterMessageFactory();
+            var factory = new WriteSingleRegisterMessageSerializer();
 
             var data = await factory.SerializeResponseAsync(response);
 

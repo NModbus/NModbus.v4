@@ -68,5 +68,22 @@ namespace NModbus.Extensions
                 request,
                 cancellationToken);
         }
+
+        public static async Task<ushort[]> ReadHoldingRegistersAsync(this IModbusClient client, byte unitNumber, ushort startingAddress, ushort numberOfRegisters, CancellationToken cancellationToken = default)
+        {
+            var request = new ReadHoldingRegistersRequest
+            {
+                StartingAddress = startingAddress,
+                NumberOfRegisters = numberOfRegisters,
+            };
+
+            var response = await client.ExecuteAsync<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>(
+                ModbusFunctionCodes.ReadHoldingRegisters,
+                unitNumber,
+                request,
+                cancellationToken);
+
+            return response.RegisterValues;
+        }
     }
 }
