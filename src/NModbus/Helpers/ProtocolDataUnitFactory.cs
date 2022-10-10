@@ -14,7 +14,7 @@ namespace NModbus.Helpers
         {
             return new ProtocolDataUnit(ModbusFunctionCodes.SetErrorBit(functionCode), new byte[]
                 {
-                    (byte)ModbusExceptionCode.IllegalFunction
+                    (byte)exceptionCode
                 });
         }
     }

@@ -2,37 +2,37 @@
 
 namespace NModbus.Functions
 {
-    public class ServerFunction<TRequest, TResponse> : IServerFunction
+    public class ModbusServerFunction<TRequest, TResponse> : IServerFunction
     {
         public byte FunctionCode { get; }
 
-        public ServerFunction(
+        public ModbusServerFunction(
             byte functionCode, 
-            IModbusMessageSerializer<TRequest, TResponse> messageFactory, 
+            IModbusMessageSerializer<TRequest, TResponse> messageSerializer, 
             IModbusFunctionImplementation<TRequest, TResponse> implementation)
         {
             FunctionCode = functionCode;
-            MessageFactory = messageFactory;
+            MessageSerializer = messageSerializer;
             Implementation = implementation;
         }
 
         /// <summary>
         /// The factory for serializing / deserialing the message.
         /// </summary>
-        public IModbusMessageSerializer<TRequest, TResponse> MessageFactory { get; }
+        public IModbusMessageSerializer<TRequest, TResponse> MessageSerializer { get; }
 
         public IModbusFunctionImplementation<TRequest, TResponse> Implementation { get; }
 
         public async Task<byte[]> ProcessAsync(byte[] data, CancellationToken cancellationToken)
         {
             //Get the request.
-            var request = await MessageFactory.DeserializeRequestAsync(data, cancellationToken);
+            var request = await MessageSerializer.DeserializeRequestAsync(data, cancellationToken);
 
             //Process the request.
             var response = await Implementation.ProcessAsync(request, cancellationToken);
 
             //Get the response.
-            return await MessageFactory.SerializeResponseAsync(response);
+            return await MessageSerializer.SerializeResponseAsync(response);
         }
     }
 }

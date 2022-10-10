@@ -1,4 +1,4 @@
-﻿namespace NModbus.Functions
+﻿namespace NModbus.Interfaces
 {
     public interface IModbusFunctionImplementation<TRequest, TResponse>
     {

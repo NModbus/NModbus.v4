@@ -1,4 +1,6 @@
-﻿namespace NModbus.Functions
+﻿using NModbus.Interfaces;
+
+namespace NModbus.Functions
 {
     /// <summary>
     /// Provides a trivial implementation of <see cref="IModbusFunctionImplementation{TRequest, TResponse}" /> using a func.
