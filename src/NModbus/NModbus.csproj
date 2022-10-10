@@ -15,8 +15,4 @@
     <ProjectReference Include="..\NModbus.Interfaces\NModbus.Interfaces.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Devices\" />
-  </ItemGroup>
-
 </Project>
