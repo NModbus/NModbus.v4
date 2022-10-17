@@ -1,5 +1,6 @@
 ﻿using NModbus.Functions;
 using NModbus.Interfaces;
+using NModbus.Messages;
 
 namespace NModbus.Extensions
 {

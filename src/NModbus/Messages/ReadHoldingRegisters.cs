@@ -1,6 +1,6 @@
 ﻿using NModbus.EndianTools;
 
-namespace NModbus.Functions
+namespace NModbus.Messages
 {
     public class ReadHoldingRegistersMessageSerializer : ModbusMessageSerializer<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>
     {
@@ -14,7 +14,7 @@ namespace NModbus.Functions
         {
             await writer.WriteAsync(response.ByteCount, cancellationToken);
 
-            foreach(var registerValue in response.RegisterValues)
+            foreach (var registerValue in response.RegisterValues)
             {
                 await writer.WriteAsync(registerValue, cancellationToken);
             }
@@ -36,7 +36,7 @@ namespace NModbus.Functions
 
             var registerValues = new ushort[registerCount];
 
-            for(var index = 0; index < registerCount; index++)
+            for (var index = 0; index < registerCount; index++)
             {
                 registerValues[index] = await reader.ReadUInt16Async(cancellationToken);
             }

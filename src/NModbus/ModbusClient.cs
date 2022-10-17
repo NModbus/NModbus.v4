@@ -2,6 +2,7 @@
 using NModbus.Extensions;
 using NModbus.Functions;
 using NModbus.Interfaces;
+using NModbus.Messages;
 
 namespace NModbus
 {
@@ -40,7 +41,7 @@ namespace NModbus
 
         public IModbusTransport Transport { get; }
 
-        public bool TryGetClientFunction<TRequest, TResponse>(byte functionCode, out IClientFunction<TRequest, TResponse> clientFunction)
+        public virtual bool TryGetClientFunction<TRequest, TResponse>(byte functionCode, out IClientFunction<TRequest, TResponse> clientFunction)
         {
             clientFunction = null;
 

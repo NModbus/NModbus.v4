@@ -1,6 +1,7 @@
 ﻿using NModbus.EndianTools;
+using NModbus.Functions;
 
-namespace NModbus.Functions
+namespace NModbus.Messages
 {
     /// <summary>
     /// Handles parsing/creating request and response messages.

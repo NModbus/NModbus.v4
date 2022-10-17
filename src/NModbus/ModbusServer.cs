@@ -7,17 +7,24 @@ namespace NModbus
     public class ModbusServer : IModbusServer
     {
         private readonly Dictionary<byte, IServerFunction> serverFunctions;
-        private readonly ILogger<ModbusServer> logger;
+        protected readonly ILogger<ModbusServer> logger;
 
         public ModbusServer(
+            byte unitNumber,
             IEnumerable<IServerFunction> serverFunctions,
             ILogger<ModbusServer> logger)
         {
             this.serverFunctions = serverFunctions.ToDictionary(f => f.FunctionCode);
+            UnitNumber = unitNumber;
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<ProtocolDataUnit> ProcessAsync(ProtocolDataUnit request, CancellationToken cancellationToken)
+        /// <summary>
+        /// Gets the unit number of the server device.
+        /// </summary>
+        public byte UnitNumber { get; }
+
+        public async virtual Task<ProtocolDataUnit> ProcessRequestAsync(ProtocolDataUnit request, CancellationToken cancellationToken)
         {
             //Try to find the function for this request
             if (!serverFunctions.TryGetValue(request.FunctionCode, out var serverFunction))
@@ -48,11 +55,6 @@ namespace NModbus
                 //We're not sure what happened here, so just return a catastrohpic error.
                 return ProtocolDataUnitFactory.CreateException(request.FunctionCode, ModbusExceptionCode.ServerDeviceFailure);
             }
-        }
-
-        public Task ListenAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
         }
     }
 }

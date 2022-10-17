@@ -1,16 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.BasicServer.Interfaces;
-using NModbus.Functions;
 using NModbus.Interfaces;
+using NModbus.Messages;
 
 namespace NModbus.BasicServer.Functions
 {
     public class WriteSingleRegisterImplementation : IModbusFunctionImplementation<WriteSingleRegisterRequest, WriteSingleRegisterResponse>
     {
         private readonly ILogger<WriteSingleRegisterImplementation> logger;
-        private readonly IBasicModbusStorage storage;
+        private readonly IDeviceStorage storage;
 
-        public WriteSingleRegisterImplementation(ILogger<WriteSingleRegisterImplementation> logger, IBasicModbusStorage storage)
+        public WriteSingleRegisterImplementation(ILogger<WriteSingleRegisterImplementation> logger, IDeviceStorage storage)
         {
             this.logger = logger;
             this.storage = storage;
@@ -18,7 +18,9 @@ namespace NModbus.BasicServer.Functions
 
         public Task<WriteSingleRegisterResponse> ProcessAsync(WriteSingleRegisterRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            storage.HoldingRegisters.WritePoints(request.Address, new ushort[] { request.Value });
+
+            return Task.FromResult(new WriteSingleRegisterResponse(request.Address, request.Value));
         }
     }
 }

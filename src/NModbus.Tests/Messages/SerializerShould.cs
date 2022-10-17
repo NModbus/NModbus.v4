@@ -1,12 +1,12 @@
-﻿using NModbus.Functions;
+﻿using NModbus.Messages;
 using Shouldly;
 
-namespace NModbus.Tests.Functions
+namespace NModbus.Tests.Messages
 {
-    public class MessageFactoryShould
+    public class SerializerShould
     {
         [Fact]
-        public async Task WriteSingleRegisterRequestShould()
+        public async Task SerializeWriteSingleRegisterRequestShould()
         {
             var request = new WriteSingleRegisterRequest(1, 3);
 
@@ -18,7 +18,7 @@ namespace NModbus.Tests.Functions
         }
 
         [Fact]
-        public async Task WriteSingleRegisterResponseShould()
+        public async Task SerializeWriteSingleRegisterResponseShould()
         {
             var response = new WriteSingleRegisterResponse(1, 3);
 

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.EndianTools", "NMod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.Samples", "NModbus.Samples\NModbus.Samples.csproj", "{65B032F2-3839-481F-B54B-F283D5F9CC85}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.BasicServer", "NModbus.BasicServer\NModbus.BasicServer.csproj", "{D6177F89-7C9C-4CC1-81F3-E4248407BBE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{65B032F2-3839-481F-B54B-F283D5F9CC85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65B032F2-3839-481F-B54B-F283D5F9CC85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65B032F2-3839-481F-B54B-F283D5F9CC85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6177F89-7C9C-4CC1-81F3-E4248407BBE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6177F89-7C9C-4CC1-81F3-E4248407BBE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6177F89-7C9C-4CC1-81F3-E4248407BBE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6177F89-7C9C-4CC1-81F3-E4248407BBE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

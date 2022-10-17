@@ -1,26 +1,73 @@
 ﻿using NModbus.BasicServer.Interfaces;
+using NModbus.Interfaces;
 
 namespace NModbus.BasicServer
 {
-    public class BasicPointStorage<T> : IBasicPointStorage<T>
+    public class PointStorage<T> : IDevicePointStorage<T>, IApplicationPointStorage<T>
     {
         private readonly Dictionary<ushort, T> values = new Dictionary<ushort, T>();
 
-        public Task<T> ReadPointAsync(ushort address)
-        {
-            if (!values.TryGetValue(address, out T value))
+        public T this[ushort address] 
+        { 
+            get
             {
-                value = default;
-            }
+                values.TryGetValue(address, out var value);
 
-            return Task.FromResult(value);
+                return value;
+            }
+            set
+            {
+                values[address] = value;
+            }
         }
 
-        public Task WritePointAsync(ushort address, T value)
-        {
-            values[address] = value;
+        public event EventHandler<DeviceReadWriteArgs> BeforeDeviceRead;
+        public event EventHandler<DeviceReadWriteArgs> AfterDeviceRead;
+        public event EventHandler<DeviceReadWriteArgs> BeforeDeviceWrite;
+        public event EventHandler<DeviceReadWriteArgs> AfterDeviceWrite;
 
-            return Task.CompletedTask;
+        private void VerifyPointsAreInRange(ushort startingAddress, ushort numberOfPoints)
+        {
+            if (startingAddress + numberOfPoints > ushort.MaxValue)
+                throw new ModbusServerException(ModbusExceptionCode.IllegalDataAddress);
+        }
+
+        T[] IDevicePointStorage<T>.ReadPoints(ushort startingAddress, ushort numberOfPoints)
+        {
+            VerifyPointsAreInRange(startingAddress, numberOfPoints);
+
+            var args = new DeviceReadWriteArgs(startingAddress, numberOfPoints);
+
+            BeforeDeviceRead?.Invoke(this, args);
+
+            var points = new T[numberOfPoints];
+
+            for (var index = 0; index < numberOfPoints; index++)
+            {
+                values.TryGetValue((ushort)(startingAddress + numberOfPoints), out var value);
+
+                points[index] = value;
+            }
+
+            AfterDeviceRead?.Invoke(this, args);
+
+            return points;
+        }
+
+        void IDevicePointStorage<T>.WritePoints(ushort startingAddress, T[] values)
+        {
+            VerifyPointsAreInRange(startingAddress, (ushort)values.Length);
+
+            var args = new DeviceReadWriteArgs(startingAddress, (ushort)values.Length);
+
+            BeforeDeviceWrite?.Invoke(this, args);
+
+            for (var index = 0; index < values.Length; index++)
+            {
+                this.values[(ushort)(startingAddress + index)] = values[index];
+            }
+
+            AfterDeviceWrite?.Invoke(this, args);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using NModbus.EndianTools;
 
-namespace NModbus.Functions
+namespace NModbus.Messages
 {
     public class WriteSingleRegisterMessageSerializer
         : ModbusMessageSerializer<WriteSingleRegisterRequest, WriteSingleRegisterResponse>

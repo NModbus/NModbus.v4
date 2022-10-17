@@ -5,6 +5,15 @@
     /// </summary>
     public interface IModbusServer
     {
-        Task ListenAsync(CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Gets the unit number for this server device.
+        /// </summary>
+        byte UnitNumber { get; }
+
+        /// <summary>
+        /// Process the request.
+        /// </summary>
+        /// <returns></returns>
+        Task<ProtocolDataUnit> ProcessRequestAsync(ProtocolDataUnit protocolDataUnit, CancellationToken cancellationToken = default);
     }
 }

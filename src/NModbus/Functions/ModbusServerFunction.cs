@@ -23,7 +23,7 @@ namespace NModbus.Functions
 
         public IModbusFunctionImplementation<TRequest, TResponse> Implementation { get; }
 
-        public async Task<byte[]> ProcessAsync(byte[] data, CancellationToken cancellationToken)
+        public virtual async Task<byte[]> ProcessAsync(byte[] data, CancellationToken cancellationToken)
         {
             //Get the request.
             var request = await MessageSerializer.DeserializeRequestAsync(data, cancellationToken);
@@ -32,7 +32,7 @@ namespace NModbus.Functions
             var response = await Implementation.ProcessAsync(request, cancellationToken);
 
             //Get the response.
-            return await MessageSerializer.SerializeResponseAsync(response);
+            return await MessageSerializer.SerializeResponseAsync(response, cancellationToken);
         }
     }
 }

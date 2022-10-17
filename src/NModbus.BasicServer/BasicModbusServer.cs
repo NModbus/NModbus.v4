@@ -7,13 +7,14 @@ namespace NModbus.BasicServer
     public static class BasicModbusServerFactory
     {
         public static IModbusServer CreateBasicServer(
-            IModbusTransport transport, 
+            byte unitNumber,
             ILoggerFactory loggerFactory,
-            IBasicModbusStorage storage = null,
+            IDeviceStorage storage = null,
             IEnumerable<IServerFunction> customServerFunctions = null)
         {
-            storage = storage ?? new BasicModbusStorage();
+            storage = storage ?? new PointStorage();
 
+            //These are the built in function implementations.
             var serverFunctions = new IServerFunction[]
             {
 
@@ -30,7 +31,7 @@ namespace NModbus.BasicServer
                 }
             }
 
-            return new ModbusServer(dictionary.Values, loggerFactory.CreateLogger<ModbusServer>());
+            return new ModbusServer(unitNumber, dictionary.Values, loggerFactory.CreateLogger<ModbusServer>());
         }
     }
 }
