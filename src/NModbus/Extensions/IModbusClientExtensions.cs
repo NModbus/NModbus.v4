@@ -72,11 +72,7 @@ namespace NModbus.Extensions
 
         public static async Task<ushort[]> ReadHoldingRegistersAsync(this IModbusClient client, byte unitNumber, ushort startingAddress, ushort numberOfRegisters, CancellationToken cancellationToken = default)
         {
-            var request = new ReadHoldingRegistersRequest
-            {
-                StartingAddress = startingAddress,
-                QuantityOfRegisters = numberOfRegisters,
-            };
+            var request = new ReadHoldingRegistersRequest(startingAddress, numberOfRegisters);
 
             var response = await client.ExecuteAsync<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>(
                 ModbusFunctionCodes.ReadHoldingRegisters,

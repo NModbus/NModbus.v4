@@ -12,7 +12,9 @@ namespace NModbus.Messages
 
         protected override void SeserializeResponseCore(ReadHoldingRegistersResponse response, EndianWriter writer)
         {
-            writer.Write(response.ByteCount);
+            byte byteCount = (byte)(response.RegisterValues.Length * 2);
+
+            writer.Write(byteCount);
 
             foreach (var registerValue in response.RegisterValues)
             {
@@ -22,11 +24,10 @@ namespace NModbus.Messages
 
         protected override ReadHoldingRegistersRequest DeserializeRequestCore(EndianReader reader)
         {
-            return new ReadHoldingRegistersRequest
-            {
-                StartingAddress = reader.ReadUInt16(),
-                QuantityOfRegisters = reader.ReadUInt16()
-            };
+            var startingAddress = reader.ReadUInt16();
+            var quantityOfRegisters = reader.ReadUInt16();
+
+            return new ReadHoldingRegistersRequest(startingAddress, quantityOfRegisters);
         }
 
         protected override ReadHoldingRegistersResponse DeserializeResponseCore(EndianReader reader)
@@ -41,25 +42,30 @@ namespace NModbus.Messages
                 registerValues[index] = reader.ReadUInt16();
             }
 
-            return new ReadHoldingRegistersResponse
-            {
-                ByteCount = byteCount,
-                RegisterValues = registerValues
-            };
+            return new ReadHoldingRegistersResponse(registerValues);
         }
     }
 
     public class ReadHoldingRegistersRequest
     {
-        public ushort StartingAddress { get; set; }
+        public ReadHoldingRegistersRequest(ushort startingAddress, ushort quantityOfRegisters)
+        {
+            StartingAddress = startingAddress;
+            QuantityOfRegisters = quantityOfRegisters;
+        }
 
-        public ushort QuantityOfRegisters { get; set; }
+        public ushort StartingAddress { get; }
+
+        public ushort QuantityOfRegisters { get; }
     }
 
     public class ReadHoldingRegistersResponse
     {
-        public byte ByteCount { get; set; }
+        public ReadHoldingRegistersResponse(ushort[] registerValues)
+        {
+            RegisterValues = registerValues ?? throw new ArgumentNullException(nameof(registerValues));
+        }
 
-        public ushort[] RegisterValues { get; set; }
+        public ushort[] RegisterValues { get; }
     }
 }

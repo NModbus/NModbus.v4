@@ -20,11 +20,8 @@ namespace NModbus.BasicServer.Functions
         {
             var registers = storage.HoldingRegisters.ReadPoints(request.StartingAddress, request.QuantityOfRegisters);
 
-            return Task.FromResult(new ReadHoldingRegistersResponse
-            {
-                ByteCount = (byte)(registers.Length * 2),
-                RegisterValues = registers
-            });
+            return Task.FromResult(new ReadHoldingRegistersResponse(registers));
+            
         }
     }
 }
