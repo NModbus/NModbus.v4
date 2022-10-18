@@ -4,41 +4,41 @@ namespace NModbus.Messages
 {
     public class ReadHoldingRegistersMessageSerializer : ModbusMessageSerializer<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>
     {
-        protected async override Task SerializeRequestCoreAsync(ReadHoldingRegistersRequest request, EndianWriter writer, CancellationToken cancellationToken)
+        protected override void SerializeRequestCore(ReadHoldingRegistersRequest request, EndianWriter writer)
         {
-            await writer.WriteAsync(request.StartingAddress, cancellationToken);
-            await writer.WriteAsync(request.QuantityOfRegisters, cancellationToken);
+            writer.Write(request.StartingAddress);
+            writer.Write(request.QuantityOfRegisters);
         }
 
-        protected override async Task SeserializeResponseCoreAsync(ReadHoldingRegistersResponse response, EndianWriter writer, CancellationToken cancellationToken)
+        protected override void SeserializeResponseCore(ReadHoldingRegistersResponse response, EndianWriter writer)
         {
-            await writer.WriteAsync(response.ByteCount, cancellationToken);
+            writer.Write(response.ByteCount);
 
             foreach (var registerValue in response.RegisterValues)
             {
-                await writer.WriteAsync(registerValue, cancellationToken);
+                writer.Write(registerValue);
             }
         }
 
-        protected async override Task<ReadHoldingRegistersRequest> DeserializeRequestCoreAsync(EndianReader reader, CancellationToken cancellationToken)
+        protected override ReadHoldingRegistersRequest DeserializeRequestCore(EndianReader reader)
         {
             return new ReadHoldingRegistersRequest
             {
-                StartingAddress = await reader.ReadUInt16Async(cancellationToken),
-                QuantityOfRegisters = await reader.ReadUInt16Async(cancellationToken)
+                StartingAddress = reader.ReadUInt16(),
+                QuantityOfRegisters = reader.ReadUInt16()
             };
         }
 
-        protected async override Task<ReadHoldingRegistersResponse> DeserializeResponseCoreAsync(EndianReader reader, CancellationToken cancellationToken)
+        protected override ReadHoldingRegistersResponse DeserializeResponseCore(EndianReader reader)
         {
-            var byteCount = await reader.ReadByteAsync(cancellationToken);
+            var byteCount = reader.ReadByte();
             var registerCount = byteCount / 2;
 
             var registerValues = new ushort[registerCount];
 
             for (var index = 0; index < registerCount; index++)
             {
-                registerValues[index] = await reader.ReadUInt16Async(cancellationToken);
+                registerValues[index] = reader.ReadUInt16();
             }
 
             return new ReadHoldingRegistersResponse

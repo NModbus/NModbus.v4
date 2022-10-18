@@ -2,11 +2,11 @@
 {
     public static class EndianWriterExtensions
     {
-        public static async Task WriteAsync(this EndianWriter writer, ushort[] values, CancellationToken cancellationToken = default)
+        public static void Write(this EndianWriter writer, ushort[] values)
         {
             foreach(var value in values)
             {
-                await writer.WriteAsync(value, cancellationToken);
+                writer.Write(value);
             }
         }
     }

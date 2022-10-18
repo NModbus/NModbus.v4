@@ -10,52 +10,44 @@ namespace NModbus.Messages
     /// <typeparam name="TResponse"></typeparam>
     public abstract class ModbusMessageSerializer<TRequest, TResponse> : IModbusMessageSerializer<TRequest, TResponse>
     {
-        public async Task<byte[]> SerializeRequestAsync(TRequest request, CancellationToken cancellationToken = default)
+        public byte[] SerializeRequest(TRequest request)
         {
-            using var stream = new MemoryStream();
+            using var writer = new EndianWriter(Endianness.BigEndian);
 
-            var writer = new EndianWriter(stream, Endianness.BigEndian);
+            SerializeRequestCore(request, writer);
 
-            await SerializeRequestCoreAsync(request, writer, cancellationToken);
-
-            return stream.ToArray();
+            return writer.ToArray();
         }
 
-        public async Task<byte[]> SerializeResponseAsync(TResponse response, CancellationToken cancellationToken = default)
+        public byte[] SerializeResponse(TResponse response)
         {
-            using var stream = new MemoryStream();
+            using var writer = new EndianWriter(Endianness.BigEndian);
 
-            var writer = new EndianWriter(stream, Endianness.BigEndian);
+            SeserializeResponseCore(response, writer);
 
-            await SeserializeResponseCoreAsync(response, writer, cancellationToken);
-
-            return stream.ToArray();
+            return writer.ToArray();
         }
 
-        public async Task<TRequest> DeserializeRequestAsync(byte[] data, CancellationToken cancellationToken = default)
+        public TRequest DeserializeRequest(byte[] data)
         {
-            using var stream = new MemoryStream(data);
+            var reader = new EndianReader(data, Endianness.BigEndian);
 
-            var reader = new EndianReader(stream, Endianness.BigEndian);
-
-            return await DeserializeRequestCoreAsync(reader, cancellationToken);
+            return DeserializeRequestCore(reader);
         }
 
-        public async Task<TResponse> DeserializeResponseAsync(byte[] data, CancellationToken cancellationToken = default)
+        public TResponse DeserializeResponse(byte[] data)
         {
-            using var stream = new MemoryStream(data);
+            var reader = new EndianReader(data, Endianness.BigEndian);
 
-            var reader = new EndianReader(stream, Endianness.BigEndian);
-
-            return await DeserializeResponseCoreAsync(reader, cancellationToken);
+            return DeserializeResponseCore(reader);
         }
 
-        protected abstract Task SerializeRequestCoreAsync(TRequest request, EndianWriter writer, CancellationToken cancellationToken);
+        protected abstract void SerializeRequestCore(TRequest request, EndianWriter writer);
 
-        protected abstract Task SeserializeResponseCoreAsync(TResponse response, EndianWriter writer, CancellationToken cancellationToken);
+        protected abstract void SeserializeResponseCore(TResponse response, EndianWriter writer);
 
-        protected abstract Task<TRequest> DeserializeRequestCoreAsync(EndianReader reader, CancellationToken cancellationToken);
+        protected abstract TRequest DeserializeRequestCore(EndianReader reader);
 
-        protected abstract Task<TResponse> DeserializeResponseCoreAsync(EndianReader reader, CancellationToken cancellationToken);
+        protected abstract TResponse DeserializeResponseCore(EndianReader reader);
     }
 }

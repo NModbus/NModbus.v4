@@ -5,30 +5,30 @@ namespace NModbus.Messages
     public class WriteSingleRegisterMessageSerializer
         : ModbusMessageSerializer<WriteSingleRegisterRequest, WriteSingleRegisterResponse>
     {
-        protected override async Task SerializeRequestCoreAsync(WriteSingleRegisterRequest request, EndianWriter writer, CancellationToken cancellationToken)
+        protected override void SerializeRequestCore(WriteSingleRegisterRequest request, EndianWriter writer)
         {
-            await writer.WriteAsync(request.Address);
-            await writer.WriteAsync(request.Value);
+            writer.Write(request.Address);
+            writer.Write(request.Value);
         }
 
-        protected override async Task SeserializeResponseCoreAsync(WriteSingleRegisterResponse response, EndianWriter writer, CancellationToken cancellationToken)
+        protected override void SeserializeResponseCore(WriteSingleRegisterResponse response, EndianWriter writer)
         {
-            await writer.WriteAsync(response.Address);
-            await writer.WriteAsync(response.Value);
+            writer.Write(response.Address);
+            writer.Write(response.Value);
         }
 
-        protected override async Task<WriteSingleRegisterRequest> DeserializeRequestCoreAsync(EndianReader reader, CancellationToken cancellationToken)
+        protected override WriteSingleRegisterRequest DeserializeRequestCore(EndianReader reader)
         {
-            var address = await reader.ReadUInt16Async(cancellationToken);
-            var value = await reader.ReadUInt16Async(cancellationToken);
+            var address = reader.ReadUInt16();
+            var value = reader.ReadUInt16();
 
             return new WriteSingleRegisterRequest(address, value);
         }
 
-        protected override async Task<WriteSingleRegisterResponse> DeserializeResponseCoreAsync(EndianReader reader, CancellationToken cancellationToken)
+        protected override WriteSingleRegisterResponse DeserializeResponseCore(EndianReader reader)
         {
-            var address = await reader.ReadUInt16Async(cancellationToken);
-            var value = await reader.ReadUInt16Async(cancellationToken);
+            var address = reader.ReadUInt16();
+            var value = reader.ReadUInt16();
 
             return new WriteSingleRegisterResponse(address, value);
         }

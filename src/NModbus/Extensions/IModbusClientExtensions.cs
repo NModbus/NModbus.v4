@@ -34,7 +34,7 @@ namespace NModbus.Extensions
             var clientFunction = client.GetClientFunction<TRequest, TResponse>(functionCode);
 
             //Serialize the request
-            var serializedRequest = await clientFunction.MessageSerializer.SerializeRequestAsync(request, cancellationToken);
+            var serializedRequest = clientFunction.MessageSerializer.SerializeRequest(request);
 
             //Form the protocol data unit.
             var requestProtocolDataUnit = new ProtocolDataUnit(clientFunction.FunctionCode, serializedRequest);
@@ -56,7 +56,7 @@ namespace NModbus.Extensions
                 throw new ModbusServerException((ModbusExceptionCode)responseProtocolDataUnit.Data.ToArray()[0]);
 
             //Deserialize the response.
-            return await clientFunction.MessageSerializer.DeserializeResponseAsync(responseProtocolDataUnit.Data.ToArray());
+            return clientFunction.MessageSerializer.DeserializeResponse(responseProtocolDataUnit.Data.ToArray());
         }
 
         public static async Task WriteSingleRegisterAsync(this IModbusClient client, byte unitNumber, ushort startingAddress, ushort value, CancellationToken cancellationToken = default)

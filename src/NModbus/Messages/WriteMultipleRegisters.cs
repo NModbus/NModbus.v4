@@ -4,37 +4,37 @@ namespace NModbus.Messages
 {
     public class WriteMultipleRegistersMessageSerializer : ModbusMessageSerializer<WriteMultipleRegistersRequest, WriteMultipleRegistersResponse>
     {
-        protected  override async Task SerializeRequestCoreAsync(WriteMultipleRegistersRequest request, EndianWriter writer, CancellationToken cancellationToken)
+        protected override void SerializeRequestCore(WriteMultipleRegistersRequest request, EndianWriter writer)
         {
-            await writer.WriteAsync(request.StartingAddress, cancellationToken);
-            await writer.WriteAsync((ushort)(request.Registers.Length), cancellationToken);
-            await writer.WriteAsync((byte)(request.Registers.Length * 2), cancellationToken);
-            await writer.WriteAsync(request.Registers);
+            writer.Write(request.StartingAddress);
+            writer.Write((ushort)(request.Registers.Length));
+            writer.Write((byte)(request.Registers.Length * 2));
+            writer.Write(request.Registers);
         }
 
-        protected override async Task SeserializeResponseCoreAsync(WriteMultipleRegistersResponse response, EndianWriter writer, CancellationToken cancellationToken)
+        protected override void SeserializeResponseCore(WriteMultipleRegistersResponse response, EndianWriter writer)
         {
-            await writer.WriteAsync(response.StartingAddress);
-            await writer.WriteAsync(response.QuantityOfRegisters);
+            writer.Write(response.StartingAddress);
+            writer.Write(response.QuantityOfRegisters);
         }
 
-        protected override async Task<WriteMultipleRegistersRequest> DeserializeRequestCoreAsync(EndianReader reader, CancellationToken cancellationToken)
+        protected override WriteMultipleRegistersRequest DeserializeRequestCore(EndianReader reader)
         {
-            var startingAddress = await reader.ReadUInt16Async(cancellationToken);
-            var quantityOfRegisters = await reader.ReadUInt16Async(cancellationToken);
-            var byteCount = await reader.ReadByteAsync(cancellationToken);
+            var startingAddress = reader.ReadUInt16();
+            var quantityOfRegisters = reader.ReadUInt16();
+            var byteCount = reader.ReadByte();
 
             //TODO: Reconcile quantityOfRegisters with byteCount
 
-            var registers = await reader.ReadUInt16ArrayAsync(quantityOfRegisters, cancellationToken);
+            var registers = reader.ReadUInt16Array(quantityOfRegisters);
 
             return new WriteMultipleRegistersRequest(startingAddress, registers);
         }
 
-        protected override async Task<WriteMultipleRegistersResponse> DeserializeResponseCoreAsync(EndianReader reader, CancellationToken cancellationToken)
+        protected override WriteMultipleRegistersResponse DeserializeResponseCore(EndianReader reader)        
         {
-            var startingAddress = await reader.ReadUInt16Async(cancellationToken);
-            var quantityOfRegisters = await reader.ReadUInt16Async(cancellationToken);
+            var startingAddress = reader.ReadUInt16();
+            var quantityOfRegisters = reader.ReadUInt16();
 
             return new WriteMultipleRegistersResponse(startingAddress, quantityOfRegisters);
         }

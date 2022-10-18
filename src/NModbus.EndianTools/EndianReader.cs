@@ -1,22 +1,22 @@
 ﻿namespace NModbus.EndianTools
 {
-    public class EndianReader
+    public class EndianReader : IDisposable
     {
-        public EndianReader(Stream stream, Endianness endianness)
+        private readonly Stream stream;
+
+        public EndianReader(byte[] source, Endianness endianness)
         {
-            Stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            stream = new MemoryStream(source);
             Endianness = endianness;
         }
 
-        protected Stream Stream { get; }
-
         public Endianness Endianness { get; }
 
-        public async Task<byte> ReadByteAsync(CancellationToken cancellationToken = default)
+        public byte ReadByte()
         {
             var buffer = new byte[1];
 
-            var numberRead = await Stream.ReadAsync(buffer, 0, 1);
+            var numberRead = stream.Read(buffer, 0, 1);
 
             if (numberRead != 1)
             {
@@ -26,18 +26,18 @@
             return buffer[0];
         }
 
-        public async Task<ushort> ReadUInt16Async(CancellationToken cancellationToken = default)
+        public ushort ReadUInt16()
         {
-            var bytes = await ReadBytesAsync(sizeof(ushort), cancellationToken);
+            var bytes = ReadBytes(sizeof(ushort));
 
             return BitConverter.ToUInt16(bytes);
         }
 
-        private async Task<byte[]> ReadBytesAsync(int count, CancellationToken cancellationToken = default)
+        private byte[] ReadBytes(int count)
         {
             var buffer = new byte[count];
 
-            var numberRead = await Stream.ReadAsync(buffer, 0, count);
+            var numberRead = stream.Read(buffer, 0, count);
 
             if (numberRead != count)
             {
@@ -50,6 +50,11 @@
             }
 
             return buffer;
+        }
+
+        public void Dispose()
+        {
+            stream.Dispose();
         }
     }
 }

@@ -22,11 +22,11 @@ namespace NModbus.Transports.TcpTransport
         {
             var transactionIdenfier = await SendAsyncInternal(unitNumber, protocolDataUnit, cancellationToken);
 
-            var mbapHeaderBuffer = new byte[MbapHeaderFactory.MbapHeaderLength];
+            var mbapHeaderBuffer = new byte[MbapHeaderSerializer.MbapHeaderLength];
 
             await tcpClient.GetStream().ReadBufferAsync(mbapHeaderBuffer, cancellationToken);
 
-            var mbapHeader = await MbapHeaderFactory.ParseMbapHeaderAsync(mbapHeaderBuffer, cancellationToken);
+            var mbapHeader = MbapHeaderSerializer.DeserializeMbapHeader(mbapHeaderBuffer);
 
             if (transactionIdenfier != mbapHeader.TransactionIdentifier)
                 throw new IOException($"The TransactionIdentier 0x{unitNumber:X4} was sent, but 0x{unitNumber:X4} was received.");
@@ -66,11 +66,10 @@ namespace NModbus.Transports.TcpTransport
             var transactionIdenfier = GetNextTransactionIdenfier();
 
             //Create the header
-            var mbapHeader = await MbapHeaderFactory.CreateMbapHeaderAsync(
+            var mbapHeader = MbapHeaderSerializer.SerializeMbapHeader(
                 transactionIdentifier,
                 (ushort)(protocolDataUnit.Length + 1),
-                unitNumber,
-                cancellationToken);
+                unitNumber);
 
             //Create a buffer with enough room for the whole message.
             var buffer = new byte[mbapHeader.Length + protocolDataUnit.Length];

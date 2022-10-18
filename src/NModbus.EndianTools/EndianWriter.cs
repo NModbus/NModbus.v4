@@ -1,37 +1,52 @@
 ﻿namespace NModbus.EndianTools
 {
-    public class EndianWriter
+    public class EndianWriter : IDisposable
     {
-        public EndianWriter(Stream stream, Endianness endianness)
+        private readonly MemoryStream stream = new MemoryStream();
+
+        public EndianWriter(Endianness endianness)
         {
-            Stream = stream ?? throw new ArgumentNullException(nameof(stream));
             Endianness = endianness;
         }
 
-        protected Stream Stream { get; }
-
         public Endianness Endianness { get; }
 
-        public async Task WriteAsync(byte value, CancellationToken cancellationToken = default)
+        public void Write(byte value)
         {
-            await Stream.WriteAsync(new byte[] { value }, cancellationToken);
+            stream.Write(new byte[] { value });
         }
 
-        public async Task WriteAsync(ushort value, CancellationToken cancellationToken = default)
+        public void Write(ushort value)
         {
             var bytes = BitConverter.GetBytes(value);
 
-            await WriteBytesAsync(bytes, cancellationToken);
+            WriteBytes(bytes);
         }
 
-        private async Task WriteBytesAsync(byte[] bytes, CancellationToken cancellationToken)
+        /// <summary>
+        /// Only call this for the number of bytes it takes to represent a single element.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private void WriteBytes(byte[] bytes)
         {
             if (Endianness == Endianness.BigEndian)
             {
                 Array.Reverse(bytes);
             }
 
-            await Stream.WriteAsync(bytes, cancellationToken);
+            stream.Write(bytes);
+        }
+
+        public byte[] ToArray()
+        {
+            return stream.ToArray();
+        }
+
+        public void Dispose()
+        {
+            stream.Dispose();
         }
     }
 }

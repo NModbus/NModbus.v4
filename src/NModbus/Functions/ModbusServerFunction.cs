@@ -26,13 +26,13 @@ namespace NModbus.Functions
         public virtual async Task<byte[]> ProcessAsync(byte[] data, CancellationToken cancellationToken)
         {
             //Get the request.
-            var request = await MessageSerializer.DeserializeRequestAsync(data, cancellationToken);
+            var request = MessageSerializer.DeserializeRequest(data);
 
             //Process the request.
             var response = await Implementation.ProcessAsync(request, cancellationToken);
 
             //Get the response.
-            return await MessageSerializer.SerializeResponseAsync(response, cancellationToken);
+            return MessageSerializer.SerializeResponse(response);
         }
     }
 }

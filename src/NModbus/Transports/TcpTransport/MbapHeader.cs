@@ -2,12 +2,20 @@
 {
     public class MbapHeader
     {
-        public ushort TransactionIdentifier { get; set; }
+        public MbapHeader(ushort transactionIdentifier, ushort protocolIdentifier, ushort length, byte unitIdentifier)
+        {
+            TransactionIdentifier = transactionIdentifier;
+            ProtocolIdentifier = protocolIdentifier;
+            Length = length;
+            UnitIdentifier = unitIdentifier;
+        }
 
-        public ushort ProtocolIdentifier { get; set; }
+        public ushort TransactionIdentifier { get; }
 
-        public ushort Length { get; set; }
+        public ushort ProtocolIdentifier { get; }
 
-        public byte UnitIdentifier { get; set; }
+        public ushort Length { get; }
+
+        public byte UnitIdentifier { get; }
     }
 }
