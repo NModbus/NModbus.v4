@@ -6,6 +6,7 @@ namespace NModbus.BasicServer.Interfaces
     /// This is how the server device accesses storage.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    /// <seealso cref="IApplicationPointStorage{T}"/>
     public interface IDevicePointStorage<T>
     {
         /// <summary>

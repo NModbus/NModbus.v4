@@ -3,7 +3,7 @@ using NModbus.Interfaces;
 
 namespace NModbus.BasicServer
 {
-    public class PointStorage<T> : IDevicePointStorage<T>, IApplicationPointStorage<T>
+    public class SparsePointStorage<T> : IDevicePointStorage<T>, IApplicationPointStorage<T>
     {
         private readonly Dictionary<ushort, T> values = new Dictionary<ushort, T>();
 
@@ -21,10 +21,10 @@ namespace NModbus.BasicServer
             }
         }
 
-        public event EventHandler<DeviceReadWriteArgs> BeforeDeviceRead;
-        public event EventHandler<DeviceReadWriteArgs> AfterDeviceRead;
-        public event EventHandler<DeviceReadWriteArgs> BeforeDeviceWrite;
-        public event EventHandler<DeviceReadWriteArgs> AfterDeviceWrite;
+        public event EventHandler<DeviceReadArgs> BeforeDeviceRead;
+        public event EventHandler<DeviceReadArgs> AfterDeviceRead;
+        public event EventHandler<DeviceWriteArgs<T>> BeforeDeviceWrite;
+        public event EventHandler<DeviceWriteArgs<T>> AfterDeviceWrite;
 
         private void VerifyPointsAreInRange(ushort startingAddress, ushort numberOfPoints)
         {
@@ -36,7 +36,7 @@ namespace NModbus.BasicServer
         {
             VerifyPointsAreInRange(startingAddress, numberOfPoints);
 
-            var args = new DeviceReadWriteArgs(startingAddress, numberOfPoints);
+            var args = new DeviceReadArgs(startingAddress, numberOfPoints);
 
             BeforeDeviceRead?.Invoke(this, args);
 
@@ -58,7 +58,7 @@ namespace NModbus.BasicServer
         {
             VerifyPointsAreInRange(startingAddress, (ushort)values.Length);
 
-            var args = new DeviceReadWriteArgs(startingAddress, (ushort)values.Length);
+            var args = new DeviceWriteArgs<T>(startingAddress, values);
 
             BeforeDeviceWrite?.Invoke(this, args);
 

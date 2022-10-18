@@ -7,7 +7,7 @@ namespace NModbus.BasicServer.Functions
 {
     public class WriteSingleRegisterImplementation : IModbusFunctionImplementation<WriteSingleRegisterRequest, WriteSingleRegisterResponse>
     {
-        private readonly ILogger<WriteSingleRegisterImplementation> logger;
+        private readonly ILogger logger;
         private readonly IDeviceStorage storage;
 
         public WriteSingleRegisterImplementation(ILogger<WriteSingleRegisterImplementation> logger, IDeviceStorage storage)

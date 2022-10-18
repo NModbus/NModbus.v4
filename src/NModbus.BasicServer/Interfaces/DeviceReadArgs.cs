@@ -1,8 +1,8 @@
 ﻿namespace NModbus.BasicServer.Interfaces
 {
-    public class DeviceReadWriteArgs : EventArgs
+    public class DeviceReadArgs : EventArgs
     {
-        public DeviceReadWriteArgs(ushort startingAddress, ushort numberOfPoints)
+        public DeviceReadArgs(ushort startingAddress, ushort numberOfPoints)
         {
             StartingAddress = startingAddress;
             NumberOfPoints = numberOfPoints;
