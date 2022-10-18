@@ -18,7 +18,7 @@ namespace NModbus.BasicServer.Functions
 
         public Task<ReadHoldingRegistersResponse> ProcessAsync(ReadHoldingRegistersRequest request, CancellationToken cancellationToken)
         {
-            var registers = storage.HoldingRegisters.ReadPoints(request.StartingAddress, request.NumberOfRegisters);
+            var registers = storage.HoldingRegisters.ReadPoints(request.StartingAddress, request.QuantityOfRegisters);
 
             return Task.FromResult(new ReadHoldingRegistersResponse
             {

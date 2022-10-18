@@ -75,7 +75,7 @@ namespace NModbus.Extensions
             var request = new ReadHoldingRegistersRequest
             {
                 StartingAddress = startingAddress,
-                NumberOfRegisters = numberOfRegisters,
+                QuantityOfRegisters = numberOfRegisters,
             };
 
             var response = await client.ExecuteAsync<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>(
@@ -85,6 +85,17 @@ namespace NModbus.Extensions
                 cancellationToken);
 
             return response.RegisterValues;
+        }
+
+        public static async Task WriteMultipleRegistersAsync(this IModbusClient client, byte unitNumber, ushort startingAddress, ushort[] registers, CancellationToken cancellationToken = default)
+        {
+            var request = new WriteMultipleRegistersRequest(startingAddress, registers);
+
+            await client.ExecuteAsync<WriteMultipleRegistersRequest, WriteMultipleRegistersResponse>(
+                ModbusFunctionCodes.WriteMultipleRegisters,
+                unitNumber,
+                request,
+                cancellationToken);
         }
     }
 }

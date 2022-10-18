@@ -7,7 +7,7 @@ namespace NModbus.Messages
         protected async override Task SerializeRequestCoreAsync(ReadHoldingRegistersRequest request, EndianWriter writer, CancellationToken cancellationToken)
         {
             await writer.WriteAsync(request.StartingAddress, cancellationToken);
-            await writer.WriteAsync(request.NumberOfRegisters, cancellationToken);
+            await writer.WriteAsync(request.QuantityOfRegisters, cancellationToken);
         }
 
         protected override async Task SeserializeResponseCoreAsync(ReadHoldingRegistersResponse response, EndianWriter writer, CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ namespace NModbus.Messages
             return new ReadHoldingRegistersRequest
             {
                 StartingAddress = await reader.ReadUInt16Async(cancellationToken),
-                NumberOfRegisters = await reader.ReadUInt16Async(cancellationToken)
+                QuantityOfRegisters = await reader.ReadUInt16Async(cancellationToken)
             };
         }
 
@@ -53,7 +53,7 @@ namespace NModbus.Messages
     {
         public ushort StartingAddress { get; set; }
 
-        public ushort NumberOfRegisters { get; set; }
+        public ushort QuantityOfRegisters { get; set; }
     }
 
     public class ReadHoldingRegistersResponse

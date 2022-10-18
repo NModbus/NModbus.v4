@@ -12,16 +12,17 @@ var transport = new ModbusTcpTransport(tcpClient, new NullLogger<ModbusTcpTransp
 
 var modbusClient = new ModbusClient(transport, new NullLogger<ModbusClient>());
 
-await modbusClient.WriteSingleRegisterAsync(1, 0, 44);
+//await modbusClient.WriteSingleRegisterAsync(1, 0, 44);
 
-var holdingRegisters = await modbusClient.ReadHoldingRegistersAsync(1, 0, 5);
+//var holdingRegisters = await modbusClient.ReadHoldingRegistersAsync(1, 0, 5);
 
-var index = 0;
+//var index = 0;
 
-foreach(var holdingRegister in holdingRegisters)
-{
-    Console.WriteLine($"[{index}]: {holdingRegister}");
+//foreach(var holdingRegister in holdingRegisters)
+//{
+//    Console.WriteLine($"[{index}]: {holdingRegister}");
 
-    index++;
-}
+//    index++;
+//}
 
+await modbusClient.WriteMultipleRegistersAsync(1, 0, new ushort[] { 42, 43, 44 });

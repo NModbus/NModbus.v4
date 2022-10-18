@@ -14,7 +14,7 @@ namespace NModbus
         public ModbusClient(
             IModbusTransport transport,
             ILogger<ModbusClient> logger,
-            IEnumerable<IClientFunction> clientFunctions = null)
+            IEnumerable<IClientFunction> customClientFunctions = null)
         {
             Transport = transport ?? throw new ArgumentNullException(nameof(transport));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -22,19 +22,20 @@ namespace NModbus
             var defaultClientFunctions = new IClientFunction[]
             {
                 new ModbusClientFunction<WriteSingleRegisterRequest, WriteSingleRegisterResponse>(ModbusFunctionCodes.WriteSingleRegister, new WriteSingleRegisterMessageSerializer()),
-                new ModbusClientFunction<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>(ModbusFunctionCodes.ReadHoldingRegisters, new ReadHoldingRegistersMessageSerializer())
+                new ModbusClientFunction<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>(ModbusFunctionCodes.ReadHoldingRegisters, new ReadHoldingRegistersMessageSerializer()),
+                new ModbusClientFunction<WriteMultipleRegistersRequest, WriteMultipleRegistersResponse>(ModbusFunctionCodes.WriteMultipleRegisters, new WriteMultipleRegistersMessageSerializer())
             };
 
-            this.clientFunctions = defaultClientFunctions
+            clientFunctions = defaultClientFunctions
                 .ToDictionary(f => f.FunctionCode);
 
             //Now allow the caller to override any of the client functions (or add new ones).
-            if (clientFunctions != null)
+            if (customClientFunctions != null)
             {
-                foreach(var clientFunction in clientFunctions)
+                foreach(var clientFunction in customClientFunctions)
                 {
                     logger.LogInformation("Custom implementation of function code {FunctionCode} with type {Type}.", $"0x{clientFunction.FunctionCode}", clientFunction.GetType().Name);
-                    this.clientFunctions[clientFunction.FunctionCode] = clientFunction;
+                    clientFunctions[clientFunction.FunctionCode] = clientFunction;
                 }
             }
         }
