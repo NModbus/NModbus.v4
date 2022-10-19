@@ -1,6 +1,6 @@
 ﻿namespace NModbus.Interfaces
 {
-    public interface IModbusTransport
+    public interface IModbusTransport : IDisposable
     {
         Task SendAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default);
 

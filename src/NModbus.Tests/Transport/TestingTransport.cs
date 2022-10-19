@@ -1,27 +1,27 @@
 ﻿using NModbus.Extensions;
 using NModbus.Interfaces;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace NModbus.Tests.Transport
 {
     public class TestingTransport : IModbusTransport
     {
-        private readonly Stream receiveStream;
-        private readonly Stream transmitStream;
+        private readonly IObservable<ApplicationDataUnit> receive;
+        private readonly IObserver<ApplicationDataUnit> transmit;
 
-        public TestingTransport(Stream receiveStream, Stream transmitStream)
+        public TestingTransport(IObservable<ApplicationDataUnit> receive, IObserver<ApplicationDataUnit> transmit)
         {
-            this.receiveStream = receiveStream ?? throw new ArgumentNullException(nameof(receiveStream));
-            this.transmitStream = transmitStream ?? throw new ArgumentNullException(nameof(transmitStream));
+            this.receive = receive ?? throw new ArgumentNullException(nameof(receive));
+            this.transmit = transmit ?? throw new ArgumentNullException(nameof(transmit));
         }
 
-        public async Task SendAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
+        public Task SendAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
         {
             //Encode the number of bytes to be sent
-            var numberOfBytes = (byte)(applicationDataUnit.ProtocolDataUnit.Length + 2);
+            transmit.OnNext(applicationDataUnit);
 
-            await transmitStream.WriteAsync(new byte[] { numberOfBytes, applicationDataUnit.UnitNumber }, cancellationToken);
-
-            await transmitStream.WriteAsync(applicationDataUnit.ProtocolDataUnit.ToArray(), cancellationToken);
+            return Task.CompletedTask;
         }
 
         public async Task<ApplicationDataUnit> SendAndReceiveAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
@@ -31,20 +31,13 @@ namespace NModbus.Tests.Transport
             return await ReceiveAsync();
         }
 
-        public async Task<ApplicationDataUnit> ReceiveAsync(CancellationToken cancellationToken = default)
+        public Task<ApplicationDataUnit> ReceiveAsync(CancellationToken cancellationToken = default)
         {
-            var headerBuffer = new byte[1];
+            return Task.FromResult(receive.Next().First());
+        }
 
-            var read = await receiveStream.ReadAsync(headerBuffer, 0, 1, cancellationToken);
-
-            if (read != 1)
-                throw new IOException("0 bytes were read.");
-
-            var aduBuffer = new byte[headerBuffer[0]];
-
-            await receiveStream.ReadBufferAsync(aduBuffer, cancellationToken);
-
-            return new ApplicationDataUnit(aduBuffer);
+        public void Dispose()
+        {
         }
     }
 }

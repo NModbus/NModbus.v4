@@ -91,5 +91,10 @@ namespace NModbus.Transports.TcpTransport
 
             return new ApplicationDataUnit(mbapHeader.UnitIdentifier, new ProtocolDataUnit(pduBuffer));
         }
+
+        public void Dispose()
+        {
+            tcpClient.Dispose();
+        }
     }
 }

@@ -44,7 +44,7 @@ namespace NModbus.BasicServer
 
             for (var index = 0; index < numberOfPoints; index++)
             {
-                values.TryGetValue((ushort)(startingAddress + numberOfPoints), out var value);
+                values.TryGetValue((ushort)(startingAddress + index), out var value);
 
                 points[index] = value;
             }

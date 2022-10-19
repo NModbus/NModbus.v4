@@ -30,6 +30,12 @@ namespace NModbus.BasicServer
                     ModbusFunctionCodes.ReadHoldingRegisters,
                     new ReadHoldingRegistersMessageSerializer(),
                     new ReadHoldingRegistersImplementation(loggerFactory.CreateLogger<ReadHoldingRegistersImplementation>(), storage)),
+
+                //Write Multiple Registers
+                new ModbusServerFunction<WriteMultipleRegistersRequest, WriteMultipleRegistersResponse>(
+                    ModbusFunctionCodes.WriteMultipleRegisters,
+                    new WriteMultipleRegistersMessageSerializer(),
+                    new WriteMultipleRegistersImplementation(loggerFactory.CreateLogger<WriteMultipleRegistersImplementation>(), storage))
             };
 
             var dictionary = serverFunctions
