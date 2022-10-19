@@ -2,8 +2,10 @@
 {
     public interface IModbusTransport
     {
-        Task SendAsync(byte unitNumber, ProtocolDataUnit data, CancellationToken cancellationToken = default);
+        Task SendAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default);
 
-        Task<ProtocolDataUnit> SendAndReceiveAsync(byte unitNumber, ProtocolDataUnit data, CancellationToken cancellationToken = default);
+        Task<ApplicationDataUnit> SendAndReceiveAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default);
+
+        Task<ApplicationDataUnit> ReceiveAsync(CancellationToken cancellationToken = default);
     }
 }

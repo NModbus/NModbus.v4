@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NModbus.BasicServer\NModbus.BasicServer.csproj" />
     <ProjectReference Include="..\NModbus\NModbus.csproj" />
   </ItemGroup>
 

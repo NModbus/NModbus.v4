@@ -14,7 +14,7 @@ namespace NModbus.BasicServer
             IDeviceStorage storage = null,
             IEnumerable<IServerFunction> customServerFunctions = null)
         {
-            storage = storage ?? new PointStorage();
+            storage = storage ?? new Storage();
 
             //These are the built in function implementations.
             var serverFunctions = new IServerFunction[]

@@ -1,4 +1,4 @@
-﻿namespace NModbus.EndianTools
+﻿namespace NModbus.Endian
 {
     public class EndianReader : IDisposable
     {

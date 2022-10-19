@@ -1,4 +1,4 @@
-﻿namespace NModbus.EndianTools
+﻿namespace NModbus.Endian
 {
     public static class EndianReaderExtensions
     {
@@ -6,7 +6,7 @@
         {
             var values = new ushort[length];
 
-            for(var index = 0; index < length; index++)
+            for (var index = 0; index < length; index++)
             {
                 values[index] = reader.ReadUInt16();
             }

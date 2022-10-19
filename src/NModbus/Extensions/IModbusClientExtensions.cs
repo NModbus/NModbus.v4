@@ -36,27 +36,28 @@ namespace NModbus.Extensions
             //Serialize the request
             var serializedRequest = clientFunction.MessageSerializer.SerializeRequest(request);
 
-            //Form the protocol data unit.
+            //Form the request
             var requestProtocolDataUnit = new ProtocolDataUnit(clientFunction.FunctionCode, serializedRequest);
+            var requestApplicationDataUnit = new ApplicationDataUnit(unitNumber, requestProtocolDataUnit);
 
             //Check to see if this is a broadcast request.
             if (unitNumber == 0)
             {
                 //This is a broadcast request. No response is expected
-                await client.Transport.SendAsync(unitNumber, requestProtocolDataUnit, cancellationToken);
+                await client.Transport.SendAsync(requestApplicationDataUnit, cancellationToken);
 
                 return default;
             }
 
             //Send the request and wait for a response.
-            var responseProtocolDataUnit = await client.Transport.SendAndReceiveAsync(unitNumber, requestProtocolDataUnit, cancellationToken);
+            var responseApplicationDataUnit = await client.Transport.SendAndReceiveAsync(requestApplicationDataUnit, cancellationToken);
 
             //Check to see if this is an error response
-            if (ModbusFunctionCodes.IsErrorBitSet(responseProtocolDataUnit.FunctionCode))
-                throw new ModbusServerException((ModbusExceptionCode)responseProtocolDataUnit.Data.ToArray()[0]);
+            if (ModbusFunctionCodes.IsErrorBitSet(responseApplicationDataUnit.ProtocolDataUnit.FunctionCode))
+                throw new ModbusServerException((ModbusExceptionCode)responseApplicationDataUnit.ProtocolDataUnit.Data.ToArray()[0]);
 
             //Deserialize the response.
-            return clientFunction.MessageSerializer.DeserializeResponse(responseProtocolDataUnit.Data.ToArray());
+            return clientFunction.MessageSerializer.DeserializeResponse(responseApplicationDataUnit.ProtocolDataUnit.Data.ToArray());
         }
 
         public static async Task WriteSingleRegisterAsync(this IModbusClient client, byte unitNumber, ushort startingAddress, ushort value, CancellationToken cancellationToken = default)

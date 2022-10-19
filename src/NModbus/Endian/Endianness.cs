@@ -1,4 +1,4 @@
-namespace NModbus.EndianTools
+namespace NModbus.Endian
 {
 	/// <summary>
 	/// Endianness of a converter

@@ -3,7 +3,7 @@ using NModbus.Interfaces;
 
 namespace NModbus.BasicServer
 {
-    public class SparsePointStorage<T> : IDevicePointStorage<T>, IApplicationPointStorage<T>
+    public class SparsePointStorage<T> : IPointStorage<T>
     {
         private readonly Dictionary<ushort, T> values = new Dictionary<ushort, T>();
 

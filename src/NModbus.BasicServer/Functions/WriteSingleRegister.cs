@@ -12,8 +12,8 @@ namespace NModbus.BasicServer.Functions
 
         public WriteSingleRegisterImplementation(ILogger<WriteSingleRegisterImplementation> logger, IDeviceStorage storage)
         {
-            this.logger = logger;
-            this.storage = storage;
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
         public Task<WriteSingleRegisterResponse> ProcessAsync(WriteSingleRegisterRequest request, CancellationToken cancellationToken)

@@ -1,5 +1,6 @@
 ﻿namespace NModbus.Interfaces
 {
+
     /// <summary>
     /// The MODBUS protocol defines a simple protocol data unit (PDU) independent of the 
     /// underlying communication layers.
