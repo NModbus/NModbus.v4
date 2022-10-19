@@ -24,5 +24,20 @@
                 totalRead+= read;
             }
         }
+
+        public static void ReadBuffer(this Stream stream, byte[] buffer)
+        {
+            var totalRead = 0;
+
+            while (totalRead < buffer.Length)
+            {
+                var read = stream.Read(buffer, totalRead, buffer.Length - totalRead);
+
+                if (read == 0)
+                    throw new IOException("Read resulted in 0 bytes returned.");
+
+                totalRead += read;
+            }
+        }
     }
 }

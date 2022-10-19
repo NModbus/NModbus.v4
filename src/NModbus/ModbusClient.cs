@@ -21,8 +21,13 @@ namespace NModbus
 
             var defaultClientFunctions = new IClientFunction[]
             {
-                new ModbusClientFunction<WriteSingleRegisterRequest, WriteSingleRegisterResponse>(ModbusFunctionCodes.WriteSingleRegister, new WriteSingleRegisterMessageSerializer()),
+                new ModbusClientFunction<ReadCoilsRequest, ReadCoilsResponse>(ModbusFunctionCodes.ReadCoils, new ReadCoilsMessageSerializer()),
+                new ModbusClientFunction<ReadDiscreteInputsRequest, ReadDiscreteInputsResponse>(ModbusFunctionCodes.ReadDiscreteInputs, new ReadDiscreteInputsMessageSerilizer()),
                 new ModbusClientFunction<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>(ModbusFunctionCodes.ReadHoldingRegisters, new ReadHoldingRegistersMessageSerializer()),
+                new ModbusClientFunction<ReadInputRegistersRequest, ReadInputRegistersResponse>(ModbusFunctionCodes.ReadInputRegisters, new ReadInputRegistersMessageSerializer()),
+                new ModbusClientFunction<WriteSingleCoilRequest, WriteSingleCoilResponse>(ModbusFunctionCodes.WriteSingleCoil, new WriteSingleCoilMessageSerializer()),
+                new ModbusClientFunction<WriteSingleRegisterRequest, WriteSingleRegisterResponse>(ModbusFunctionCodes.WriteSingleRegister, new WriteSingleRegisterMessageSerializer()),
+                new ModbusClientFunction<WriteMultipleCoilsRequest, WriteMultipleCoilsResponse>(ModbusFunctionCodes.WriteMultipleCoils, new WriteMultipleCoilsMessageSerializer()),
                 new ModbusClientFunction<WriteMultipleRegistersRequest, WriteMultipleRegistersResponse>(ModbusFunctionCodes.WriteMultipleRegisters, new WriteMultipleRegistersMessageSerializer())
             };
 

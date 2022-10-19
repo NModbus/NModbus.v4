@@ -1,43 +1,57 @@
 ﻿using NModbus.BasicServer;
 using NModbus.Extensions;
 using Shouldly;
+using Xunit.Abstractions;
 
 namespace NModbus.Tests.Integration
 {
     public class FunctionsShould : ClientServerBase
     {
-        [Fact]
-        public async Task WriteSingleRegisterShouldWork()
+        public FunctionsShould(ITestOutputHelper  output)
         {
-            await Client.WriteSingleRegisterAsync(UnitNumber, 10, 42);
-
-            Storage.HoldingRegisters[10].ShouldBe((ushort)42);
+            output.WriteLine("Constructor");
         }
 
-        [Fact]
-        public async Task WriteMultipleRegistersShouldWork()
+        [Theory]
+        [InlineData(10, 42)]
+        [InlineData(100, 420)]
+        public async Task WriteSingleRegisterShouldWork(ushort address, ushort value)
         {
-            await Client.WriteMultipleRegistersAsync(UnitNumber, 10, new ushort[] { 1, 2, 3, 4, 5 });
+            await Client.WriteSingleRegisterAsync(UnitNumber, address, value);
 
-            Storage.HoldingRegisters[10].ShouldBe((ushort)1);
-            Storage.HoldingRegisters[11].ShouldBe((ushort)2);
-            Storage.HoldingRegisters[12].ShouldBe((ushort)3);
-            Storage.HoldingRegisters[13].ShouldBe((ushort)4);
-            Storage.HoldingRegisters[14].ShouldBe((ushort)5);
+            Storage.HoldingRegisters[address].ShouldBe((ushort)value);
         }
 
-        [Fact]
-        public async Task ReadHoldingRegistersShouldWork()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1000)]
+        [InlineData(60000)]
+        public async Task WriteMultipleRegistersShouldWork(ushort startingAddress)
         {
-            Storage.HoldingRegisters[100] = 4;
-            Storage.HoldingRegisters[101] = 5;
-            Storage.HoldingRegisters[102] = 6;
+            await Client.WriteMultipleRegistersAsync(UnitNumber, startingAddress, new ushort[] { 1, 2, 3, 4, 5 });
 
-            var registers = await Client.ReadHoldingRegistersAsync(UnitNumber, 100, 3);
+            Storage.HoldingRegisters[(ushort)(startingAddress + 0)].ShouldBe((ushort)1);
+            Storage.HoldingRegisters[(ushort)(startingAddress + 1)].ShouldBe((ushort)2);
+            Storage.HoldingRegisters[(ushort)(startingAddress + 2)].ShouldBe((ushort)3);
+            Storage.HoldingRegisters[(ushort)(startingAddress + 3)].ShouldBe((ushort)4);
+            Storage.HoldingRegisters[(ushort)(startingAddress + 4)].ShouldBe((ushort)5);
+        }
+
+        [Theory]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(60000)]
+        public async Task ReadHoldingRegistersShouldWork(ushort startingAddress)
+        {
+            const int numberOfRegisters = 3;
+
+            Storage.HoldingRegisters[(ushort)(startingAddress + 0)] = 4;
+            Storage.HoldingRegisters[(ushort)(startingAddress + 1)] = 5;
+            Storage.HoldingRegisters[(ushort)(startingAddress + 2)] = 6;
+
+            var registers = await Client.ReadHoldingRegistersAsync(UnitNumber, startingAddress, numberOfRegisters);
 
             registers.ShouldBe(new ushort[] { 4, 5, 6 });
         }
-
-       
     }
 }

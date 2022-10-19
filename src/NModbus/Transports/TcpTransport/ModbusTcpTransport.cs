@@ -45,10 +45,10 @@ namespace NModbus.Transports.TcpTransport
 
         public async Task SendAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
         {
-            await SendAsyncInternal(applicationDataUnit, cancellationToken);
+            await SendInternalAsync(applicationDataUnit, cancellationToken);
         }
 
-        private async Task<ushort> SendAsyncInternal(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
+        private async Task<ushort> SendInternalAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
         {
             //Get the next transaction id
             var transactionIdenfier = GetNextTransactionIdenfier();

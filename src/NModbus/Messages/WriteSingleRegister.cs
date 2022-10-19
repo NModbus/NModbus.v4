@@ -11,7 +11,7 @@ namespace NModbus.Messages
             writer.Write(request.Value);
         }
 
-        protected override void SeserializeResponseCore(WriteSingleRegisterResponse response, EndianWriter writer)
+        protected override void SerializeResponseCore(WriteSingleRegisterResponse response, EndianWriter writer)
         {
             writer.Write(response.Address);
             writer.Write(response.Value);
@@ -34,29 +34,7 @@ namespace NModbus.Messages
         }
     }
 
-    public class WriteSingleRegisterRequest
-    {
-        public WriteSingleRegisterRequest(ushort address, ushort value)
-        {
-            Address = address;
-            Value = value;
-        }
-
-        public ushort Address { get; }
-
-        public ushort Value { get; }
-    }
-
-    public class WriteSingleRegisterResponse
-    {
-        public WriteSingleRegisterResponse(ushort address, ushort value)
-        {
-            Address = address;
-            Value = value;
-        }
-
-        public ushort Address { get; }
-
-        public ushort Value { get; }
-    }
+    public record WriteSingleRegisterRequest(ushort Address, ushort Value);
+    
+    public record WriteSingleRegisterResponse(ushort Address, ushort Value);
 }

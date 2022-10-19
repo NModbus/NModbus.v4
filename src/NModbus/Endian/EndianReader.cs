@@ -1,4 +1,7 @@
-﻿namespace NModbus.Endian
+﻿using NModbus.Extensions;
+using System.Reflection.Metadata.Ecma335;
+
+namespace NModbus.Endian
 {
     public class EndianReader : IDisposable
     {
@@ -28,12 +31,21 @@
 
         public ushort ReadUInt16()
         {
-            var bytes = ReadBytes(sizeof(ushort));
+            var bytes = ReadPrimitiveBytes(sizeof(ushort));
 
             return BitConverter.ToUInt16(bytes);
         }
 
-        private byte[] ReadBytes(int count)
+        public byte[] ReadBytes(int length)
+        {
+            var buffer = new byte[length];
+
+            stream.ReadBuffer(buffer);
+
+            return buffer;
+        }
+
+        private byte[] ReadPrimitiveBytes(int count)
         {
             var buffer = new byte[count];
 

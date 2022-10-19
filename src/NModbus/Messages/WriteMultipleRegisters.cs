@@ -12,7 +12,7 @@ namespace NModbus.Messages
             writer.Write(request.Registers);
         }
 
-        protected override void SeserializeResponseCore(WriteMultipleRegistersResponse response, EndianWriter writer)
+        protected override void SerializeResponseCore(WriteMultipleRegistersResponse response, EndianWriter writer)
         {
             writer.Write(response.StartingAddress);
             writer.Write(response.QuantityOfRegisters);
@@ -40,29 +40,7 @@ namespace NModbus.Messages
         }
     }
 
-    public class WriteMultipleRegistersRequest
-    {
-        public WriteMultipleRegistersRequest(ushort startingAddress, ushort[] registers)
-        {
-            StartingAddress = startingAddress;
-            Registers = registers ?? throw new ArgumentNullException(nameof(registers));
-        }
-
-        public ushort StartingAddress { get; }
-
-        public ushort[] Registers { get; }
-    }
-
-    public class WriteMultipleRegistersResponse
-    {
-        public WriteMultipleRegistersResponse(ushort startingAddress, ushort quantityOfRegisters)
-        {
-            StartingAddress = startingAddress;
-            QuantityOfRegisters = quantityOfRegisters;
-        }
-
-        public ushort StartingAddress { get; }
-
-        public ushort QuantityOfRegisters { get; }
-    }
+    public record WriteMultipleRegistersRequest(ushort StartingAddress, ushort[] Registers);
+        
+    public record WriteMultipleRegistersResponse(ushort StartingAddress, ushort QuantityOfRegisters);
 }

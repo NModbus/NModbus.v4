@@ -23,7 +23,7 @@ namespace NModbus.Messages
         {
             using var writer = new EndianWriter(Endianness.BigEndian);
 
-            SeserializeResponseCore(response, writer);
+            SerializeResponseCore(response, writer);
 
             return writer.ToArray();
         }
@@ -44,7 +44,7 @@ namespace NModbus.Messages
 
         protected abstract void SerializeRequestCore(TRequest request, EndianWriter writer);
 
-        protected abstract void SeserializeResponseCore(TResponse response, EndianWriter writer);
+        protected abstract void SerializeResponseCore(TResponse response, EndianWriter writer);
 
         protected abstract TRequest DeserializeRequestCore(EndianReader reader);
 

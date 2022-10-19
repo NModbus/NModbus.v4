@@ -10,7 +10,7 @@ namespace NModbus.Messages
             writer.Write(request.QuantityOfRegisters);
         }
 
-        protected override void SeserializeResponseCore(ReadHoldingRegistersResponse response, EndianWriter writer)
+        protected override void SerializeResponseCore(ReadHoldingRegistersResponse response, EndianWriter writer)
         {
             byte byteCount = (byte)(response.RegisterValues.Length * 2);
 
@@ -46,26 +46,7 @@ namespace NModbus.Messages
         }
     }
 
-    public class ReadHoldingRegistersRequest
-    {
-        public ReadHoldingRegistersRequest(ushort startingAddress, ushort quantityOfRegisters)
-        {
-            StartingAddress = startingAddress;
-            QuantityOfRegisters = quantityOfRegisters;
-        }
+    public record ReadHoldingRegistersRequest(ushort StartingAddress, ushort QuantityOfRegisters);
 
-        public ushort StartingAddress { get; }
-
-        public ushort QuantityOfRegisters { get; }
-    }
-
-    public class ReadHoldingRegistersResponse
-    {
-        public ReadHoldingRegistersResponse(ushort[] registerValues)
-        {
-            RegisterValues = registerValues ?? throw new ArgumentNullException(nameof(registerValues));
-        }
-
-        public ushort[] RegisterValues { get; }
-    }
+    public record ReadHoldingRegistersResponse(ushort[] RegisterValues);
 }

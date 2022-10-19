@@ -23,6 +23,11 @@
             WriteBytes(bytes);
         }
 
+        public void Write(byte[] value)
+        {
+            stream.Write(value);
+        }
+
         /// <summary>
         /// Only call this for the number of bytes it takes to represent a single element.
         /// </summary>

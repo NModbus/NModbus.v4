@@ -4,7 +4,7 @@ namespace NModbus.Transports.TcpTransport
 {
     public static class MbapHeaderSerializer
     {
-        private const ushort ProtocolIdentifier = 0x0000;
+        public const ushort ProtocolIdentifier = 0x0000;
 
         /// <summary>
         /// The length of a MBAP header.
