@@ -7,7 +7,7 @@ namespace NModbus.Messages
         protected override void SerializeRequestCore(ReadCoilsRequest request, EndianWriter writer)
         {
             writer.Write(request.StartingAddress);
-            writer.Write(request.QuantityOfCoils);
+            writer.Write(request.QuantityOfOutputs);
         }
 
         protected override void SerializeResponseCore(ReadCoilsResponse response, EndianWriter writer)
@@ -33,7 +33,7 @@ namespace NModbus.Messages
         }
     }
 
-    public record ReadCoilsRequest(ushort StartingAddress, ushort QuantityOfCoils);
+    public record ReadCoilsRequest(ushort StartingAddress, ushort QuantityOfOutputs);
 
     public record ReadCoilsResponse(byte[] CoilStatus);
 }

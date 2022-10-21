@@ -5,7 +5,10 @@
     /// </summary>
     public static class ModbusFunctionCodes
     {
-        private const byte ErrorMask = 0b10000000;
+        /// <summary>
+        /// Has the Most Significant Bit Set. Or this with a function code to set the error bit.
+        /// </summary>
+        public const byte ErrorMask = 0b10000000;
 
         public const byte ReadCoils = 0x01;
 
@@ -32,6 +35,8 @@
         public const byte MaskWriteRegister = 0x16;
 
         public const byte ReadWriteMultipleRegisters = 0x17;
+
+        public const byte ReadFifoQueue = 0x18;
 
         /// <summary>
         /// Sets the error bit.

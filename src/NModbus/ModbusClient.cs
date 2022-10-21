@@ -28,8 +28,13 @@ namespace NModbus
                 new ModbusClientFunction<WriteSingleCoilRequest, WriteSingleCoilResponse>(ModbusFunctionCodes.WriteSingleCoil, new WriteSingleCoilMessageSerializer()),
                 new ModbusClientFunction<WriteSingleRegisterRequest, WriteSingleRegisterResponse>(ModbusFunctionCodes.WriteSingleRegister, new WriteSingleRegisterMessageSerializer()),
                 new ModbusClientFunction<WriteMultipleCoilsRequest, WriteMultipleCoilsResponse>(ModbusFunctionCodes.WriteMultipleCoils, new WriteMultipleCoilsMessageSerializer()),
-                new ModbusClientFunction<WriteMultipleRegistersRequest, WriteMultipleRegistersResponse>(ModbusFunctionCodes.WriteMultipleRegisters, new WriteMultipleRegistersMessageSerializer())
-            };
+                new ModbusClientFunction<WriteMultipleRegistersRequest, WriteMultipleRegistersResponse>(ModbusFunctionCodes.WriteMultipleRegisters, new WriteMultipleRegistersMessageSerializer()),
+                new ModbusClientFunction<ReadFileRecordRequest, ReadFileRecordResponse>(ModbusFunctionCodes.ReadFileRecord, new ReadFileRecordMessageSerializer()),
+                new ModbusClientFunction<WriteFileRecordRequest, WriteFileRecordResponse>(ModbusFunctionCodes.WriteFileRecord, new WriteFileRecordMessageSerializer()),
+                new ModbusClientFunction<MaskWriteRegisterRequest, MaskWriteRegisterResponse>(ModbusFunctionCodes.MaskWriteRegister, new MaskWriteRegisterMessageSerializer()),
+                new ModbusClientFunction<ReadWriteMultipleRegistersRequest, ReadWriteMultipleRegistersResponse>(ModbusFunctionCodes.ReadWriteMultipleRegisters, new ReadWriteMultipleRegistersMessageSerializer()),
+                new ModbusClientFunction<ReadFifoQueueRequest, ReadFifoQueueResponse>(ModbusFunctionCodes.ReadFifoQueue, new ReadFifoQueueMessageSerializer()),
+            };  
 
             clientFunctions = defaultClientFunctions
                 .ToDictionary(f => f.FunctionCode);

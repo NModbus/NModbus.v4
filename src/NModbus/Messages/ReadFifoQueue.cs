@@ -2,7 +2,7 @@
 
 namespace NModbus.Messages
 {
-    public class ReadFifoQueueSerilizer : ModbusMessageSerializer<ReadFifoQueueRequest, ReadFifoQueueResponse>
+    public class ReadFifoQueueMessageSerializer : ModbusMessageSerializer<ReadFifoQueueRequest, ReadFifoQueueResponse>
     {
         protected override void SerializeRequestCore(ReadFifoQueueRequest request, EndianWriter writer)
         {
