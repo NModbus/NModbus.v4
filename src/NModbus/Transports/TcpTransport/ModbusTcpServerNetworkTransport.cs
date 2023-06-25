@@ -11,7 +11,7 @@ namespace NModbus.Transports.TcpTransport
         private readonly IModbusServerNetwork serverNetwork;
         private readonly ILoggerFactory loggerFactory;
         private readonly ILogger<ModbusTcpServerNetworkTransport> logger;
-        private readonly ConcurrentDictionary<string, ModbusServerTcpConnection> servers = new();
+        private readonly ConcurrentDictionary<string, ModbusServerTcpConnection> connections = new();
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private readonly Task listenTask;
 
@@ -38,18 +38,39 @@ namespace NModbus.Transports.TcpTransport
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    var tcpClient = await tcpListener.AcceptTcpClientAsync()
+                    try
+                    {
+                        var tcpClient = await tcpListener.AcceptTcpClientAsync()
                         .ConfigureAwait(false);
 
-                    var endpoint = tcpClient.Client.RemoteEndPoint.ToString();
+                        var endpoint = tcpClient.Client.RemoteEndPoint.ToString();
 
-                    logger.LogInformation("Accepted a client from {Endpoint}", endpoint);
+                        logger.LogInformation("Accepted a client from {Endpoint}", endpoint);
 
-                    var serverConnection = new ModbusServerTcpConnection(tcpClient, serverNetwork, loggerFactory);
+                        var serverConnection = new ModbusServerTcpConnection(tcpClient, serverNetwork, loggerFactory);
 
-                    if (!servers.TryAdd(endpoint, serverConnection))
-                        logger.LogWarning("Unable to add TCP server connection for '{Endpoint}'.", endpoint);
+                        if (!connections.TryAdd(endpoint, serverConnection))
+                            logger.LogWarning("Unable to add TCP server connection for '{Endpoint}'.", endpoint);
+
+                        serverConnection.ConnectionClosed += ServerConnection_ConnectionClosed;
+                    }
+                    catch(SocketException ex) when (cancellationToken.IsCancellationRequested)
+                    {
+                        logger.LogTrace(ex, $"Swallowing {nameof(IOException)} in {nameof(ModbusTcpServerNetworkTransport)}.{nameof(ListenAsync)}");
+                    }
                 }
+            }
+        }
+
+        private void ServerConnection_ConnectionClosed(object? sender, TcpConnectionEventArgs e)
+        {
+            if (!connections.TryRemove(e.Endpoint, out _))
+            {
+                logger.LogWarning("Unable to remove '{Endpoint}' as it does not exist in the connections dictionary.", e.Endpoint);
+            }
+            else
+            {
+                logger.LogInformation("Connection from '{Endpoint}' has been removed.", e.Endpoint);
             }
         }
 

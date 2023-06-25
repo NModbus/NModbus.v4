@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+﻿using NModbus.Interfaces;
 
 namespace NModbus.BasicServer.Interfaces
 {
@@ -15,6 +15,7 @@ namespace NModbus.BasicServer.Interfaces
         /// <param name="startingAddress"></param>
         /// <param name="numberOfPoints"></param>
         /// <returns></returns>
+        /// <exception cref="ModbusServerException"/>
         T[] ReadPoints(ushort startingAddress, ushort numberOfPoints);
 
         /// <summary>
@@ -23,6 +24,7 @@ namespace NModbus.BasicServer.Interfaces
         /// <param name="startingAddress"></param>
         /// <param name="value"></param>
         /// <returns></returns>
+        /// <exception cref="ModbusServerException"/>
         void WritePoints(ushort startingAddress, T[] value);
     }
 }
