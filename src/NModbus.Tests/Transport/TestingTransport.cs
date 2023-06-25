@@ -1,11 +1,9 @@
-﻿using NModbus.Extensions;
-using NModbus.Interfaces;
+﻿using NModbus.Interfaces;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace NModbus.Tests.Transport
 {
-    public class TestingTransport : IModbusTransport
+    public class TestingTransport : IModbusClientTransport
     {
         private readonly IObservable<ApplicationDataUnit> receive;
         private readonly IObserver<ApplicationDataUnit> transmit;
@@ -36,8 +34,9 @@ namespace NModbus.Tests.Transport
             return Task.FromResult(receive.Next().First());
         }
 
-        public void Dispose()
+        public ValueTask DisposeAsync()
         {
+            return ValueTask.CompletedTask;
         }
     }
 }

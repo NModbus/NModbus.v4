@@ -40,7 +40,8 @@ namespace NModbus.Endian
         {
             var buffer = new byte[length];
 
-            stream.ReadBuffer(buffer);
+            if (!stream.TryReadBuffer(buffer))
+                return null;
 
             return buffer;
         }

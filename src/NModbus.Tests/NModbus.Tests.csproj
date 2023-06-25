@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="Shouldly" Version="4.1.0" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />

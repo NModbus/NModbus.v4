@@ -12,12 +12,15 @@ namespace NModbus
         private readonly ILogger logger;
 
         public ModbusClient(
-            IModbusTransport transport,
-            ILogger<ModbusClient> logger,
+            IModbusClientTransport transport,
+            ILoggerFactory loggerFactory,
             IEnumerable<IClientFunction> customClientFunctions = null)
         {
+            if (loggerFactory is null)
+                throw new ArgumentNullException(nameof(loggerFactory));
+
             Transport = transport ?? throw new ArgumentNullException(nameof(transport));
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            logger = loggerFactory.CreateLogger<ModbusClient>();
 
             var defaultClientFunctions = new IClientFunction[]
             {
@@ -50,7 +53,7 @@ namespace NModbus
             }
         }
 
-        public IModbusTransport Transport { get; }
+        public IModbusClientTransport Transport { get; }
 
         public virtual bool TryGetClientFunction<TRequest, TResponse>(byte functionCode, out IClientFunction<TRequest, TResponse> clientFunction)
         {

@@ -1,15 +1,19 @@
-﻿using NModbus.BasicServer;
+﻿using Divergic.Logging.Xunit;
+using Microsoft.Extensions.Logging;
+using NModbus.BasicServer;
 using NModbus.Extensions;
 using Shouldly;
 using Xunit.Abstractions;
 
 namespace NModbus.Tests.Integration
 {
-    public class FunctionsShould : ClientServerBase
+    public class FunctionsShould
     {
-        public FunctionsShould(ITestOutputHelper  output)
+        private readonly ILoggerFactory loggerFactory;
+
+        public FunctionsShould(ITestOutputHelper output)
         {
-            output.WriteLine("Constructor");
+            loggerFactory = LogFactory.Create(output);
         }
 
         [Theory]
@@ -17,9 +21,11 @@ namespace NModbus.Tests.Integration
         [InlineData(100, 420)]
         public async Task WriteSingleRegisterShouldWork(ushort address, ushort value)
         {
-            await Client.WriteSingleRegisterAsync(UnitNumber, address, value);
+            await using var clientServer = new ClientServer(1, loggerFactory);
 
-            Storage.HoldingRegisters[address].ShouldBe((ushort)value);
+            await clientServer.Client.WriteSingleRegisterAsync(clientServer.UnitNumber, address, value);
+
+            clientServer.Storage.HoldingRegisters[address].ShouldBe((ushort)value);
         }
 
         [Theory]
@@ -28,30 +34,33 @@ namespace NModbus.Tests.Integration
         [InlineData(60000)]
         public async Task WriteMultipleRegistersShouldWork(ushort startingAddress)
         {
-            await Client.WriteMultipleRegistersAsync(UnitNumber, startingAddress, new ushort[] { 1, 2, 3, 4, 5 });
+            await using var clientServer = new ClientServer(1, loggerFactory);
 
-            Storage.HoldingRegisters[(ushort)(startingAddress + 0)].ShouldBe((ushort)1);
-            Storage.HoldingRegisters[(ushort)(startingAddress + 1)].ShouldBe((ushort)2);
-            Storage.HoldingRegisters[(ushort)(startingAddress + 2)].ShouldBe((ushort)3);
-            Storage.HoldingRegisters[(ushort)(startingAddress + 3)].ShouldBe((ushort)4);
-            Storage.HoldingRegisters[(ushort)(startingAddress + 4)].ShouldBe((ushort)5);
+            await clientServer.Client.WriteMultipleRegistersAsync(clientServer.UnitNumber, startingAddress, new ushort[] { 1, 2, 3, 4, 5 });
+
+            clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + 0)].ShouldBe((ushort)1);
+            clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + 1)].ShouldBe((ushort)2);
+            clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + 2)].ShouldBe((ushort)3);
+            clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + 3)].ShouldBe((ushort)4);
+            clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + 4)].ShouldBe((ushort)5);
         }
 
         [Theory]
-        [InlineData(100)]
-        [InlineData(1000)]
-        [InlineData(60000)]
-        public async Task ReadHoldingRegistersShouldWork(ushort startingAddress)
+        [InlineData(100, new ushort[] { 4, 5, 6 })]
+        [InlineData(1000, new ushort[] { 100, 2000, 7 })]
+        [InlineData(60000, new ushort[] { 60, 0, 4, 5 })]
+        public async Task ReadHoldingRegistersShouldWork(ushort startingAddress, ushort[] values)
         {
-            const int numberOfRegisters = 3;
+            await using var clientServer = new ClientServer(1, loggerFactory);
 
-            Storage.HoldingRegisters[(ushort)(startingAddress + 0)] = 4;
-            Storage.HoldingRegisters[(ushort)(startingAddress + 1)] = 5;
-            Storage.HoldingRegisters[(ushort)(startingAddress + 2)] = 6;
+            for (int x = 0; x < values.Length; x++)
+            {
+                clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + x)] = values[x];
+            }
+            
+            var registers = await clientServer.Client.ReadHoldingRegistersAsync(clientServer.UnitNumber, startingAddress, (ushort)values.Length);
 
-            var registers = await Client.ReadHoldingRegistersAsync(UnitNumber, startingAddress, numberOfRegisters);
-
-            registers.ShouldBe(new ushort[] { 4, 5, 6 });
+            registers.ShouldBe(values);
         }
     }
 }

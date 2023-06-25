@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NModbus.Helpers;
 using NModbus.Interfaces;
 
@@ -12,11 +13,11 @@ namespace NModbus
         public ModbusServer(
             byte unitNumber,
             IEnumerable<IServerFunction> serverFunctions,
-            ILogger<ModbusServer> logger)
+            ILoggerFactory loggerFactory)
         {
             this.serverFunctions = serverFunctions.ToDictionary(f => f.FunctionCode);
             UnitNumber = unitNumber;
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            logger = loggerFactory.CreateLogger<ModbusServer>();
         }
 
         /// <summary>

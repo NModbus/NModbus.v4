@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NModbus.BasicServer.Functions;
 using NModbus.BasicServer.Interfaces;
 using NModbus.Functions;
@@ -10,10 +11,11 @@ namespace NModbus.BasicServer
     public static class ServerFunctionFactory
     {
         public static IServerFunction[] CreateBasicServerFunctions(
-            ILoggerFactory loggerFactory,
             IDeviceStorage storage = null,
+            ILoggerFactory loggerFactory = null,
             IEnumerable<IServerFunction> customServerFunctions = null)
         {
+            loggerFactory = loggerFactory ?? new NullLoggerFactory();
             storage = storage ?? new Storage();
 
             //These are the built in function implementations.

@@ -1,50 +1,49 @@
-﻿using NModbus.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using NModbus.Interfaces;
+using System.Collections.Concurrent;
 
 namespace NModbus
 {
     public class ModbusServerNetwork : IModbusServerNetwork
     {
-        private readonly Dictionary<byte, IModbusServer> servers = new Dictionary<byte, IModbusServer>();
-        private readonly IModbusTransport transport;
+        private readonly ConcurrentDictionary<byte, IModbusServer> servers = new ConcurrentDictionary<byte, IModbusServer>();
+        private readonly ILogger logger;
+        private readonly ILoggerFactory loggerFactory;
 
-        public ModbusServerNetwork(IModbusTransport transport)
+        public ModbusServerNetwork(ILoggerFactory loggerFactory)
         {
-            this.transport = transport ?? throw new ArgumentNullException(nameof(transport));
+            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            this.logger = loggerFactory.CreateLogger<ModbusServerNetwork>();
         }
 
-        public void AddServer(IModbusServer server)
+        public bool TryAddServer(IModbusServer server)
         {
-            servers.Add(server.UnitNumber, server);
+            return servers.TryAdd(server.UnitNumber, server);
         }
 
-        public void RemoveServer(IModbusServer server)
+        public bool TryRemoveServer(byte unitNumnber)
         {
-            servers.Remove(server.UnitNumber);
+            return servers.TryRemove(unitNumnber, out _);
         }
 
-        public async Task ListenAsync(CancellationToken cancellationToken)
+        public async Task ProcessRequestAsync(ApplicationDataUnit applicationDataUnit, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default)
         {
-            while(!cancellationToken.IsCancellationRequested)
+            if (applicationDataUnit.UnitNumber == 0)
             {
-                var applicationDataUnit = await transport.ReceiveAsync(cancellationToken);
-
-                if (applicationDataUnit.UnitNumber == 0)
+                foreach (var server in servers.Values)
                 {
-                    foreach(var server in servers.Values)
-                    {
-                        await server.ProcessRequestAsync(applicationDataUnit.ProtocolDataUnit, cancellationToken);
-                    }
+                    await server.ProcessRequestAsync(applicationDataUnit.ProtocolDataUnit, cancellationToken);
                 }
-                else
+            }
+            else
+            {
+                if (servers.TryGetValue(applicationDataUnit.UnitNumber, out var server))
                 {
-                    if (servers.TryGetValue(applicationDataUnit.UnitNumber, out var server))
-                    {
-                        var response = await server.ProcessRequestAsync(applicationDataUnit.ProtocolDataUnit, cancellationToken);
+                    var response = await server.ProcessRequestAsync(applicationDataUnit.ProtocolDataUnit, cancellationToken);
 
-                        if (response != null)
-                        {
-                            await transport.SendAsync(new ApplicationDataUnit(applicationDataUnit.UnitNumber, response), cancellationToken);
-                        }
+                    if (response != null)
+                    {
+                        await clientTransport.SendAsync(new ApplicationDataUnit(applicationDataUnit.UnitNumber, response), cancellationToken);
                     }
                 }
             }

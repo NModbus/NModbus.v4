@@ -8,9 +8,9 @@
         /// <param name="stream"></param>
         /// <param name="buffer"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <returns>True if the read was successful, false if no data was returned (indiciating that the connection wsa closed).</returns>
         /// <exception cref="IOException"></exception>
-        public static async Task ReadBufferAsync(this Stream stream, byte[] buffer, CancellationToken cancellationToken = default)
+        public static async Task<bool> TryReadBufferAsync(this Stream stream, byte[] buffer, CancellationToken cancellationToken = default)
         {
             var totalRead = 0;
 
@@ -19,13 +19,15 @@
                 var read = await stream.ReadAsync(buffer, totalRead, buffer.Length - totalRead, cancellationToken);
 
                 if (read == 0)
-                    throw new IOException("Read resulted in 0 bytes returned.");
+                    return false;
 
                 totalRead+= read;
             }
+
+            return true;
         }
 
-        public static void ReadBuffer(this Stream stream, byte[] buffer)
+        public static bool TryReadBuffer(this Stream stream, byte[] buffer)
         {
             var totalRead = 0;
 
@@ -34,10 +36,12 @@
                 var read = stream.Read(buffer, totalRead, buffer.Length - totalRead);
 
                 if (read == 0)
-                    throw new IOException("Read resulted in 0 bytes returned.");
+                    return false;
 
                 totalRead += read;
             }
+
+            return true;
         }
     }
 }

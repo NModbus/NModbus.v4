@@ -17,6 +17,6 @@ namespace NModbus.Interfaces
         /// <returns></returns>
         bool TryGetClientFunction<TRequest, TResponse>(byte functionCode, out IClientFunction<TRequest, TResponse> clientFunction);
 
-        IModbusTransport Transport { get; }
+        IModbusClientTransport Transport { get; }
     }
 }
