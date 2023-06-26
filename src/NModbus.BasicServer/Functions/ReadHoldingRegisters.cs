@@ -7,18 +7,18 @@ namespace NModbus.BasicServer.Functions
 {
     public class ReadHoldingRegistersImplementation : IModbusFunctionImplementation<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>
     {
-        private readonly ILogger logger;
-        private readonly IDeviceStorage storage;
+        private readonly ILoggerFactory loggerFactory;
+        private readonly IDevicePointStorage<ushort> storage;
 
-        public ReadHoldingRegistersImplementation(ILogger<ReadHoldingRegistersImplementation> logger, IDeviceStorage storage)
+        public ReadHoldingRegistersImplementation(ILoggerFactory loggerFactory, IDevicePointStorage<ushort> storage)
         {
-            this.logger = logger;
-            this.storage = storage;
+            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
         public Task<ReadHoldingRegistersResponse> ProcessAsync(ReadHoldingRegistersRequest request, CancellationToken cancellationToken)
         {
-            var registers = storage.HoldingRegisters.ReadPoints(request.StartingAddress, request.QuantityOfRegisters);
+            var registers = storage.ReadPoints(request.StartingAddress, request.QuantityOfRegisters);
 
             return Task.FromResult(new ReadHoldingRegistersResponse(registers));
             

@@ -13,11 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.BasicServer", "NMod
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{0C26A446-4E45-4AB2-A00D-62EDFACFC1FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.Examples.ModbusTcpServer", "NModbus.Examples.ModbusTcpServer\NModbus.Examples.ModbusTcpServer.csproj", "{20E1A26F-9316-40F5-B793-C2D619F12819}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Examples.ModbusTcpServer", "NModbus.Examples.ModbusTcpServer\NModbus.Examples.ModbusTcpServer.csproj", "{20E1A26F-9316-40F5-B793-C2D619F12819}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9DC29837-8406-4634-A209-99F448681DCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.Examples.ModbusTcpClient", "NModbus.Examples.ModbusTcpClient\NModbus.Examples.ModbusTcpClient.csproj", "{560C2172-125E-46B2-99ED-6FD0FE40CD32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Examples.ModbusTcpClient", "NModbus.Examples.ModbusTcpClient\NModbus.Examples.ModbusTcpClient.csproj", "{560C2172-125E-46B2-99ED-6FD0FE40CD32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.BasicServer.Tests", "NModbus.BasicServer.Tests\NModbus.BasicServer.Tests.csproj", "{E2E3DD7B-242A-4B0C-8EA2-5BD4AAFCA130}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{560C2172-125E-46B2-99ED-6FD0FE40CD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{560C2172-125E-46B2-99ED-6FD0FE40CD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{560C2172-125E-46B2-99ED-6FD0FE40CD32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2E3DD7B-242A-4B0C-8EA2-5BD4AAFCA130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2E3DD7B-242A-4B0C-8EA2-5BD4AAFCA130}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2E3DD7B-242A-4B0C-8EA2-5BD4AAFCA130}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2E3DD7B-242A-4B0C-8EA2-5BD4AAFCA130}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +63,7 @@ Global
 		{B25A477F-E198-4F3E-9BE7-68FFF72104B5} = {9DC29837-8406-4634-A209-99F448681DCA}
 		{20E1A26F-9316-40F5-B793-C2D619F12819} = {0C26A446-4E45-4AB2-A00D-62EDFACFC1FA}
 		{560C2172-125E-46B2-99ED-6FD0FE40CD32} = {0C26A446-4E45-4AB2-A00D-62EDFACFC1FA}
+		{E2E3DD7B-242A-4B0C-8EA2-5BD4AAFCA130} = {9DC29837-8406-4634-A209-99F448681DCA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5416E9F6-B214-44F1-966B-794AAA341CC3}

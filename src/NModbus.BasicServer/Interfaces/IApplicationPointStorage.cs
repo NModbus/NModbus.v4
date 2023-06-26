@@ -34,8 +34,4 @@
         /// <returns></returns>
         T this[ushort address] { get; set; }
     }
-
-    public interface IPointStorage<T> : IDevicePointStorage<T>, IApplicationPointStorage<T>
-    {
-    }
 }

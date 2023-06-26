@@ -7,18 +7,18 @@ namespace NModbus.BasicServer.Functions
 {
     public class WriteMultipleRegistersImplementation : IModbusFunctionImplementation<WriteMultipleRegistersRequest, WriteMultipleRegistersResponse>
     {
-        private readonly ILogger logger;
-        private readonly IDeviceStorage storage;
+        private readonly ILoggerFactory loggerFactory;
+        private readonly IDevicePointStorage<ushort> storage;
 
-        public WriteMultipleRegistersImplementation(ILogger<WriteMultipleRegistersImplementation> logger, IDeviceStorage storage)
+        public WriteMultipleRegistersImplementation(ILoggerFactory loggerFactory, IDevicePointStorage<ushort> storage)
         {
-            this.logger = logger;
-            this.storage = storage;
+            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
         public Task<WriteMultipleRegistersResponse> ProcessAsync(WriteMultipleRegistersRequest request, CancellationToken cancellationToken)
         {
-            storage.HoldingRegisters.WritePoints(request.StartingAddress, request.Registers);
+            storage.WritePoints(request.StartingAddress, request.Registers);
 
             return Task.FromResult(new WriteMultipleRegistersResponse(request.StartingAddress, (ushort)request.Registers.Length));
         }

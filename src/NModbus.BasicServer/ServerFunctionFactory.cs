@@ -25,19 +25,19 @@ namespace NModbus.BasicServer
                 new ModbusServerFunction<WriteSingleRegisterRequest, WriteSingleRegisterResponse>(
                     ModbusFunctionCodes.WriteSingleRegister,
                     new WriteSingleRegisterMessageSerializer(),
-                    new WriteSingleRegisterImplementation(loggerFactory.CreateLogger<WriteSingleRegisterImplementation>(), storage)),
+                    new WriteSingleRegisterImplementation(loggerFactory, storage.HoldingRegisters)),
 
                 //Read Holding Registers
                 new ModbusServerFunction<ReadHoldingRegistersRequest, ReadHoldingRegistersResponse>(
                     ModbusFunctionCodes.ReadHoldingRegisters,
                     new ReadHoldingRegistersMessageSerializer(),
-                    new ReadHoldingRegistersImplementation(loggerFactory.CreateLogger<ReadHoldingRegistersImplementation>(), storage)),
+                    new ReadHoldingRegistersImplementation(loggerFactory, storage.HoldingRegisters)),
 
                 //Write Multiple Registers
                 new ModbusServerFunction<WriteMultipleRegistersRequest, WriteMultipleRegistersResponse>(
                     ModbusFunctionCodes.WriteMultipleRegisters,
                     new WriteMultipleRegistersMessageSerializer(),
-                    new WriteMultipleRegistersImplementation(loggerFactory.CreateLogger<WriteMultipleRegistersImplementation>(), storage))
+                    new WriteMultipleRegistersImplementation(loggerFactory, storage.HoldingRegisters))
             };
 
             var dictionary = serverFunctions
