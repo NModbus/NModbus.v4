@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.Interfaces;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
 
 namespace NModbus.Transports.TcpTransport
 {
@@ -23,7 +20,7 @@ namespace NModbus.Transports.TcpTransport
             this.tcpClientStrategy = tcpClientStrategy ?? throw new ArgumentNullException(nameof(tcpClientStrategy));
         }
 
-        public async Task<ApplicationDataUnit> SendAndReceiveAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
+        public async Task<ModbusMessage> SendAndReceiveAsync(ModbusMessage applicationDataUnit, CancellationToken cancellationToken = default)
         {
             await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
                 .ConfigureAwait(false);
@@ -51,15 +48,15 @@ namespace NModbus.Transports.TcpTransport
             return result;
         }
 
-        public async Task SendAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
+        public async Task SendAsync(ModbusMessage message, CancellationToken cancellationToken = default)
         {
             await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
                .ConfigureAwait(false);
 
-            await SendInternalAsync(tcpClientContainer.Stream, applicationDataUnit, cancellationToken);
+            await SendInternalAsync(tcpClientContainer.Stream, message, cancellationToken);
         }
 
-        private async Task<ushort> SendInternalAsync(Stream stream, ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
+        private async Task<ushort> SendInternalAsync(Stream stream, ModbusMessage message, CancellationToken cancellationToken = default)
         {
             //Get the next transaction id
             var transactionIdenfier = GetNextTransactionIdenfier();
@@ -67,17 +64,17 @@ namespace NModbus.Transports.TcpTransport
             //Create the header
             var mbapHeader = MbapHeaderSerializer.SerializeMbapHeader(
                 transactionIdentifier,
-                (ushort)(applicationDataUnit.ProtocolDataUnit.Length + 1),
-                applicationDataUnit.UnitNumber);
+                (ushort)(message.ProtocolDataUnit.Length + 1),
+                message.UnitIdentifier);
 
             //Create a buffer with enough room for the whole message.
-            var buffer = new byte[mbapHeader.Length + applicationDataUnit.ProtocolDataUnit.Length];
+            var buffer = new byte[mbapHeader.Length + message.ProtocolDataUnit.Length];
 
             //Copy the header in
             Array.Copy(mbapHeader, buffer, mbapHeader.Length);
 
             //Copy the PDU in
-            Array.Copy(applicationDataUnit.ProtocolDataUnit.ToArray(), 0, buffer, mbapHeader.Length, applicationDataUnit.ProtocolDataUnit.Length);
+            Array.Copy(message.ProtocolDataUnit.ToArray(), 0, buffer, mbapHeader.Length, message.ProtocolDataUnit.Length);
 
             //Write it
             await stream.WriteAsync(buffer, cancellationToken);

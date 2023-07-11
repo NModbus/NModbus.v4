@@ -41,9 +41,9 @@ namespace NModbus.Transports.TcpTransport
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var applicationDataUnit = await stream.ReceiveApplicationDataUnitFromTcpStream(cancellationToken);
+                var message = await stream.ReceiveApplicationDataUnitFromTcpStream(cancellationToken);
 
-                if (applicationDataUnit == null)
+                if (message == null)
                 {
                     logger.LogInformation("{ConnectionId} closed after receiving 0 bytes.", connectionId);
                     OnConnectionClosed();
@@ -52,10 +52,10 @@ namespace NModbus.Transports.TcpTransport
 
                 logger.LogInformation("{ConnectionId} ModbusServerTcpConnection received ADU for unit {UnitNumber} with PDU FunctionCode {FunctionCode}.", 
                     connectionId, 
-                    applicationDataUnit.UnitNumber, 
-                    applicationDataUnit.ProtocolDataUnit.FunctionCode);
+                    message.UnitIdentifier, 
+                    message.ProtocolDataUnit.FunctionCode);
 
-                await serverNetwork.ProcessRequestAsync(applicationDataUnit, clientTransport, cancellationToken);
+                await serverNetwork.ProcessRequestAsync(message, clientTransport, cancellationToken);
             }
         }
 

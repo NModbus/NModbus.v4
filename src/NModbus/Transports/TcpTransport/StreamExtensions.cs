@@ -5,7 +5,7 @@ namespace NModbus.Transports.TcpTransport
 {
     internal static class StreamExtensions
     {
-        internal static async Task<ApplicationDataUnit> ReceiveApplicationDataUnitFromTcpStream(this Stream stream, CancellationToken cancellationToken)
+        internal static async Task<ModbusMessage> ReceiveApplicationDataUnitFromTcpStream(this Stream stream, CancellationToken cancellationToken)
         {
             var mbapHeaderBuffer = new byte[MbapHeaderSerializer.MbapHeaderLength];
 
@@ -22,7 +22,7 @@ namespace NModbus.Transports.TcpTransport
             if (!await stream.TryReadBufferAsync(pduBuffer, cancellationToken))
                 return null;
 
-            return new ApplicationDataUnit(mbapHeader.UnitIdentifier, new ProtocolDataUnit(pduBuffer));
+            return new ModbusMessage(mbapHeader.UnitIdentifier, new ProtocolDataUnit(pduBuffer));
         }
     }
 }

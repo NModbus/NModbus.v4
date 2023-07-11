@@ -26,24 +26,24 @@ namespace NModbus
             return servers.TryRemove(unitNumnber, out _);
         }
 
-        public async Task ProcessRequestAsync(ApplicationDataUnit applicationDataUnit, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default)
+        public async Task ProcessRequestAsync(ModbusMessage message, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default)
         {
-            if (applicationDataUnit.UnitNumber == 0)
+            if (message.UnitIdentifier == 0)
             {
                 foreach (var server in servers.Values)
                 {
-                    await server.ProcessRequestAsync(applicationDataUnit.ProtocolDataUnit, cancellationToken);
+                    await server.ProcessRequestAsync(message.ProtocolDataUnit, cancellationToken);
                 }
             }
             else
             {
-                if (servers.TryGetValue(applicationDataUnit.UnitNumber, out var server))
+                if (servers.TryGetValue(message.UnitIdentifier, out var server))
                 {
-                    var response = await server.ProcessRequestAsync(applicationDataUnit.ProtocolDataUnit, cancellationToken);
+                    var response = await server.ProcessRequestAsync(message.ProtocolDataUnit, cancellationToken);
 
                     if (response != null)
                     {
-                        await clientTransport.SendAsync(new ApplicationDataUnit(applicationDataUnit.UnitNumber, response), cancellationToken);
+                        await clientTransport.SendAsync(new ModbusMessage(message.UnitIdentifier, response), cancellationToken);
                     }
                 }
             }

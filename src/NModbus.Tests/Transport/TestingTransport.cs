@@ -5,16 +5,16 @@ namespace NModbus.Tests.Transport
 {
     public class TestingTransport : IModbusClientTransport
     {
-        private readonly IObservable<ApplicationDataUnit> receive;
-        private readonly IObserver<ApplicationDataUnit> transmit;
+        private readonly IObservable<ModbusMessage> receive;
+        private readonly IObserver<ModbusMessage> transmit;
 
-        public TestingTransport(IObservable<ApplicationDataUnit> receive, IObserver<ApplicationDataUnit> transmit)
+        public TestingTransport(IObservable<ModbusMessage> receive, IObserver<ModbusMessage> transmit)
         {
             this.receive = receive ?? throw new ArgumentNullException(nameof(receive));
             this.transmit = transmit ?? throw new ArgumentNullException(nameof(transmit));
         }
 
-        public Task SendAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
+        public Task SendAsync(ModbusMessage applicationDataUnit, CancellationToken cancellationToken = default)
         {
             //Encode the number of bytes to be sent
             transmit.OnNext(applicationDataUnit);
@@ -22,14 +22,14 @@ namespace NModbus.Tests.Transport
             return Task.CompletedTask;
         }
 
-        public async Task<ApplicationDataUnit> SendAndReceiveAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
+        public async Task<ModbusMessage> SendAndReceiveAsync(ModbusMessage applicationDataUnit, CancellationToken cancellationToken = default)
         {
             await SendAsync(applicationDataUnit, cancellationToken);
 
             return await ReceiveAsync();
         }
 
-        public Task<ApplicationDataUnit> ReceiveAsync(CancellationToken cancellationToken = default)
+        public Task<ModbusMessage> ReceiveAsync(CancellationToken cancellationToken = default)
         {
             return Task.FromResult(receive.Next().First());
         }

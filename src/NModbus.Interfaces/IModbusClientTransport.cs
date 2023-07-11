@@ -8,17 +8,17 @@
         /// <summary>
         /// Send a message but don't want for a response.
         /// </summary>
-        /// <param name="applicationDataUnit"></param>
+        /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SendAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default);
+        Task SendAsync(ModbusMessage message, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Send a message and wait for a response.
         /// </summary>
-        /// <param name="applicationDataUnit"></param>
+        /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ApplicationDataUnit> SendAndReceiveAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default);
+        Task<ModbusMessage> SendAndReceiveAsync(ModbusMessage message, CancellationToken cancellationToken = default);
     }
 }
