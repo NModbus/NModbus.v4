@@ -20,12 +20,5 @@
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<ApplicationDataUnit> SendAndReceiveAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default);
-
-        ///// <summary>
-        ///// Wait for a message.
-        ///// </summary>
-        ///// <param name="cancellationToken"></param>
-        ///// <returns></returns>
-        //Task<ApplicationDataUnit> ReceiveAsync(CancellationToken cancellationToken = default);
     }
 }

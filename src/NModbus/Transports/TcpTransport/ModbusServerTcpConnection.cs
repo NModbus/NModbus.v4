@@ -31,7 +31,7 @@ namespace NModbus.Transports.TcpTransport
 
             logger = loggerFactory.CreateLogger<ModbusServerTcpConnection>();
             this.tcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
-            clientTransport = new ModbusTcpClientTransport(tcpClient, loggerFactory);
+            clientTransport = new ModbusTcpClientTransport(new SimpleTcpClientLifetime(tcpClient.GetStream()), loggerFactory);
             this.serverNetwork = serverNetwork;
             stream = tcpClient.GetStream();
             listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));

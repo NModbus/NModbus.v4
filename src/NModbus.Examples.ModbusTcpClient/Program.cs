@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus;
 using NModbus.Transports.TcpTransport;
+using System.Net;
 using System.Net.Sockets;
 
 var loggerFactory = LoggerFactory.Create(builder =>
@@ -15,11 +16,11 @@ var logger = loggerFactory.CreateLogger<Program>();
 //The unit number of the modbus server
 const byte unitNumber = 1;
 
-var tcpClient = new TcpClient();
+var endpoint = new IPEndPoint(IPAddress.Loopback, ModbusDefaultTcpPorts.Insecure);
 
-await tcpClient.ConnectAsync("localhost", ModbusDefaultTcpPorts.Insecure);
+var strategy = new PersistentTcpClientLifetime(endpoint, loggerFactory);
 
-await using var transport = new ModbusTcpClientTransport(tcpClient, loggerFactory);
+await using var transport = new ModbusTcpClientTransport(strategy, loggerFactory);
 
 var modbusClient = new ModbusClient(transport, loggerFactory);
 

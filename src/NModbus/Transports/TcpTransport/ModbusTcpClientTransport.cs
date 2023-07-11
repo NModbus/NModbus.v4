@@ -1,34 +1,37 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.Interfaces;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
 
 namespace NModbus.Transports.TcpTransport
 {
     public class ModbusTcpClientTransport : IModbusClientTransport
     {
-        private readonly TcpClient tcpClient;
         private readonly ILogger<ModbusTcpClientTransport> logger;
         private ushort transactionIdentifier;
         private readonly object transactionIdenfitierLock = new object();
-        private readonly Stream stream;
+        private readonly ITcpClientLifetime tcpClientStrategy;
 
-        public ModbusTcpClientTransport(
-            TcpClient tcpClient, 
+        public ModbusTcpClientTransport(ITcpClientLifetime tcpClientStrategy, 
             ILoggerFactory loggerFactory) 
         {
             if (loggerFactory is null)
                 throw new ArgumentNullException(nameof(loggerFactory));
-
-            this.tcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
-            this.logger = loggerFactory.CreateLogger<ModbusTcpClientTransport>();
-            stream = this.tcpClient.GetStream();
+            
+            logger = loggerFactory.CreateLogger<ModbusTcpClientTransport>();
+            this.tcpClientStrategy = tcpClientStrategy ?? throw new ArgumentNullException(nameof(tcpClientStrategy));
         }
 
         public async Task<ApplicationDataUnit> SendAndReceiveAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
         {
-            await SendAsync(applicationDataUnit, cancellationToken);
+            await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-            return await ReceiveAsync(cancellationToken);
+            await SendInternalAsync(tcpClientContainer.Stream, applicationDataUnit, cancellationToken);
+
+            return await tcpClientContainer.Stream.ReceiveApplicationDataUnitFromTcpStream(cancellationToken);
+
         }
 
         private ushort GetNextTransactionIdenfier()
@@ -50,10 +53,13 @@ namespace NModbus.Transports.TcpTransport
 
         public async Task SendAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
         {
-            await SendInternalAsync(applicationDataUnit, cancellationToken);
+            await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
+               .ConfigureAwait(false);
+
+            await SendInternalAsync(tcpClientContainer.Stream, applicationDataUnit, cancellationToken);
         }
 
-        private async Task<ushort> SendInternalAsync(ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
+        private async Task<ushort> SendInternalAsync(Stream stream, ApplicationDataUnit applicationDataUnit, CancellationToken cancellationToken = default)
         {
             //Get the next transaction id
             var transactionIdenfier = GetNextTransactionIdenfier();
@@ -79,16 +85,9 @@ namespace NModbus.Transports.TcpTransport
             return transactionIdenfier;
         }
 
-        public async Task<ApplicationDataUnit> ReceiveAsync(CancellationToken cancellationToken = default)
+        public async ValueTask DisposeAsync()
         {
-            return await stream.ReceiveApplicationDataUnitFromTcpStream(cancellationToken);
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            tcpClient?.Dispose();
-
-            return ValueTask.CompletedTask;
+            await tcpClientStrategy.DisposeAsync();
         }
     }
 }
