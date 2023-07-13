@@ -3,14 +3,15 @@ using NModbus.Interfaces;
 
 namespace NModbus.Transport.Tcp
 {
-    public class ModbusTcpClientTransport : IModbusClientTransport
+    public class ModbusTcpClientTransport : ModbusTcpClientTransportBase
     {
         private readonly ILogger<ModbusTcpClientTransport> logger;
-        private ushort transactionIdentifier;
+        private readonly ITcpClientConnectionStrategy tcpClientStrategy;
         private readonly object transactionIdenfitierLock = new object();
-        private readonly ITcpClientLifetime tcpClientStrategy;
 
-        public ModbusTcpClientTransport(ITcpClientLifetime tcpClientStrategy,
+        private ushort transactionIdentifierCounter;
+
+        public ModbusTcpClientTransport(ITcpClientConnectionStrategy tcpClientStrategy,
             ILoggerFactory loggerFactory)
         {
             if (loggerFactory is null)
@@ -20,69 +21,51 @@ namespace NModbus.Transport.Tcp
             this.tcpClientStrategy = tcpClientStrategy ?? throw new ArgumentNullException(nameof(tcpClientStrategy));
         }
 
-        public async Task<IModbusMessage> SendAndReceiveAsync(IModbusMessage message, CancellationToken cancellationToken = default)
-        {
-            await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            await SendInternalAsync(tcpClientContainer.Stream, message, cancellationToken);
-
-            return await tcpClientContainer.Stream.ReadTcpMessage(cancellationToken);
-
-        }
-
         private ushort GetNextTransactionIdenfier()
         {
-            ushort result;
+            ushort transactionIdentifier;
 
             lock (transactionIdenfitierLock)
             {
                 unchecked
                 {
-                    transactionIdentifier++;
+                    transactionIdentifierCounter++;
 
-                    result = transactionIdentifier;
+                    transactionIdentifier = transactionIdentifierCounter;
                 }
             }
 
-            return result;
+            return transactionIdentifier;
         }
 
-        public async Task SendAsync(IModbusMessage message, CancellationToken cancellationToken = default)
+        public override async Task<IModbusMessage> SendAndReceiveAsync(IModbusMessage message, CancellationToken cancellationToken = default)
         {
+            await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            var transactionIdentifier = GetNextTransactionIdenfier();
+
+            await SendProtectedAsync(tcpClientContainer.TcpClient.GetStream(), transactionIdentifier, message, cancellationToken);
+
+            var receivedMessage = await tcpClientContainer.TcpClient.GetStream().ReadTcpMessageAsync(cancellationToken);
+
+            if (receivedMessage.Header.TransactionIdentifier != transactionIdentifier)
+                throw new InvalidOperationException($"TransactionIdentifier {transactionIdentifier}");
+
+            return receivedMessage;
+        }
+
+        public override async Task SendAsync(IModbusMessage message, CancellationToken cancellationToken = default)
+        {
+            var transactionIdentifier = GetNextTransactionIdenfier();
+
             await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
                .ConfigureAwait(false);
 
-            await SendInternalAsync(tcpClientContainer.Stream, message, cancellationToken);
+            await SendProtectedAsync(tcpClientContainer.TcpClient.GetStream(), transactionIdentifier, message, cancellationToken);
         }
 
-        private async Task<ushort> SendInternalAsync(Stream stream, IModbusMessage message, CancellationToken cancellationToken = default)
-        {
-            //Get the next transaction id
-            var transactionIdenfier = GetNextTransactionIdenfier();
-
-            //Create the header
-            var mbapHeader = MbapHeaderSerializer.SerializeMbapHeader(
-                transactionIdentifier,
-                (ushort)(message.ProtocolDataUnit.Length + 1),
-                message.UnitIdentifier);
-
-            //Create a buffer with enough room for the whole message.
-            var buffer = new byte[mbapHeader.Length + message.ProtocolDataUnit.Length];
-
-            //Copy the header in
-            Array.Copy(mbapHeader, buffer, mbapHeader.Length);
-
-            //Copy the PDU in
-            Array.Copy(message.ProtocolDataUnit.ToArray(), 0, buffer, mbapHeader.Length, message.ProtocolDataUnit.Length);
-
-            //Write it
-            await stream.WriteAsync(buffer, cancellationToken);
-
-            return transactionIdenfier;
-        }
-
-        public async ValueTask DisposeAsync()
+        public override async ValueTask DisposeAsync()
         {
             await tcpClientStrategy.DisposeAsync();
         }

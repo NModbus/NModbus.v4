@@ -1,6 +1,6 @@
 ﻿using NModbus.Endian;
 
-namespace NModbus.Transport.Tcp
+namespace NModbus.Transport.Tcp.TcpMessages
 {
     internal static class MbapHeaderSerializer
     {

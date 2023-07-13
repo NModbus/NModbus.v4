@@ -14,7 +14,6 @@ namespace NModbus.Transport.Tcp
         private readonly NetworkStream stream;
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private readonly Task listenTask;
-        private readonly IModbusClientTransport clientTransport;
         private readonly ILogger logger;
         private readonly int connectionId;
 
@@ -34,7 +33,6 @@ namespace NModbus.Transport.Tcp
 
             logger = loggerFactory.CreateLogger<ModbusServerTcpConnection>();
             this.tcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
-            clientTransport = new ModbusTcpClientTransport(new SimpleTcpClientLifetime(tcpClient.GetStream()), loggerFactory);
             this.serverNetwork = serverNetwork;
             stream = tcpClient.GetStream();
             listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));
@@ -44,9 +42,9 @@ namespace NModbus.Transport.Tcp
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var message = await stream.ReadTcpMessage(cancellationToken);
+                var requestMessage = await stream.ReadTcpMessageAsync(cancellationToken);
 
-                if (message == null)
+                if (requestMessage == null)
                 {
                     logger.LogInformation("{ConnectionId} closed after receiving 0 bytes.", connectionId);
                     OnConnectionClosed();
@@ -55,10 +53,13 @@ namespace NModbus.Transport.Tcp
 
                 logger.LogInformation("{ConnectionId} ModbusServerTcpConnection received ADU for unit {UnitIdentifier} with PDU FunctionCode {FunctionCode}.",
                     connectionId,
-                    message.UnitIdentifier,
-                    message.ProtocolDataUnit.FunctionCode);
+                    requestMessage.UnitIdentifier,
+                    requestMessage.ProtocolDataUnit.FunctionCode);
 
-                await serverNetwork.ProcessRequestAsync(message, clientTransport, cancellationToken);
+                await using (var backchannelTransport = new BackchannelTcpClientTransport(stream, requestMessage.Header.TransactionIdentifier))
+                {
+                    await serverNetwork.ProcessRequestAsync(requestMessage, backchannelTransport, cancellationToken);
+                }
             }
         }
 

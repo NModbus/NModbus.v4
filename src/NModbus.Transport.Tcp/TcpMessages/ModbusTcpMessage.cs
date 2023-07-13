@@ -1,6 +1,6 @@
 ﻿using NModbus.Interfaces;
 
-namespace NModbus.Transport.Tcp
+namespace NModbus.Transport.Tcp.TcpMessages
 {
     internal class ModbusTcpMessage : IModbusMessage
     {

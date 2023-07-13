@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus;
 using NModbus.Transport.Tcp;
+using NModbus.Transport.Tcp.ConnectionStrategies;
 using System.Net;
 
 var loggerFactory = LoggerFactory.Create(builder =>
@@ -17,7 +18,7 @@ const byte unitIdentifier = 1;
 
 var endpoint = new IPEndPoint(IPAddress.Loopback, ModbusTcpPorts.Insecure);
 
-var strategy = new PersistentTcpClientLifetime(endpoint, loggerFactory);
+var strategy = new SingletonTcpClientConnectionStrategy(endpoint, loggerFactory);
 
 await using var transport = new ModbusTcpClientTransport(strategy, loggerFactory);
 

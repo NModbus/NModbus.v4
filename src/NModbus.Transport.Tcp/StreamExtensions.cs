@@ -1,11 +1,12 @@
 ﻿using NModbus.Extensions;
 using NModbus.Interfaces;
+using NModbus.Transport.Tcp.TcpMessages;
 
 namespace NModbus.Transport.Tcp
 {
     internal static class StreamExtensions
     {
-        internal static async Task<ModbusTcpMessage> ReadTcpMessage(this Stream stream, CancellationToken cancellationToken)
+        internal static async Task<ModbusTcpMessage> ReadTcpMessageAsync(this Stream stream, CancellationToken cancellationToken)
         {
             var mbapHeaderBuffer = new byte[MbapHeaderSerializer.MbapHeaderLength];
 

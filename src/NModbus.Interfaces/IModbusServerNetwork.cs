@@ -24,6 +24,6 @@
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task ProcessRequestAsync(IModbusMessage message, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default);
+        Task ProcessRequestAsync(IModbusMessage requestMessage, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default);
     }
 }

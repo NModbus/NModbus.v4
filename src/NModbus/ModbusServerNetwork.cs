@@ -26,25 +26,32 @@ namespace NModbus
             return servers.TryRemove(unitNumnber, out _);
         }
 
-        public async Task ProcessRequestAsync(IModbusMessage message, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default)
+        public async Task ProcessRequestAsync(
+            IModbusMessage requestMessage, 
+            IModbusClientTransport clientTransport, 
+            CancellationToken cancellationToken = default)
         {
-            if (message.UnitIdentifier == 0)
+            if (requestMessage.UnitIdentifier == 0)
             {
                 foreach (var server in servers.Values)
                 {
-                    await server.ProcessRequestAsync(message.ProtocolDataUnit, cancellationToken);
+                    await server.ProcessRequestAsync(requestMessage.ProtocolDataUnit, cancellationToken);
                 }
             }
             else
             {
-                if (servers.TryGetValue(message.UnitIdentifier, out var server))
+                if (servers.TryGetValue(requestMessage.UnitIdentifier, out var server))
                 {
-                    var response = await server.ProcessRequestAsync(message.ProtocolDataUnit, cancellationToken);
+                    var response = await server.ProcessRequestAsync(requestMessage.ProtocolDataUnit, cancellationToken);
 
                     if (response != null)
                     {
-                        await clientTransport.SendAsync(new ModbusMessage(message.UnitIdentifier, response), cancellationToken);
+                        await clientTransport.SendAsync(new ModbusMessage(requestMessage.UnitIdentifier, response), cancellationToken);
                     }
+                }
+                else
+                {
+                    //TODO: Send an exception message that the unit wasn't found. Or do we just timeout. Hmm. Look in the docs.
                 }
             }
         }

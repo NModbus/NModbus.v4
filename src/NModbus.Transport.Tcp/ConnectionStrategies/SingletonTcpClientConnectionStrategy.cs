@@ -2,31 +2,37 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace NModbus.Transport.Tcp
+namespace NModbus.Transport.Tcp.ConnectionStrategies
 {
-    public class PersistentTcpClientLifetime : ITcpClientLifetime
+    public class SingletonTcpClientConnectionStrategy : ITcpClientConnectionStrategy
     {
         private readonly IPEndPoint endpoint;
         private readonly ILoggerFactory loggerFactory;
+        private readonly Action<TcpClient> config;
         private TcpClient tcpClient;
 
-        public PersistentTcpClientLifetime(IPEndPoint endpoint, ILoggerFactory loggerFactory)
+        public SingletonTcpClientConnectionStrategy(IPEndPoint endpoint, ILoggerFactory loggerFactory, Action<TcpClient> config = null)
         {
             this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
             this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            this.config = config;
         }
 
-        public async Task<ITcpClientContainer> GetTcpClientAsync(CancellationToken cancellationToken)
+        public async Task<ITcpClientRequestContainer> GetTcpClientAsync(CancellationToken cancellationToken)
         {
             if (tcpClient == null)
             {
-                //TODO: Lock and double check null
                 tcpClient = new TcpClient();
+
+                if (config != null)
+                {
+                    config(tcpClient);
+                }
 
                 await tcpClient.ConnectAsync(endpoint, cancellationToken);
             }
 
-            return new SimpleTcpClientContainer(tcpClient.GetStream());
+            return new SingletonTcpClientRequestContainer(tcpClient);
         }
 
         public ValueTask DisposeAsync()

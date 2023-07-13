@@ -2,6 +2,7 @@
 using NModbus.BasicServer;
 using NModbus.Interfaces;
 using NModbus.Transport.Tcp;
+using NModbus.Transport.Tcp.ConnectionStrategies;
 using System.Net;
 using System.Net.Sockets;
 
@@ -34,8 +35,8 @@ namespace NModbus.Tests.Integration
             serverTransport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
 
             //Create the client
-            var tcpClient = new TcpClient("127.0.0.1", ModbusTcpPorts.Insecure);
-            var tcpClientLifetime = new SimpleTcpClientLifetime(tcpClient.GetStream());
+            //var tcpClient = new TcpClient("127.0.0.1", ModbusTcpPorts.Insecure);
+            var tcpClientLifetime = new PerRequestTcpClientConnectionStrategy(new IPEndPoint(IPAddress.Loopback, ModbusTcpPorts.Insecure), loggerFactory);
             clientTransport = new ModbusTcpClientTransport(tcpClientLifetime, loggerFactory);
             Client = new ModbusClient(clientTransport, loggerFactory);
         }
