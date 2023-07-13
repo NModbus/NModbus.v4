@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.Interfaces;
 
-namespace NModbus.Transports.TcpTransport
+namespace NModbus.Transport.Tcp
 {
     public class ModbusTcpClientTransport : IModbusClientTransport
     {
@@ -10,24 +10,24 @@ namespace NModbus.Transports.TcpTransport
         private readonly object transactionIdenfitierLock = new object();
         private readonly ITcpClientLifetime tcpClientStrategy;
 
-        public ModbusTcpClientTransport(ITcpClientLifetime tcpClientStrategy, 
-            ILoggerFactory loggerFactory) 
+        public ModbusTcpClientTransport(ITcpClientLifetime tcpClientStrategy,
+            ILoggerFactory loggerFactory)
         {
             if (loggerFactory is null)
                 throw new ArgumentNullException(nameof(loggerFactory));
-            
+
             logger = loggerFactory.CreateLogger<ModbusTcpClientTransport>();
             this.tcpClientStrategy = tcpClientStrategy ?? throw new ArgumentNullException(nameof(tcpClientStrategy));
         }
 
-        public async Task<ModbusMessage> SendAndReceiveAsync(ModbusMessage applicationDataUnit, CancellationToken cancellationToken = default)
+        public async Task<IModbusMessage> SendAndReceiveAsync(IModbusMessage message, CancellationToken cancellationToken = default)
         {
             await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            await SendInternalAsync(tcpClientContainer.Stream, applicationDataUnit, cancellationToken);
+            await SendInternalAsync(tcpClientContainer.Stream, message, cancellationToken);
 
-            return await tcpClientContainer.Stream.ReceiveApplicationDataUnitFromTcpStream(cancellationToken);
+            return await tcpClientContainer.Stream.ReadTcpMessage(cancellationToken);
 
         }
 
@@ -48,7 +48,7 @@ namespace NModbus.Transports.TcpTransport
             return result;
         }
 
-        public async Task SendAsync(ModbusMessage message, CancellationToken cancellationToken = default)
+        public async Task SendAsync(IModbusMessage message, CancellationToken cancellationToken = default)
         {
             await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
                .ConfigureAwait(false);
@@ -56,7 +56,7 @@ namespace NModbus.Transports.TcpTransport
             await SendInternalAsync(tcpClientContainer.Stream, message, cancellationToken);
         }
 
-        private async Task<ushort> SendInternalAsync(Stream stream, ModbusMessage message, CancellationToken cancellationToken = default)
+        private async Task<ushort> SendInternalAsync(Stream stream, IModbusMessage message, CancellationToken cancellationToken = default)
         {
             //Get the next transaction id
             var transactionIdenfier = GetNextTransactionIdenfier();

@@ -1,8 +1,8 @@
 ﻿using NModbus.Endian;
 
-namespace NModbus.Transports.TcpTransport
+namespace NModbus.Transport.Tcp
 {
-    public static class MbapHeaderSerializer
+    internal static class MbapHeaderSerializer
     {
         public const ushort ProtocolIdentifier = 0x0000;
 
@@ -12,8 +12,8 @@ namespace NModbus.Transports.TcpTransport
         public const ushort MbapHeaderLength = 7;
 
         public static byte[] SerializeMbapHeader(
-            ushort transactionIdentifier, 
-            ushort length, 
+            ushort transactionIdentifier,
+            ushort length,
             byte unitIdentifier)
         {
             using var writer = new EndianWriter(Endianness.BigEndian);

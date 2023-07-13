@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-
-namespace NModbus.Transports.TcpTransport
+﻿namespace NModbus.Transport.Tcp
 {
     public interface ITcpClientContainer : IAsyncDisposable
     {

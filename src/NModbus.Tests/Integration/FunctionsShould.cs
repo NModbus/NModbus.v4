@@ -23,7 +23,7 @@ namespace NModbus.Tests.Integration
         {
             await using var clientServer = new ClientServer(1, loggerFactory);
 
-            await clientServer.Client.WriteSingleRegisterAsync(clientServer.UnitNumber, address, value);
+            await clientServer.Client.WriteSingleRegisterAsync(clientServer.UnitIdentifier, address, value);
 
             clientServer.Storage.HoldingRegisters[address].ShouldBe((ushort)value);
         }
@@ -36,7 +36,7 @@ namespace NModbus.Tests.Integration
         {
             await using var clientServer = new ClientServer(1, loggerFactory);
 
-            await clientServer.Client.WriteMultipleRegistersAsync(clientServer.UnitNumber, startingAddress, new ushort[] { 1, 2, 3, 4, 5 });
+            await clientServer.Client.WriteMultipleRegistersAsync(clientServer.UnitIdentifier, startingAddress, new ushort[] { 1, 2, 3, 4, 5 });
 
             clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + 0)].ShouldBe((ushort)1);
             clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + 1)].ShouldBe((ushort)2);
@@ -58,7 +58,7 @@ namespace NModbus.Tests.Integration
                 clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + x)] = values[x];
             }
             
-            var registers = await clientServer.Client.ReadHoldingRegistersAsync(clientServer.UnitNumber, startingAddress, (ushort)values.Length);
+            var registers = await clientServer.Client.ReadHoldingRegistersAsync(clientServer.UnitIdentifier, startingAddress, (ushort)values.Length);
 
             registers.ShouldBe(values);
         }

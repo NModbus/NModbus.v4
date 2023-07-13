@@ -18,7 +18,7 @@ namespace NModbus
 
         public bool TryAddServer(IModbusServer server)
         {
-            return servers.TryAdd(server.UnitNumber, server);
+            return servers.TryAdd(server.UnitIdentifier, server);
         }
 
         public bool TryRemoveServer(byte unitNumnber)
@@ -26,7 +26,7 @@ namespace NModbus
             return servers.TryRemove(unitNumnber, out _);
         }
 
-        public async Task ProcessRequestAsync(ModbusMessage message, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default)
+        public async Task ProcessRequestAsync(IModbusMessage message, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default)
         {
             if (message.UnitIdentifier == 0)
             {

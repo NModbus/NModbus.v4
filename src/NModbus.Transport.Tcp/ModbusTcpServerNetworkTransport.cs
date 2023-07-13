@@ -3,7 +3,7 @@ using NModbus.Interfaces;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 
-namespace NModbus.Transports.TcpTransport
+namespace NModbus.Transport.Tcp
 {
     public class ModbusTcpServerNetworkTransport : IModbusServerNetworkTransport
     {
@@ -23,7 +23,7 @@ namespace NModbus.Transports.TcpTransport
             this.tcpListener = tcpListener ?? throw new ArgumentNullException(nameof(tcpListener));
             this.serverNetwork = serverNetwork ?? throw new ArgumentNullException(nameof(serverNetwork));
             this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            this.logger = loggerFactory.CreateLogger<ModbusTcpServerNetworkTransport>();
+            logger = loggerFactory.CreateLogger<ModbusTcpServerNetworkTransport>();
 
             listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));
         }
@@ -54,7 +54,7 @@ namespace NModbus.Transports.TcpTransport
 
                         serverConnection.ConnectionClosed += ServerConnection_ConnectionClosed;
                     }
-                    catch(SocketException ex) when (cancellationToken.IsCancellationRequested)
+                    catch (SocketException ex) when (cancellationToken.IsCancellationRequested)
                     {
                         logger.LogTrace(ex, $"Swallowing {nameof(IOException)} in {nameof(ModbusTcpServerNetworkTransport)}.{nameof(ListenAsync)}");
                     }
@@ -62,7 +62,7 @@ namespace NModbus.Transports.TcpTransport
             }
         }
 
-        private void ServerConnection_ConnectionClosed(object? sender, TcpConnectionEventArgs e)
+        private void ServerConnection_ConnectionClosed(object sender, TcpConnectionEventArgs e)
         {
             if (!connections.TryRemove(e.Endpoint, out _))
             {
@@ -82,7 +82,7 @@ namespace NModbus.Transports.TcpTransport
             {
                 await listenTask;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogWarning(ex, "Error disposing {Object}", nameof(ModbusTcpServerNetworkTransport));
             }

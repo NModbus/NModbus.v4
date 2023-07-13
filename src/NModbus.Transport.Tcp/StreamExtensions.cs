@@ -1,11 +1,11 @@
 ﻿using NModbus.Extensions;
 using NModbus.Interfaces;
 
-namespace NModbus.Transports.TcpTransport
+namespace NModbus.Transport.Tcp
 {
     internal static class StreamExtensions
     {
-        internal static async Task<ModbusMessage> ReceiveApplicationDataUnitFromTcpStream(this Stream stream, CancellationToken cancellationToken)
+        internal static async Task<ModbusTcpMessage> ReadTcpMessage(this Stream stream, CancellationToken cancellationToken)
         {
             var mbapHeaderBuffer = new byte[MbapHeaderSerializer.MbapHeaderLength];
 
@@ -14,15 +14,12 @@ namespace NModbus.Transports.TcpTransport
 
             var mbapHeader = MbapHeaderSerializer.DeserializeMbapHeader(mbapHeaderBuffer);
 
-            //if (transactionIdenfier != mbapHeader.TransactionIdentifier)
-            //    throw new IOException($"The TransactionIdentier 0x{unitNumber:X4} was sent, but 0x{unitNumber:X4} was received.");
-
             var pduBuffer = new byte[mbapHeader.Length - 1];
 
             if (!await stream.TryReadBufferAsync(pduBuffer, cancellationToken))
                 return null;
 
-            return new ModbusMessage(mbapHeader.UnitIdentifier, new ProtocolDataUnit(pduBuffer));
+            return new ModbusTcpMessage(mbapHeader, new ProtocolDataUnit(pduBuffer));
         }
     }
 }

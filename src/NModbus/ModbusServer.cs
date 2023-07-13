@@ -11,19 +11,19 @@ namespace NModbus
         protected readonly ILogger<ModbusServer> logger;
 
         public ModbusServer(
-            byte unitNumber,
+            byte unitIdentifier,
             IEnumerable<IServerFunction> serverFunctions,
             ILoggerFactory loggerFactory)
         {
             this.serverFunctions = serverFunctions.ToDictionary(f => f.FunctionCode);
-            UnitNumber = unitNumber;
+            UnitIdentifier = unitIdentifier;
             logger = loggerFactory.CreateLogger<ModbusServer>();
         }
 
         /// <summary>
         /// Gets the unit number of the server device.
         /// </summary>
-        public byte UnitNumber { get; }
+        public byte UnitIdentifier { get; }
 
         public async virtual Task<ProtocolDataUnit> ProcessRequestAsync(ProtocolDataUnit request, CancellationToken cancellationToken)
         {

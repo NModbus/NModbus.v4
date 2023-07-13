@@ -2,8 +2,11 @@
 using NModbus.Interfaces;
 using System.Net.Sockets;
 
-namespace NModbus.Transports.TcpTransport
+namespace NModbus.Transport.Tcp
 {
+    /// <summary>
+    /// This represents a connection from a client on a server.
+    /// </summary>
     internal class ModbusServerTcpConnection : IAsyncDisposable
     {
         private readonly TcpClient tcpClient;
@@ -41,7 +44,7 @@ namespace NModbus.Transports.TcpTransport
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var message = await stream.ReceiveApplicationDataUnitFromTcpStream(cancellationToken);
+                var message = await stream.ReadTcpMessage(cancellationToken);
 
                 if (message == null)
                 {
@@ -50,9 +53,9 @@ namespace NModbus.Transports.TcpTransport
                     return;
                 }
 
-                logger.LogInformation("{ConnectionId} ModbusServerTcpConnection received ADU for unit {UnitNumber} with PDU FunctionCode {FunctionCode}.", 
-                    connectionId, 
-                    message.UnitIdentifier, 
+                logger.LogInformation("{ConnectionId} ModbusServerTcpConnection received ADU for unit {UnitIdentifier} with PDU FunctionCode {FunctionCode}.",
+                    connectionId,
+                    message.UnitIdentifier,
                     message.ProtocolDataUnit.FunctionCode);
 
                 await serverNetwork.ProcessRequestAsync(message, clientTransport, cancellationToken);

@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets the unit number for this server device.
         /// </summary>
-        byte UnitNumber { get; }
+        byte UnitIdentifier { get; }
 
         /// <summary>
         /// Process the request.

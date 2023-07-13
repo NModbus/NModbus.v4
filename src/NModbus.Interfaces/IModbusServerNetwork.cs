@@ -15,15 +15,15 @@
         /// <summary>
         /// Attempts to remove the Modbus server from this network.
         /// </summary>
-        /// <param name="unitNumber"></param>
+        /// <param name="unitIdentifier"></param>
         /// <returns>True if the server was removed, false otherwise.</returns>
-        bool TryRemoveServer(byte unitNumber);
+        bool TryRemoveServer(byte unitIdentifier);
 
         /// <summary>
         /// Processes a request from a Modbus Server network.
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task ProcessRequestAsync(ModbusMessage message, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default);
+        Task ProcessRequestAsync(IModbusMessage message, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default);
     }
 }

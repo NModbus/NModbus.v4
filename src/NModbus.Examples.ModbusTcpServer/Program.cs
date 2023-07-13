@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus;
 using NModbus.BasicServer;
-using NModbus.Transports.TcpTransport;
+using NModbus.Transport.Tcp;
 using System.Net;
 using System.Net.Sockets;
 
@@ -14,7 +14,7 @@ var loggerFactory = LoggerFactory.Create(builder =>
 
 var serverNetwork = new ModbusServerNetwork(loggerFactory);
 
-var tcpListener = new TcpListener(IPAddress.Loopback, ModbusDefaultTcpPorts.Insecure);
+var tcpListener = new TcpListener(IPAddress.Loopback, ModbusTcpPorts.Insecure);
 
 await using var transport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
 

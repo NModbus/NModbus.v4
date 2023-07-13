@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.BasicServer;
 using NModbus.Interfaces;
-using NModbus.Transports.TcpTransport;
+using NModbus.Transport.Tcp;
 using System.Net;
 using System.Net.Sockets;
 
@@ -14,9 +14,9 @@ namespace NModbus.Tests.Integration
         private readonly IModbusClientTransport clientTransport;
         private readonly IModbusServerNetwork serverNetwork;
 
-        public ClientServer(byte unitNumber, ILoggerFactory loggerFactory)
+        public ClientServer(byte unitIdentifier, ILoggerFactory loggerFactory)
         {
-            UnitNumber = unitNumber;
+            UnitIdentifier = unitIdentifier;
             this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 
             //Create the server
@@ -24,23 +24,23 @@ namespace NModbus.Tests.Integration
 
             var serverFunctions = ServerFunctionFactory.CreateBasicServerFunctions(Storage, loggerFactory);
 
-            var server = new ModbusServer(UnitNumber, serverFunctions, loggerFactory);
+            var server = new ModbusServer(UnitIdentifier, serverFunctions, loggerFactory);
 
             if (!serverNetwork.TryAddServer(server))
-                throw new InvalidOperationException($"Unable to add server with unit number {server.UnitNumber}");
+                throw new InvalidOperationException($"Unable to add server with unit number {server.UnitIdentifier}");
 
-            var tcpListener = new TcpListener(IPAddress.Loopback, ModbusDefaultTcpPorts.Insecure);
+            var tcpListener = new TcpListener(IPAddress.Loopback, ModbusTcpPorts.Insecure);
 
             serverTransport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
 
             //Create the client
-            var tcpClient = new TcpClient("127.0.0.1", ModbusDefaultTcpPorts.Insecure);
-            var strategy = new SimpleTcpClientLifetime(tcpClient.GetStream());
-            clientTransport = new ModbusTcpClientTransport(strategy, loggerFactory);
+            var tcpClient = new TcpClient("127.0.0.1", ModbusTcpPorts.Insecure);
+            var tcpClientLifetime = new SimpleTcpClientLifetime(tcpClient.GetStream());
+            clientTransport = new ModbusTcpClientTransport(tcpClientLifetime, loggerFactory);
             Client = new ModbusClient(clientTransport, loggerFactory);
         }
 
-        public byte UnitNumber { get; }
+        public byte UnitIdentifier { get; }
 
         public IModbusClient Client { get; }
 
