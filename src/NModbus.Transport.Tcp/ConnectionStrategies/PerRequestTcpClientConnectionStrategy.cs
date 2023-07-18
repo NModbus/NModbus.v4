@@ -24,10 +24,7 @@ namespace NModbus.Transport.Tcp.ConnectionStrategies
         {
             var tcpClient = new TcpClient();
 
-            if (config != null)
-            {
-                config(tcpClient);
-            }
+            config?.Invoke(tcpClient);
 
             await tcpClient.ConnectAsync(endpoint, cancellationToken);
 

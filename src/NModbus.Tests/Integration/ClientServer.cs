@@ -36,7 +36,8 @@ namespace NModbus.Tests.Integration
 
             //Create the client
             //var tcpClient = new TcpClient("127.0.0.1", ModbusTcpPorts.Insecure);
-            var tcpClientLifetime = new PerRequestTcpClientConnectionStrategy(new IPEndPoint(IPAddress.Loopback, ModbusTcpPorts.Insecure), loggerFactory);
+            //var tcpClientLifetime = new PerRequestTcpClientConnectionStrategy(new IPEndPoint(IPAddress.Loopback, ModbusTcpPorts.Insecure), loggerFactory);
+            var tcpClientLifetime = new SingletonTcpClientConnectionStrategy(new IPEndPoint(IPAddress.Loopback, ModbusTcpPorts.Insecure), loggerFactory);
             clientTransport = new ModbusTcpClientTransport(tcpClientLifetime, loggerFactory);
             Client = new ModbusClient(clientTransport, loggerFactory);
         }
