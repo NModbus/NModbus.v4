@@ -28,4 +28,26 @@ namespace NModbus.Messages
     public record WriteFileRecordRequest();
 
     public record WriteFileRecordResponse();
+
+    public struct WriteReferenceRequest
+    {
+        public ReferenceType Type { get; }
+
+        public ushort FileNumber { get; }
+
+        public ushort RecordNumber { get; }
+
+        public ushort[] RegisterData { get; }
+    }
+
+    public struct WriteReferenceResponse
+    {
+        public ReferenceType Type { get; }
+
+        public ushort FileNumber { get; }
+
+        public ushort RecordNumber { get; }
+
+        public ushort[] RegisterData { get; }
+    }
 }
