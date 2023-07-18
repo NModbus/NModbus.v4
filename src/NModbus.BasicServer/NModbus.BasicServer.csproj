@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>annotations</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>annotations</Nullable>
+		<Authors>Rich Quackenbush</Authors>
+		<Description>Contains an "out of the box" implementation of a Modbus server.</Description>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NModbus\NModbus.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\NModbus\NModbus.csproj" />
+	</ItemGroup>
 
 </Project>

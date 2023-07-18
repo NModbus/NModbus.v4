@@ -1,33 +1,10 @@
-﻿using Divergic.Logging.Xunit;
-using Microsoft.Extensions.Logging;
-using NModbus.BasicServer;
+﻿using NModbus.BasicServer;
 using NModbus.Extensions;
 using Shouldly;
 using Xunit.Abstractions;
 
 namespace NModbus.Tests.Integration
 {
-    public abstract class ClientServerTestBase
-    {
-        protected readonly ILoggerFactory loggerFactory;
-
-        protected ClientServerTestBase(ITestOutputHelper output)
-        {
-            loggerFactory = LogFactory.Create(output);
-        }
-
-        protected async Task<ClientServer> CreateClientServerAsync(byte unitIdentifier)
-        {
-            var clientServer = new ClientServer(1, loggerFactory);
-
-            //Give the server (TcpListener) time to start up
-            await Task.Delay(TimeSpan.FromSeconds(0.1));
-
-            return clientServer;
-        }
-
-    }
-
     public class FunctionsShould : ClientServerTestBase
     {
         public FunctionsShould(ITestOutputHelper output) : base(output)
@@ -77,6 +54,24 @@ namespace NModbus.Tests.Integration
             }
             
             var registers = await clientServer.Client.ReadHoldingRegistersAsync(clientServer.UnitIdentifier, startingAddress, (ushort)values.Length);
+
+            registers.ShouldBe(values);
+        }
+
+        [Theory]
+        [InlineData(100, new ushort[] { 4, 5, 6 })]
+        [InlineData(1000, new ushort[] { 100, 2000, 7 })]
+        [InlineData(60000, new ushort[] { 60, 0, 4, 5 })]
+        public async Task ReadInputRegistersShouldWork(ushort startingAddress, ushort[] values)
+        {
+            await using var clientServer = await CreateClientServerAsync(1);
+
+            for (int x = 0; x < values.Length; x++)
+            {
+                clientServer.Storage.InputRegisters[(ushort)(startingAddress + x)] = values[x];
+            }
+
+            var registers = await clientServer.Client.ReadInputRegistersAsync(clientServer.UnitIdentifier, startingAddress, (ushort)values.Length);
 
             registers.ShouldBe(values);
         }

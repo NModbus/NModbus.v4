@@ -125,6 +125,19 @@ namespace NModbus
                 cancellationToken);
         }
 
+        public static async Task<ushort[]> ReadInputRegistersAsync(this IModbusClient client, byte unitIdentifier, ushort startingAddress, ushort numberOfRegisters, CancellationToken cancellationToken = default)
+        {
+            var request = new ReadInputRegistersRequest(startingAddress, numberOfRegisters);
+
+            var response = await client.ExecuteAsync<ReadInputRegistersRequest, ReadInputRegistersResponse>(
+                ModbusFunctionCodes.ReadInputRegisters,
+                unitIdentifier,
+                request,
+                cancellationToken);
+
+            return response.InputRegisters;
+        }
+
         public static async Task WriteMultipleCoils(
             this IModbusClient client, 
             byte unitIdentifier, 
