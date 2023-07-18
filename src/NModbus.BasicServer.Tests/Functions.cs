@@ -54,6 +54,36 @@ namespace NModbus.BasicServer.Tests
 
             response.Unpack((ushort)values.Length).ShouldBe(values);
         }
+
+        [Theory]
+        [InlineData(50, true)]
+        public async Task WriteSingleCoil_ShouldWork(ushort outputAddress, bool outputValue)
+        {
+            var storageMock = new Mock<IDevicePointStorage<bool>>();
+
+            var implementation = new WriteSingleCoilImplementation(loggerFactory, storageMock.Object);
+
+            var request = new WriteSingleCoilRequest(outputAddress, outputValue);
+
+            await implementation.ProcessAsync(request, default);
+
+            storageMock.Verify(m => m.WritePoints(outputAddress, new bool[] { outputValue }), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(100, new bool[] { true, false, false, false } )]
+        public async Task WriteMultipleCoils_ShouldWork(ushort startingAddress, bool[] values)
+        {
+            var storageMock = new Mock<IDevicePointStorage<bool>>();
+
+            var implementation = new WriteMultipleCoilsImplementation(loggerFactory, storageMock.Object);
+
+            var request = new WriteMultipleCoilsRequest(startingAddress, values);
+
+            await implementation.ProcessAsync(request, default);
+
+            storageMock.Verify(m => m.WritePoints(startingAddress, values), Times.Once);
+        }
     }
 }
 
