@@ -6,6 +6,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    container: ubuntu
     strategy:
       matrix:
         dotnet-version: [ '6.0.x' ]
