@@ -12,9 +12,9 @@ jobs:
         dotnet-version: [ '6.0.x' ]
 
     steps:
-      - name: Install curl
-        run: |
-          apt-get update; apt-get install -y curl libicu
+      # - name: Install curl
+      #   run: |
+      #     apt-get update; apt-get install -y curl libicu
       - uses: actions/checkout@v3
       # - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
       #   uses: actions/setup-dotnet@v3
