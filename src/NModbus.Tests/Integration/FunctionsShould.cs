@@ -7,13 +7,31 @@ using Xunit.Abstractions;
 
 namespace NModbus.Tests.Integration
 {
-    public class FunctionsShould
+    public abstract class ClientServerTestBase
     {
-        private readonly ILoggerFactory loggerFactory;
+        protected readonly ILoggerFactory loggerFactory;
 
-        public FunctionsShould(ITestOutputHelper output)
+        protected ClientServerTestBase(ITestOutputHelper output)
         {
             loggerFactory = LogFactory.Create(output);
+        }
+
+        protected async Task<ClientServer> CreateClientServerAsync(byte unitIdentifier)
+        {
+            var clientServer = new ClientServer(1, loggerFactory);
+
+            //Give the server (TcpListener) time to start up
+            await Task.Delay(TimeSpan.FromSeconds(0.1));
+
+            return clientServer;
+        }
+
+    }
+
+    public class FunctionsShould : ClientServerTestBase
+    {
+        public FunctionsShould(ITestOutputHelper output) : base(output)
+        {
         }
 
         [Theory]
@@ -21,7 +39,7 @@ namespace NModbus.Tests.Integration
         [InlineData(100, 420)]
         public async Task WriteSingleRegisterShouldWork(ushort address, ushort value)
         {
-            await using var clientServer = new ClientServer(1, loggerFactory);
+            await using var clientServer = await CreateClientServerAsync(1);
 
             await clientServer.Client.WriteSingleRegisterAsync(clientServer.UnitIdentifier, address, value);
 
@@ -34,7 +52,7 @@ namespace NModbus.Tests.Integration
         [InlineData(60000)]
         public async Task WriteMultipleRegistersShouldWork(ushort startingAddress)
         {
-            await using var clientServer = new ClientServer(1, loggerFactory);
+            await using var clientServer = await CreateClientServerAsync(1);
 
             await clientServer.Client.WriteMultipleRegistersAsync(clientServer.UnitIdentifier, startingAddress, new ushort[] { 1, 2, 3, 4, 5 });
 
@@ -51,7 +69,7 @@ namespace NModbus.Tests.Integration
         [InlineData(60000, new ushort[] { 60, 0, 4, 5 })]
         public async Task ReadHoldingRegistersShouldWork(ushort startingAddress, ushort[] values)
         {
-            await using var clientServer = new ClientServer(1, loggerFactory);
+            await using var clientServer = await CreateClientServerAsync(1);
 
             for (int x = 0; x < values.Length; x++)
             {
