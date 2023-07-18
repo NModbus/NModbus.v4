@@ -4,6 +4,13 @@
     {
         public static bool[] Unpack(this byte[] buffer, ushort bitCount)
         {
+            if (buffer is null) throw new ArgumentNullException(nameof(buffer));
+
+            var expectedNumberOfBytes = CalculateBytesToPackBits(bitCount);
+
+            if (expectedNumberOfBytes != buffer.Length)
+                throw new ArgumentOutOfRangeException(nameof(bitCount), $"{bitCount} bits were requested during this unpack operation but {buffer.Length} bytes were available instead of the expected {expectedNumberOfBytes}.");
+
             var bits = new bool[bitCount];
 
             var byteIndex = 0;
@@ -27,7 +34,7 @@
 
         public static byte[] Pack(this bool[] bits)
         {
-            var byteCount = CalculateBytesToPack(bits.Length);
+            var byteCount = CalculateBytesToPackBits(bits.Length);
 
             var bytes = new byte[byteCount];
 
@@ -53,9 +60,17 @@
             return bytes;
         }
 
-        public static int CalculateBytesToPack(int numberOfBits)
+        public static int CalculateBytesToPackBits(int numberOfBits)
         {
-            return (numberOfBits / 8) + 1;
+            if (numberOfBits <= 0)
+                throw new ArgumentOutOfRangeException(nameof(numberOfBits));
+            
+            var numberOfBytes = numberOfBits / 8;
+
+            if (numberOfBits % 8 != 0)
+                numberOfBytes++;
+
+            return numberOfBytes;
         }
     }
 }
