@@ -78,8 +78,7 @@ namespace NModbus
                 request, 
                 cancellationToken);
 
-            //TODO: parse out the correct number of outputs according to the request.
-            throw new NotImplementedException();
+            return response.Unpack(request.QuantityOfOutputs);
         }
 
         public static async Task<bool[]> ReadDiscreteInputsAsync(

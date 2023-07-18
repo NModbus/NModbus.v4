@@ -1,4 +1,5 @@
 ﻿using NModbus.Endian;
+using NModbus.Helpers;
 
 namespace NModbus.Messages
 {
@@ -35,5 +36,15 @@ namespace NModbus.Messages
 
     public record ReadCoilsRequest(ushort StartingAddress, ushort QuantityOfOutputs);
 
-    public record ReadCoilsResponse(byte[] CoilStatus);
+    public record ReadCoilsResponse(byte[] CoilStatus)
+    {
+        public ReadCoilsResponse(bool[] coils) : this(BitPacker.Pack(coils))
+        {
+        }
+
+        public bool[] Unpack(ushort quantityOfCoils)
+        {
+            return BitPacker.Unpack(CoilStatus, quantityOfCoils);
+        }
+    }
 }

@@ -4,6 +4,7 @@ using Moq;
 using NModbus.BasicServer.Functions;
 using NModbus.BasicServer.Interfaces;
 using NModbus.Messages;
+using Shouldly;
 using Xunit.Abstractions;
 
 namespace NModbus.BasicServer.Tests
@@ -32,6 +33,26 @@ namespace NModbus.BasicServer.Tests
             await implementation.ProcessAsync(request, default);
 
             storageMock.Verify(m => m.WritePoints(startingAddress, values), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(50, new bool[] { true, true, false, false, false, false, false, true })]
+        public async Task ReadCoils_ShouldWork(ushort startingAddress, bool[] values)
+        {
+            var storage = new SparsePointStorage<bool>();
+
+            for(int index = 0; index < values.Length; index++)
+            {
+                storage[(ushort)(index + startingAddress)] = values[index];
+            }
+
+            var implementation = new ReadCoilsImplementation(loggerFactory, storage);
+
+            var request = new ReadCoilsRequest(startingAddress, (ushort)values.Length);
+
+            var response = await implementation.ProcessAsync(request, default);
+
+            response.Unpack((ushort)values.Length).ShouldBe(values);
         }
     }
 }

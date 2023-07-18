@@ -10,11 +10,11 @@ namespace NModbus.Tests.Messages
         {
             var request = new WriteSingleRegisterRequest(1, 3);
 
-            var factory = new WriteSingleRegisterMessageSerializer();
+            var serializer = new WriteSingleRegisterMessageSerializer();
 
-            var data = factory.SerializeRequest(request);
+            var serialized = serializer.SerializeRequest(request);
 
-            data.ShouldBe(new byte[] { 0x00, 0x01, 0x00, 0x03 });
+            serialized.ShouldBe(new byte[] { 0x00, 0x01, 0x00, 0x03 });
         }
 
         [Fact]
@@ -22,11 +22,35 @@ namespace NModbus.Tests.Messages
         {
             var response = new WriteSingleRegisterResponse(1, 3);
 
-            var factory = new WriteSingleRegisterMessageSerializer();
+            var serializer = new WriteSingleRegisterMessageSerializer();
 
-            var data = factory.SerializeResponse(response);
+            var serialized = serializer.SerializeResponse(response);
 
-            data.ShouldBe(new byte[] { 0x00, 0x01, 0x00, 0x03 });
+            serialized.ShouldBe(new byte[] { 0x00, 0x01, 0x00, 0x03 });
+        }
+
+        [Fact]
+        public void SerializeReadCoilsRequestShould()
+        {
+            var request = new ReadCoilsRequest(19, 19);
+
+            var serializer = new ReadCoilsMessageSerializer();
+
+            var serialized = serializer.SerializeRequest(request);
+
+            serialized.ShouldBe(new byte[] { 0x00, 0x13, 0x00, 0x13 });
+        }
+
+        [Fact]
+        public void SerializeReadCoilsResponseShould()
+        {
+            var response = new ReadCoilsResponse(new byte[] { 0xcd, 0x6b, 0x05 });
+
+            var serializer = new ReadCoilsMessageSerializer();
+
+            var serialized = serializer.SerializeResponse(response);
+
+            serialized.ShouldBe(new byte[] { 0x03, 0xcd, 0x6b, 0x05 });
         }
     }
 }
