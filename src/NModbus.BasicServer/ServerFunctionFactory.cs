@@ -39,11 +39,35 @@ namespace NModbus.BasicServer
                     new WriteMultipleRegistersMessageSerializer(),
                     new WriteMultipleRegistersImplementation(loggerFactory, storage.HoldingRegisters)),
 
+                //Read Write Multiple Registers
+                new ModbusServerFunction<ReadWriteMultipleRegistersRequest, ReadWriteMultipleRegistersResponse>(
+                    ModbusFunctionCodes.ReadWriteMultipleRegisters,
+                    new ReadWriteMultipleRegistersMessageSerializer(),
+                    new ReadWriteMultipleRegistersImplementation(loggerFactory, storage.HoldingRegisters)),
+
                 //Read Input Registers
                 new ModbusServerFunction<ReadInputRegistersRequest, ReadInputRegistersResponse>(
                     ModbusFunctionCodes.ReadInputRegisters,
                     new ReadInputRegistersMessageSerializer(),
-                    new ReadInputRegistersImplementation(loggerFactory, storage.InputRegisters))
+                    new ReadInputRegistersImplementation(loggerFactory, storage.InputRegisters)),
+
+                //Write Single Coil
+                new ModbusServerFunction<WriteSingleCoilRequest, WriteSingleCoilResponse>(
+                    ModbusFunctionCodes.WriteSingleCoil,
+                    new WriteSingleCoilMessageSerializer(),
+                    new WriteSingleCoilImplementation(loggerFactory, storage.Coils)),
+
+                // Write Multiple Coils
+                new ModbusServerFunction<WriteMultipleCoilsRequest, WriteMultipleCoilsResponse>(
+                    ModbusFunctionCodes.WriteMultipleCoils,
+                    new WriteMultipleCoilsMessageSerializer(),
+                    new WriteMultipleCoilsImplementation(loggerFactory,storage.Coils)),
+
+                // Read Coils
+                new ModbusServerFunction<ReadCoilsRequest, ReadCoilsResponse>(
+                    ModbusFunctionCodes.ReadCoils,
+                    new ReadCoilsMessageSerializer(),
+                    new ReadCoilsImplementation(loggerFactory, storage.Coils))
             };
 
             var dictionary = serverFunctions
