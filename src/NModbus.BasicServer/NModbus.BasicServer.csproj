@@ -6,6 +6,7 @@
 		<Nullable>annotations</Nullable>
 		<Authors>Rich Quackenbush</Authors>
 		<Description>Contains an "out of the box" implementation of a Modbus server.</Description>
+		<IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>

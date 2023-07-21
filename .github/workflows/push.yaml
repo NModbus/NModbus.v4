@@ -1,6 +1,11 @@
 name: dotnet build
 
-on: [push]
+# https://acraven.medium.com/a-nuget-package-workflow-using-github-actions-7da8c6557863
+
+on: 
+  push:
+    tags:
+    - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   build:
@@ -26,3 +31,5 @@ jobs:
         run: dotnet build --configuration Release --no-restore ./src/
       - name: Test
         run: dotnet test --no-restore --verbosity normal ./src/
+      - name: Pack
+        run: dotnet pack --configuration Release -o . --include-symbols ./src/

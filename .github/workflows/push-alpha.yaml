@@ -1,0 +1,19 @@
+on:
+  push:
+    tags:
+    - "v[0-9]+.[0-9]+.[0-9]+-alpha[0-9][0-9][0-9]"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set VERSION variable from tag
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+    - name: Pack
+      run: dotnet pack --configuration Release --include-symbols /p:Version=${VERSION} --output . ./src/
+    - name: Push
+      run: dotnet nuget push *.nupkg -k ${NUGET_API_KEY} -s https://api.nuget.org/v3/index.json
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
