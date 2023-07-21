@@ -2,7 +2,7 @@ name: PR build
 
 # https://futurestud.io/tutorials/github-actions-run-on-pull-request
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   build:
