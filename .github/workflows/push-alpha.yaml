@@ -1,3 +1,5 @@
+name: alpha package push
+
 on:
   push:
     tags:
@@ -14,6 +16,6 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release --include-symbols /p:Version=${VERSION} --output . ./src/
     - name: Push
-      run: dotnet nuget push *.nupkg -k ${NUGET_API_KEY} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "*.nupkg" --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
