@@ -2,24 +2,6 @@ name: package push
 
 # https://acraven.medium.com/a-nuget-package-workflow-using-github-actions-7da8c6557863
 
-on: 
-  push:
-    tags:
-    - "v[0-9]+.[0-9]+.[0-9]+"
-
-jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Test
-        run: dotnet test --no-restore --verbosity normal ./src/
-      - name: Pack
-        run: dotnet pack --configuration Release -o . --include-symbols ./src/
-
 on:
   push:
     tags:
@@ -42,4 +24,4 @@ jobs:
     - name: Push
       run: dotnet nuget push "*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY} --skip-duplicate
       env:
-        GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
