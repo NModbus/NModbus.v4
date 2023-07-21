@@ -1,0 +1,19 @@
+name: PR build
+
+# https://futurestud.io/tutorials/github-actions-run-on-pull-request
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: dotnet restore ./src/
+      - name: Build
+        run: dotnet build --configuration Release --no-restore ./src/
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal ./src/
