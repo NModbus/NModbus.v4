@@ -6,6 +6,7 @@
 		<Authors>Rich Quackenbush</Authors>
 		<Description>TCP Transport for NModbus.</Description>
 		<IsPackable>true</IsPackable>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -7,6 +7,7 @@
 	    <Authors>Rich Quackenbush</Authors>
 	    <Description>Types used by NModbus.</Description>
 		<IsPackable>true</IsPackable>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
 </Project>

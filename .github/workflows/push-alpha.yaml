@@ -16,6 +16,6 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release --include-symbols /p:Version=${VERSION} --output . ./src/
     - name: Push
-      run: dotnet nuget push "*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY} 
+      run: dotnet nuget push "*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY} --skip-duplicate
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
