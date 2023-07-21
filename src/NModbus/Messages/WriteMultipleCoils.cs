@@ -1,4 +1,5 @@
 ﻿using NModbus.Endian;
+using NModbus.Helpers;
 
 namespace NModbus.Messages
 {
@@ -6,11 +7,12 @@ namespace NModbus.Messages
     {
         protected override void SerializeRequestCore(WriteMultipleCoilsRequest request, EndianWriter writer)
         {
+            var packed = BitPacker.Pack(request.OutputsValue);
+
             writer.Write(request.StartingAddress);
             writer.Write((ushort)request.OutputsValue.Length);
-            writer.Write((byte)(request.OutputsValue.Length / 8));
-            
-            //TODO: Do bit math to write the bits
+            writer.Write((byte)(packed.Length));
+            writer.Write(packed);
         }
 
         protected override void SerializeResponseCore(WriteMultipleCoilsResponse response, EndianWriter writer)
