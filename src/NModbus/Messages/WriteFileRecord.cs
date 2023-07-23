@@ -40,7 +40,7 @@ namespace NModbus.Messages
         public ushort[] RegisterData { get; }
     }
 
-    public struct WriteReferenceResponse
+    public readonly struct WriteReferenceResponse
     {
         public ReferenceType Type { get; }
 

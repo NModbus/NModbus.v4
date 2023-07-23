@@ -96,8 +96,7 @@ namespace NModbus
                 request, 
                 cancellationToken);
 
-            //TODO: parse out the correct number of inputs according to the request.
-            throw new NotImplementedException();
+            return response.Unpack(request.QuantityOfInputs);
         }
 
         public static async Task<ushort[]> ReadHoldingRegistersAsync(this IModbusClient client, byte unitIdentifier, ushort startingAddress, ushort numberOfRegisters, CancellationToken cancellationToken = default)
