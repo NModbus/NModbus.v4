@@ -13,7 +13,7 @@ namespace NModbus.Transport.Tcp.ConnectionStrategies
 
         public ValueTask DisposeAsync()
         {
-            return ValueTask.CompletedTask;
+            return default;
         }
     }
 }
