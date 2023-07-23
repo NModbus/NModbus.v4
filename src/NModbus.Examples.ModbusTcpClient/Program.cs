@@ -16,9 +16,7 @@ var logger = loggerFactory.CreateLogger<Program>();
 //The unit number of the modbus server
 const byte unitIdentifier = 1;
 
-var endpoint = new IPEndPoint(IPAddress.Loopback, ModbusTcpPorts.Insecure);
-
-var strategy = new SingletonTcpClientConnectionStrategy(endpoint, loggerFactory);
+var strategy = new SingletonTcpClientConnectionStrategy(IPAddress.Loopback, ModbusTcpPorts.Insecure, loggerFactory);
 
 await using var transport = new ModbusTcpClientTransport(strategy, loggerFactory);
 

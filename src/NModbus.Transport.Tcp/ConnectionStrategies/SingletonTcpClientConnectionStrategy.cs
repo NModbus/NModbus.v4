@@ -6,14 +6,17 @@ namespace NModbus.Transport.Tcp.ConnectionStrategies
 {
     public class SingletonTcpClientConnectionStrategy : ITcpClientConnectionStrategy
     {
-        private readonly IPEndPoint endpoint;
+
+        private readonly IPAddress ipAddress;
+        private readonly int port;
         private readonly ILoggerFactory loggerFactory;
         private readonly Action<TcpClient> config;
         private TcpClient tcpClient;
 
-        public SingletonTcpClientConnectionStrategy(IPEndPoint endpoint, ILoggerFactory loggerFactory, Action<TcpClient> config = null)
+        public SingletonTcpClientConnectionStrategy(IPAddress ipAddress, int port, ILoggerFactory loggerFactory, Action<TcpClient> config = null)
         {
-            this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            this.ipAddress = ipAddress ?? throw new ArgumentNullException(nameof(ipAddress));
+            this.port = port;
             this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             this.config = config;
         }
@@ -24,12 +27,10 @@ namespace NModbus.Transport.Tcp.ConnectionStrategies
             {
                 tcpClient = new TcpClient();
 
-                if (config != null)
-                {
-                    config(tcpClient);
-                }
+                config?.Invoke(tcpClient);
 
-                await tcpClient.ConnectAsync(endpoint, cancellationToken);
+
+                await tcpClient.ConnectAsync(ipAddress, port);
             }
 
             return new SingletonTcpClientRequestContainer(tcpClient);
@@ -39,7 +40,7 @@ namespace NModbus.Transport.Tcp.ConnectionStrategies
         {
             tcpClient?.Dispose();
 
-            return ValueTask.CompletedTask;
+            return default;
         }
     }
 }

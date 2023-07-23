@@ -35,7 +35,7 @@ namespace NModbus.Tests.Transport
             serverTransport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
 
             //Create the client
-            var tcpClientLifetime = new SingletonTcpClientConnectionStrategy(new IPEndPoint(IPAddress.Loopback, ModbusTcpPorts.Insecure), loggerFactory);
+            var tcpClientLifetime = new SingletonTcpClientConnectionStrategy(IPAddress.Loopback, ModbusTcpPorts.Insecure, loggerFactory);
             clientTransport = new ModbusTcpClientTransport(tcpClientLifetime, loggerFactory);
             Client = new ModbusClient(clientTransport, loggerFactory);
         }

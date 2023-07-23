@@ -1,5 +1,4 @@
 ﻿using NModbus.Extensions;
-using System.Reflection.Metadata.Ecma335;
 
 namespace NModbus.Endian
 {

@@ -28,7 +28,7 @@ namespace NModbus.Transport.Tcp
 
         public override ValueTask DisposeAsync()
         {
-            return ValueTask.CompletedTask;
+            return default;
         }
     }
 }

@@ -6,16 +6,19 @@ namespace NModbus.Transport.Tcp.ConnectionStrategies
 {
     public class PerRequestTcpClientConnectionStrategy : ITcpClientConnectionStrategy
     {
-        private readonly IPEndPoint endpoint;
+        private readonly IPAddress ipAddress;
+        private readonly int port;
         private readonly ILoggerFactory loggerFactory;
         private readonly Action<TcpClient> config;
 
         public PerRequestTcpClientConnectionStrategy(
-            IPEndPoint endpoint, 
+            IPAddress ipAddress, 
+            int port,
             ILoggerFactory loggerFactory, 
             Action<TcpClient> config = null)
         {
-            this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            this.ipAddress = ipAddress ?? throw new ArgumentNullException(nameof(ipAddress));
+            this.port = port;
             this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             this.config = config;
         }
@@ -26,14 +29,14 @@ namespace NModbus.Transport.Tcp.ConnectionStrategies
 
             config?.Invoke(tcpClient);
 
-            await tcpClient.ConnectAsync(endpoint, cancellationToken);
+            await tcpClient.ConnectAsync(ipAddress, port);
 
             return new PerRequestTcpClientRequestContainer(tcpClient);
         }
 
         public ValueTask DisposeAsync()
         {
-            return ValueTask.CompletedTask;
+            return default;
         }
     }
 }
