@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    container: mcr.microsoft.com/dotnet/sdk:6.0
+    container: mcr.microsoft.com/dotnet/sdk:7.0
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
