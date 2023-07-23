@@ -15,8 +15,8 @@ namespace NModbus.BasicServer
             ILoggerFactory loggerFactory = null,
             IEnumerable<IServerFunction> customServerFunctions = null)
         {
-            loggerFactory = loggerFactory ?? new NullLoggerFactory();
-            storage = storage ?? new Storage();
+            loggerFactory ??= new NullLoggerFactory();
+            storage ??= new Storage();
 
             //These are the built in function implementations.
             var serverFunctions = new IServerFunction[]
@@ -57,17 +57,23 @@ namespace NModbus.BasicServer
                     new WriteSingleCoilMessageSerializer(),
                     new WriteSingleCoilImplementation(loggerFactory, storage.Coils)),
 
-                // Write Multiple Coils
+                //Write Multiple Coils
                 new ModbusServerFunction<WriteMultipleCoilsRequest, WriteMultipleCoilsResponse>(
                     ModbusFunctionCodes.WriteMultipleCoils,
                     new WriteMultipleCoilsMessageSerializer(),
                     new WriteMultipleCoilsImplementation(loggerFactory,storage.Coils)),
 
-                // Read Coils
+                //Read Coils
                 new ModbusServerFunction<ReadCoilsRequest, ReadCoilsResponse>(
                     ModbusFunctionCodes.ReadCoils,
                     new ReadCoilsMessageSerializer(),
-                    new ReadCoilsImplementation(loggerFactory, storage.Coils))
+                    new ReadCoilsImplementation(loggerFactory, storage.Coils)),
+
+                //Read Discrete Inputs
+                new ModbusServerFunction<ReadDiscreteInputsRequest, ReadDiscreteInputsResponse>(
+                    ModbusFunctionCodes.ReadDiscreteInputs,
+                    new ReadDiscreteInputsMessageSerilizer(),
+                    new ReadDiscreteInputsImplementation(loggerFactory, storage.DiscreteInputs)),
             };
 
             var dictionary = serverFunctions

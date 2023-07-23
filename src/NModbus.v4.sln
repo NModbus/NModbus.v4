@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Examples.ModbusTcpC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Transport.Tcp", "NModbus.Transport.Tcp\NModbus.Transport.Tcp.csproj", "{06101EB7-D940-4414-B27E-EA067E1E3A6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.BasicServer.Tests", "NModbus.BasicServer.Tests\NModbus.BasicServer.Tests.csproj", "{3D13E2A4-CBA3-461E-9127-8816F0A1D73A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.Transports.Tcp.Tests", "NModbus.Transports.Tcp.Tests\NModbus.Transports.Tcp.Tests.csproj", "{81367A82-7022-4D21-9C81-A05F1688915F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,14 @@ Global
 		{06101EB7-D940-4414-B27E-EA067E1E3A6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06101EB7-D940-4414-B27E-EA067E1E3A6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06101EB7-D940-4414-B27E-EA067E1E3A6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D13E2A4-CBA3-461E-9127-8816F0A1D73A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D13E2A4-CBA3-461E-9127-8816F0A1D73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D13E2A4-CBA3-461E-9127-8816F0A1D73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D13E2A4-CBA3-461E-9127-8816F0A1D73A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81367A82-7022-4D21-9C81-A05F1688915F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81367A82-7022-4D21-9C81-A05F1688915F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81367A82-7022-4D21-9C81-A05F1688915F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81367A82-7022-4D21-9C81-A05F1688915F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +75,8 @@ Global
 		{B25A477F-E198-4F3E-9BE7-68FFF72104B5} = {9DC29837-8406-4634-A209-99F448681DCA}
 		{20E1A26F-9316-40F5-B793-C2D619F12819} = {0C26A446-4E45-4AB2-A00D-62EDFACFC1FA}
 		{560C2172-125E-46B2-99ED-6FD0FE40CD32} = {0C26A446-4E45-4AB2-A00D-62EDFACFC1FA}
+		{3D13E2A4-CBA3-461E-9127-8816F0A1D73A} = {9DC29837-8406-4634-A209-99F448681DCA}
+		{81367A82-7022-4D21-9C81-A05F1688915F} = {9DC29837-8406-4634-A209-99F448681DCA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5416E9F6-B214-44F1-966B-794AAA341CC3}

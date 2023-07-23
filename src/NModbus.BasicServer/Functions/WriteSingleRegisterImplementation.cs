@@ -7,12 +7,11 @@ namespace NModbus.BasicServer.Functions
 {
     public class WriteSingleRegisterImplementation : IModbusFunctionImplementation<WriteSingleRegisterRequest, WriteSingleRegisterResponse>
     {
-        private readonly ILoggerFactory loggerFactory;
         private readonly IDevicePointStorage<ushort> storage;
 
         public WriteSingleRegisterImplementation(ILoggerFactory loggerFactory, IDevicePointStorage<ushort> storage)
         {
-            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            if (loggerFactory is null) throw new ArgumentNullException(nameof(loggerFactory));
             this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 

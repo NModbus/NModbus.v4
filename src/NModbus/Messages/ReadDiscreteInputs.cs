@@ -1,4 +1,5 @@
 ﻿using NModbus.Endian;
+using NModbus.Helpers;
 
 namespace NModbus.Messages
 {
@@ -35,5 +36,11 @@ namespace NModbus.Messages
 
     public record ReadDiscreteInputsRequest(ushort StartingAddress, ushort QuantityOfInputs);
 
-    public record ReadDiscreteInputsResponse(byte[] InputStatus);
+    public record ReadDiscreteInputsResponse(byte[] InputStatus)
+    {
+        public bool[] Unpack(ushort QuantityOfInputs)
+        {
+            return BitPacker.Unpack(InputStatus, QuantityOfInputs);
+        }
+    }
 }

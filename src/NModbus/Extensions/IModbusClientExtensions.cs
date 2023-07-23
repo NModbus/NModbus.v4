@@ -41,7 +41,7 @@ namespace NModbus
 
             //Form the request
             var requestProtocolDataUnit = new ProtocolDataUnit(clientFunction.FunctionCode, serializedRequest);
-            var requestMessage = new ModbusMessage(unitIdentifier, requestProtocolDataUnit);
+            var requestMessage = new ModbusDataUnit(unitIdentifier, requestProtocolDataUnit);
 
             //Check to see if this is a broadcast request.
             if (unitIdentifier == 0)
@@ -96,8 +96,7 @@ namespace NModbus
                 request, 
                 cancellationToken);
 
-            //TODO: parse out the correct number of inputs according to the request.
-            throw new NotImplementedException();
+            return response.Unpack(request.QuantityOfInputs);
         }
 
         public static async Task<ushort[]> ReadHoldingRegistersAsync(this IModbusClient client, byte unitIdentifier, ushort startingAddress, ushort numberOfRegisters, CancellationToken cancellationToken = default)

@@ -2,7 +2,7 @@
 {
     public class EndianWriter : IDisposable
     {
-        private readonly MemoryStream stream = new MemoryStream();
+        private readonly MemoryStream stream = new();
 
         public EndianWriter(Endianness endianness)
         {
@@ -20,7 +20,7 @@
         {
             var bytes = BitConverter.GetBytes(value);
 
-            WriteBytes(bytes);
+            WriteSingletonBytes(bytes);
         }
 
         public void Write(byte[] value)
@@ -32,9 +32,8 @@
         /// Only call this for the number of bytes it takes to represent a single element.
         /// </summary>
         /// <param name="bytes"></param>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private void WriteBytes(byte[] bytes)
+        private void WriteSingletonBytes(byte[] bytes)
         {
             if (Endianness == Endianness.BigEndian)
             {

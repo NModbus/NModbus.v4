@@ -2,7 +2,7 @@
 
 namespace NModbus.Transport.Tcp.TcpMessages
 {
-    internal class ModbusTcpMessage : IModbusMessage
+    internal class ModbusTcpMessage : IModbusDataUnit
     {
         public ModbusTcpMessage(MbapHeader header, ProtocolDataUnit protocolDataUnit)
         {

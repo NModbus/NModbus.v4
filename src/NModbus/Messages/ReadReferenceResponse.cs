@@ -1,6 +1,6 @@
 ﻿namespace NModbus.Messages
 {
-    public struct ReadReferenceResponse
+    public readonly struct ReadReferenceResponse
     {
         public ReferenceType Type { get; }
 

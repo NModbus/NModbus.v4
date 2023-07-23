@@ -101,6 +101,26 @@ namespace NModbus.Tests
 
             storageMock.Verify(m => m.WritePoints(writeStartingAddress, writeValues), Times.Once);
         }
+
+        [Theory]
+        [InlineData(1000, new bool[] { false, true, true, false })]
+        public async Task ReadDiscretes_ShouldWork(ushort startingAddress, bool[] expectedValues)
+        {
+            var storageMock = new Mock<IDevicePointStorage<bool>>();
+
+            storageMock.Setup(s => s.ReadPoints(startingAddress, (ushort)expectedValues.Length))
+                .Returns(expectedValues);
+
+            var implementation = new ReadDiscreteInputsImplementation(loggerFactory, storageMock.Object);
+
+            var request = new ReadDiscreteInputsRequest(startingAddress, (ushort)expectedValues.Length);
+
+            var response = await implementation.ProcessAsync(request, default);
+
+            var unpacked = response.Unpack((ushort)expectedValues.Length);
+
+            unpacked.ShouldBe(expectedValues);         
+        }
     }
 }
 
