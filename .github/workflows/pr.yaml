@@ -9,6 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     container: mcr.microsoft.com/dotnet/sdk:7.0
+    strategy:
+      matrix:
+        include:
+        - dotnet-version: '2.1.x'
+          tfm: 'netstandard2.1'
+        - dotnet-version: '6.0.x'
+          tfm: 'net6.0'
+        - dotnet-version: '7.0.x'
+          tfm: 'net7.0'
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
@@ -18,9 +27,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: | 
-            6.0.x
-            7.0.x
+          dotnet-version: ${{ matrix.dotnet-version }}
       - name: Test
         run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage ./src/ 
       - name: Code Coverage Report
