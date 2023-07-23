@@ -41,7 +41,7 @@ namespace NModbus
 
             //Form the request
             var requestProtocolDataUnit = new ProtocolDataUnit(clientFunction.FunctionCode, serializedRequest);
-            var requestMessage = new ModbusMessage(unitIdentifier, requestProtocolDataUnit);
+            var requestMessage = new ModbusDataUnit(unitIdentifier, requestProtocolDataUnit);
 
             //Check to see if this is a broadcast request.
             if (unitIdentifier == 0)

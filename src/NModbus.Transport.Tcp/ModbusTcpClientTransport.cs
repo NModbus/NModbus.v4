@@ -38,7 +38,7 @@ namespace NModbus.Transport.Tcp
             return transactionIdentifier;
         }
 
-        public override async Task<IModbusMessage> SendAndReceiveAsync(IModbusMessage message, CancellationToken cancellationToken = default)
+        public override async Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
             await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
                 .ConfigureAwait(false);
@@ -55,7 +55,7 @@ namespace NModbus.Transport.Tcp
             return receivedMessage;
         }
 
-        public override async Task SendAsync(IModbusMessage message, CancellationToken cancellationToken = default)
+        public override async Task SendAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
             var transactionIdentifier = GetNextTransactionIdenfier();
 

@@ -7,12 +7,12 @@ namespace NModbus.BasicServer.Functions
 {
     public class ReadCoilsImplementation : IModbusFunctionImplementation<ReadCoilsRequest, ReadCoilsResponse>
     {
-        private readonly ILoggerFactory loggerFactory;
         private readonly IDevicePointStorage<bool> storage;
 
         public ReadCoilsImplementation(ILoggerFactory loggerFactory, IDevicePointStorage<bool> storage)
         {
-            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            if (loggerFactory is null) throw new ArgumentNullException(nameof(loggerFactory));
+
             this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 

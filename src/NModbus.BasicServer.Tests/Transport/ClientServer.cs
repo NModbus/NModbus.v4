@@ -1,24 +1,23 @@
 ﻿using Microsoft.Extensions.Logging;
-using NModbus.BasicServer;
 using NModbus.Interfaces;
 using NModbus.Transport.Tcp;
 using NModbus.Transport.Tcp.ConnectionStrategies;
 using System.Net;
 using System.Net.Sockets;
 
-namespace NModbus.Tests.Transport
+namespace NModbus.BasicServer.Tests.Transport
 {
     public class ClientServer : IAsyncDisposable
     {
-        private readonly ILoggerFactory loggerFactory;
         private readonly ModbusTcpServerNetworkTransport serverTransport;
         private readonly IModbusClientTransport clientTransport;
         private readonly IModbusServerNetwork serverNetwork;
 
         public ClientServer(byte unitIdentifier, ILoggerFactory loggerFactory)
         {
+            if (loggerFactory is null) throw new ArgumentNullException(nameof(loggerFactory));
+
             UnitIdentifier = unitIdentifier;
-            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 
             //Create the server
             serverNetwork = new ModbusServerNetwork(loggerFactory);
@@ -50,6 +49,8 @@ namespace NModbus.Tests.Transport
         {
             await serverTransport.DisposeAsync();
             await clientTransport.DisposeAsync();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

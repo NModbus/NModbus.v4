@@ -8,14 +8,14 @@ namespace NModbus.Transport.Tcp
     /// </summary>
     public abstract class ModbusTcpClientTransportBase : IModbusClientTransport
     {
-        public abstract Task<IModbusMessage> SendAndReceiveAsync(IModbusMessage message, CancellationToken cancellationToken = default);
+        public abstract Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default);
 
-        public abstract Task SendAsync(IModbusMessage message, CancellationToken cancellationToken = default);
+        public abstract Task SendAsync(IModbusDataUnit message, CancellationToken cancellationToken = default);
 
         protected async Task SendProtectedAsync(
             Stream stream, 
             ushort transactionIdentifier, 
-            IModbusMessage message, 
+            IModbusDataUnit message, 
             CancellationToken cancellationToken = default)
         {
             //Create the header

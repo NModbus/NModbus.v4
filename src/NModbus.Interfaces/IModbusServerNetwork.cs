@@ -22,8 +22,10 @@
         /// <summary>
         /// Processes a request from a Modbus Server network.
         /// </summary>
+        /// <param name="requestMessage"></param>
+        /// <param name="clientTransport"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task ProcessRequestAsync(IModbusMessage requestMessage, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default);
+        Task ProcessRequestAsync(IModbusDataUnit requestMessage, IModbusClientTransport clientTransport, CancellationToken cancellationToken = default);
     }
 }

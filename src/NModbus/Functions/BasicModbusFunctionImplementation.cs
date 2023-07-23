@@ -11,11 +11,17 @@ namespace NModbus.Functions
     {
         private readonly Func<TRequest, CancellationToken, Task<TResponse>> func;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="func"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public BasicModbusFunctionImplementation(Func<TRequest, CancellationToken, Task<TResponse>> func)
         {
             this.func = func ?? throw new ArgumentNullException(nameof(func));
         }
 
+        /// <inheritdoc/>
         public async Task<TResponse> ProcessAsync(TRequest request, CancellationToken cancellationToken)
         {
             return await func(request, cancellationToken);

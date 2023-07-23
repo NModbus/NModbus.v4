@@ -13,8 +13,8 @@
         /// <param name="buffer"></param>
         public ProtocolDataUnit(ReadOnlyMemory<byte> buffer)
         {
-            FunctionCode = buffer.Slice(0, 1).ToArray()[0];
-            Data = buffer.Slice(1);
+            FunctionCode = buffer[..1].ToArray()[0];
+            Data = buffer[1..];
         }
 
         /// <summary>

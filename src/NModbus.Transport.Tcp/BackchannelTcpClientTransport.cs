@@ -16,12 +16,12 @@ namespace NModbus.Transport.Tcp
             this.transactionIdentifier = transactionIdentifier;
         }
 
-        public override Task<IModbusMessage> SendAndReceiveAsync(IModbusMessage message, CancellationToken cancellationToken = default)
+        public override Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException("Backchannel Tcp Transport cannot SendAndReceive as a Modbus Server can only respond to requests.");
         }
 
-        public override async Task SendAsync(IModbusMessage message, CancellationToken cancellationToken = default)
+        public override async Task SendAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
             await SendProtectedAsync(stream, transactionIdentifier, message, cancellationToken);
         }

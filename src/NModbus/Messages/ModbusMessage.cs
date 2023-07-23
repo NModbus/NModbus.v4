@@ -1,8 +1,9 @@
 ﻿namespace NModbus.Interfaces
 {
-    public class ModbusMessage : IModbusMessage
+    public class ModbusDataUnit
+        : IModbusDataUnit
     {
-        public ModbusMessage(byte unitIdentifier, ProtocolDataUnit protocolDataUnit)
+        public ModbusDataUnit(byte unitIdentifier, ProtocolDataUnit protocolDataUnit)
         {
             UnitIdentifier = unitIdentifier;
             ProtocolDataUnit = protocolDataUnit ?? throw new ArgumentNullException(nameof(protocolDataUnit));

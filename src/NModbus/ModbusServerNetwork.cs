@@ -6,7 +6,7 @@ namespace NModbus
 {
     public class ModbusServerNetwork : IModbusServerNetwork
     {
-        private readonly ConcurrentDictionary<byte, IModbusServer> servers = new ConcurrentDictionary<byte, IModbusServer>();
+        private readonly ConcurrentDictionary<byte, IModbusServer> servers = new();
         private readonly ILogger logger;
         private readonly ILoggerFactory loggerFactory;
 
@@ -27,7 +27,7 @@ namespace NModbus
         }
 
         public async Task ProcessRequestAsync(
-            IModbusMessage requestMessage, 
+            IModbusDataUnit requestMessage, 
             IModbusClientTransport clientTransport, 
             CancellationToken cancellationToken = default)
         {
@@ -46,7 +46,7 @@ namespace NModbus
 
                     if (response != null)
                     {
-                        await clientTransport.SendAsync(new ModbusMessage(requestMessage.UnitIdentifier, response), cancellationToken);
+                        await clientTransport.SendAsync(new ModbusDataUnit(requestMessage.UnitIdentifier, response), cancellationToken);
                     }
                 }
                 else

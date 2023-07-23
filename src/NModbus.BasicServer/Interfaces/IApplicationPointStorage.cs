@@ -8,22 +8,22 @@
     public interface IApplicationPointStorage<T>
     {
         /// <summary>
-        /// Invoked before <see cref="IDevicePointStorage{T}.ReadPointsAsync(ushort, ushort)"/>
+        /// Invoked before <see cref="IDevicePointStorage{T}.ReadPoints(ushort, ushort)"/>
         /// </summary>
         event EventHandler<DeviceReadArgs> BeforeDeviceRead;
 
         /// <summary>
-        /// Invoked after <see cref="IDevicePointStorage{T}.ReadPointsAsync(ushort, ushort)"/>
+        /// Invoked after <see cref="IDevicePointStorage{T}.ReadPoints(ushort, ushort)"/>
         /// </summary>
         event EventHandler<DeviceReadArgs> AfterDeviceRead;
 
         /// <summary>
-        /// Invoked before <see cref="IDevicePointStorage{T}.WritePointsAsync(ushort, T[])"/>
+        /// Invoked before <see cref="IDevicePointStorage{T}.WritePoints(ushort, T[])"/>
         /// </summary>
         event EventHandler<DeviceWriteArgs<T>> BeforeDeviceWrite;
 
         /// <summary>
-        /// Invoked after <see cref="IDevicePointStorage{T}.WritePointsAsync(ushort, T[])"/>
+        /// Invoked after <see cref="IDevicePointStorage{T}.WritePoints(ushort, T[])"/>
         /// </summary>
         event EventHandler<DeviceWriteArgs<T>> AfterDeviceWrite;
 

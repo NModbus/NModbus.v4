@@ -1,9 +1,6 @@
-﻿using NModbus.BasicServer;
-using NModbus.Extensions;
-using Shouldly;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 
-namespace NModbus.Tests.Integration
+namespace NModbus.BasicServer.Tests.Integration
 {
     public class FunctionsShould : ClientServerTestBase
     {
@@ -20,7 +17,7 @@ namespace NModbus.Tests.Integration
 
             await clientServer.Client.WriteSingleRegisterAsync(clientServer.UnitIdentifier, address, value);
 
-            clientServer.Storage.HoldingRegisters[address].ShouldBe((ushort)value);
+            clientServer.Storage.HoldingRegisters[address].ShouldBe(value);
         }
 
         [Theory]
@@ -52,7 +49,7 @@ namespace NModbus.Tests.Integration
             {
                 clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + x)] = values[x];
             }
-            
+
             var registers = await clientServer.Client.ReadHoldingRegistersAsync(clientServer.UnitIdentifier, startingAddress, (ushort)values.Length);
 
             registers.ShouldBe(values);
