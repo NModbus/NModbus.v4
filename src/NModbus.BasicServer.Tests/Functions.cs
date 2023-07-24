@@ -121,6 +121,27 @@ namespace NModbus.Tests
 
             unpacked.ShouldBe(expectedValues);         
         }
+
+        /// <summary>
+        ///                    HX Binary
+        ///                    -- ---------
+        /// Current Contents = 12 0001 0010
+        ///        And_Mask  = F2 1111 0010
+        ///          Or_Mask = 25 0010 0101
+        ///   (NOT And_Mask) = 0D 0000 1101
+        ///           Result = 17 0001 0111
+        /// </summary>
+        /// <param name="currentContents"></param>
+        /// <param name="andMask"></param>
+        /// <param name="orMask"></param>
+        /// <param name="expected"></param>
+        [Theory]
+        [InlineData(0b00010010, 0b11110010, 0b00100101, 0b00010111)]
+        public void MaskWriteRegister(ushort currentContents, ushort andMask, ushort orMask, ushort expected)
+        {
+            MaskWriteRegisterImplementation.MaskWrite(currentContents, andMask, orMask)
+                .ShouldBe(expected);
+        }
     }
 }
 
