@@ -7,7 +7,7 @@ namespace NModbus.Transport.Tcp
     {
         private readonly ILogger<ModbusTcpClientTransport> logger;
         private readonly ITcpClientConnectionStrategy tcpClientStrategy;
-        private readonly object transactionIdenfitierLock = new object();
+        private readonly object transactionIdenfitierLock = new();
 
         private ushort transactionIdentifierCounter;
 
@@ -45,9 +45,9 @@ namespace NModbus.Transport.Tcp
 
             var transactionIdentifier = GetNextTransactionIdenfier();
 
-            await SendProtectedAsync(tcpClientContainer.TcpClient.GetStream(), transactionIdentifier, message, cancellationToken);
+            await SendProtectedAsync(tcpClientContainer.Stream, transactionIdentifier, message, cancellationToken);
 
-            var receivedMessage = await tcpClientContainer.TcpClient.GetStream().ReadTcpMessageAsync(cancellationToken);
+            var receivedMessage = await tcpClientContainer.Stream.ReadTcpMessageAsync(cancellationToken);
 
             if (receivedMessage.Header.TransactionIdentifier != transactionIdentifier)
                 throw new InvalidOperationException($"TransactionIdentifier {transactionIdentifier}");
@@ -62,7 +62,7 @@ namespace NModbus.Transport.Tcp
             await using var tcpClientContainer = await tcpClientStrategy.GetTcpClientAsync(cancellationToken)
                .ConfigureAwait(false);
 
-            await SendProtectedAsync(tcpClientContainer.TcpClient.GetStream(), transactionIdentifier, message, cancellationToken);
+            await SendProtectedAsync(tcpClientContainer.Stream, transactionIdentifier, message, cancellationToken);
         }
 
         public override async ValueTask DisposeAsync()

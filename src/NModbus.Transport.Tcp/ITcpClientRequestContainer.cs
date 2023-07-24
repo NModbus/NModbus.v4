@@ -7,6 +7,6 @@ namespace NModbus.Transport.Tcp
     /// </summary>
     public interface ITcpClientRequestContainer : IAsyncDisposable
     {
-        TcpClient TcpClient { get; }
+        Stream Stream { get; }
     }
 }

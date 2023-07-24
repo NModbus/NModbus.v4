@@ -1,15 +1,15 @@
-﻿using System.Net.Sockets;
-
-namespace NModbus.Transport.Tcp.ConnectionStrategies
+﻿namespace NModbus.Transport.Tcp.ConnectionStrategies
 {
     internal class SingletonTcpClientRequestContainer : ITcpClientRequestContainer
     {
-        public SingletonTcpClientRequestContainer(TcpClient tcpClient)
+        public SingletonTcpClientRequestContainer(TcpClientWrapper tcpClientWrapper)
         {
-            TcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
+            if (tcpClientWrapper is null) throw new ArgumentNullException(nameof(tcpClientWrapper));
+
+            Stream = tcpClientWrapper.Stream;
         }
 
-        public TcpClient TcpClient { get; }
+        public Stream Stream { get; }
 
         public ValueTask DisposeAsync()
         {

@@ -1,19 +1,20 @@
-﻿using System.Net.Sockets;
-
-namespace NModbus.Transport.Tcp.ConnectionStrategies
+﻿namespace NModbus.Transport.Tcp.ConnectionStrategies
 {
     internal class PerRequestTcpClientRequestContainer : ITcpClientRequestContainer
     {
-        internal PerRequestTcpClientRequestContainer(TcpClient tcpClient)
+        private readonly TcpClientWrapper tcpClientWrapper;
+
+        internal PerRequestTcpClientRequestContainer(TcpClientWrapper tcpClientWrapper)
         {
-            TcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
+            this.tcpClientWrapper = tcpClientWrapper ?? throw new ArgumentNullException(nameof(tcpClientWrapper));
+            Stream = tcpClientWrapper.Stream;
         }
 
-        public TcpClient TcpClient { get; }
+        public Stream Stream { get; }
 
         public ValueTask DisposeAsync()
         {
-            TcpClient.Dispose();
+            tcpClientWrapper.Dispose();
             return default;
         }
     }

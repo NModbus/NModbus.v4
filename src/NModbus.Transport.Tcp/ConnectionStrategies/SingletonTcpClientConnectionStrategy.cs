@@ -1,44 +1,28 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Net;
-using System.Net.Sockets;
 
 namespace NModbus.Transport.Tcp.ConnectionStrategies
 {
     public class SingletonTcpClientConnectionStrategy : ITcpClientConnectionStrategy
     {
+        private readonly ITcpClientFactory tcpClientFactory;
+        private TcpClientWrapper tcpClientWrapper;
 
-        private readonly IPAddress ipAddress;
-        private readonly int port;
-        private readonly ILoggerFactory loggerFactory;
-        private readonly Action<TcpClient> config;
-        private TcpClient tcpClient;
-
-        public SingletonTcpClientConnectionStrategy(IPAddress ipAddress, int port, ILoggerFactory loggerFactory, Action<TcpClient> config = null)
+        public SingletonTcpClientConnectionStrategy(ITcpClientFactory tcpClientFactory, ILoggerFactory loggerFactory)
         {
-            this.ipAddress = ipAddress ?? throw new ArgumentNullException(nameof(ipAddress));
-            this.port = port;
-            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            this.config = config;
+            this.tcpClientFactory = tcpClientFactory ?? throw new ArgumentNullException(nameof(tcpClientFactory));
+            if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         public async Task<ITcpClientRequestContainer> GetTcpClientAsync(CancellationToken cancellationToken)
         {
-            if (tcpClient == null)
-            {
-                tcpClient = new TcpClient();
+            tcpClientWrapper ??= await tcpClientFactory.CreateAndConnectAsync(cancellationToken);
 
-                config?.Invoke(tcpClient);
-
-
-                await tcpClient.ConnectAsync(ipAddress, port);
-            }
-
-            return new SingletonTcpClientRequestContainer(tcpClient);
+            return new SingletonTcpClientRequestContainer(tcpClientWrapper);
         }
 
         public ValueTask DisposeAsync()
         {
-            tcpClient?.Dispose();
+            tcpClientWrapper?.Dispose();
 
             return default;
         }

@@ -4,6 +4,7 @@ using NModbus.BasicServer;
 using NModbus.Transport.Tcp;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 
 var loggerFactory = LoggerFactory.Create(builder =>
 {
@@ -14,9 +15,25 @@ var loggerFactory = LoggerFactory.Create(builder =>
 
 var serverNetwork = new ModbusServerNetwork(loggerFactory);
 
+#if FALSE
+
 var tcpListener = new TcpListener(IPAddress.Loopback, ModbusTcpPorts.Insecure);
 
-await using var transport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
+await using var transport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory, options);
+
+#else
+
+var tcpListener = new TcpListener(IPAddress.Loopback, ModbusTcpPorts.Secure);
+
+var options = new ModbusTcpServerOptions
+{
+    Certificate = X509Certificate.CreateFromCertFile("../../../../../certificates/modbus-test.pfx"),
+    SslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls12,
+};
+
+await using var transport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory, options);
+
+#endif
 
 var storage = new Storage();
 

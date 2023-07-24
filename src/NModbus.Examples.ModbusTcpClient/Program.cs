@@ -3,6 +3,8 @@ using NModbus;
 using NModbus.Transport.Tcp;
 using NModbus.Transport.Tcp.ConnectionStrategies;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 var loggerFactory = LoggerFactory.Create(builder =>
 {
@@ -16,7 +18,28 @@ var logger = loggerFactory.CreateLogger<Program>();
 //The unit number of the modbus server
 const byte unitIdentifier = 1;
 
-var strategy = new SingletonTcpClientConnectionStrategy(IPAddress.Loopback, ModbusTcpPorts.Insecure, loggerFactory);
+// options = null
+
+#if FALSE
+
+var tcpClientFactory = new TcpClientFactory(IPAddress.Loopback, ModbusTcpPorts.Insecure);
+
+var strategy = new SingletonTcpClientConnectionStrategy(tcpClientFactory, loggerFactory);
+
+#else
+
+var options = new SslClientAuthenticationOptions
+{
+    TargetHost = "127.0.0.1",
+    EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13,
+    RemoteCertificateValidationCallback = RemoteCertificateValidationCallback
+};
+
+var tcpClientFactory = new TcpClientFactory(IPAddress.Loopback, ModbusTcpPorts.Secure, null, options);
+
+var strategy = new SingletonTcpClientConnectionStrategy(tcpClientFactory, loggerFactory);
+
+#endif
 
 await using var transport = new ModbusTcpClientTransport(strategy, loggerFactory);
 
@@ -46,3 +69,7 @@ Console.WriteLine("Press any key to exit...");
 Console.ReadKey();
 
 
+static bool RemoteCertificateValidationCallback(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
+{
+    return true;
+}

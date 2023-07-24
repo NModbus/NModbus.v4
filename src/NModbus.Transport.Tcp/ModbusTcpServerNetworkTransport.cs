@@ -11,6 +11,7 @@ namespace NModbus.Transport.Tcp
         private readonly IModbusServerNetwork serverNetwork;
         private readonly ILoggerFactory loggerFactory;
         private readonly ILogger<ModbusTcpServerNetworkTransport> logger;
+        private readonly ModbusTcpServerOptions options;
         private readonly ConcurrentDictionary<string, ModbusServerTcpConnection> connections = new();
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private readonly Task listenTask;
@@ -18,11 +19,13 @@ namespace NModbus.Transport.Tcp
         public ModbusTcpServerNetworkTransport(
             TcpListener tcpListener,
             IModbusServerNetwork serverNetwork,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            ModbusTcpServerOptions options = null)
         {
             this.tcpListener = tcpListener ?? throw new ArgumentNullException(nameof(tcpListener));
             this.serverNetwork = serverNetwork ?? throw new ArgumentNullException(nameof(serverNetwork));
             this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            this.options = options ?? new ModbusTcpServerOptions();
             logger = loggerFactory.CreateLogger<ModbusTcpServerNetworkTransport>();
 
             listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));
@@ -38,27 +41,32 @@ namespace NModbus.Transport.Tcp
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    try
-                    {
-                        var tcpClient = await tcpListener.AcceptTcpClientAsync()
+                    var tcpClient = await tcpListener.AcceptTcpClientAsync()
                         .ConfigureAwait(false);
 
-                        var endpoint = tcpClient.Client.RemoteEndPoint.ToString();
-
-                        logger.LogInformation("Accepted a client from {Endpoint}", endpoint);
-
-                        var serverConnection = new ModbusServerTcpConnection(tcpClient, serverNetwork, loggerFactory);
-
-                        if (!connections.TryAdd(endpoint, serverConnection))
-                            logger.LogWarning("Unable to add TCP server connection for '{Endpoint}'.", endpoint);
-
-                        serverConnection.ConnectionClosed += ServerConnection_ConnectionClosed;
-                    }
-                    catch (SocketException ex) when (cancellationToken.IsCancellationRequested)
-                    {
-                        logger.LogTrace(ex, $"Swallowing {nameof(IOException)} in {nameof(ModbusTcpServerNetworkTransport)}.{nameof(ListenAsync)}");
-                    }
+                    ProcessClient(tcpClient, cancellationToken);
                 }
+            }
+        }
+
+        private void ProcessClient(TcpClient tcpClient, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var endpoint = tcpClient.Client.RemoteEndPoint.ToString();
+
+                logger.LogInformation("Accepted a client from {Endpoint}", endpoint);
+
+                var serverConnection = new ModbusServerTcpConnection(tcpClient, serverNetwork, loggerFactory, options);
+
+                if (!connections.TryAdd(endpoint, serverConnection))
+                    logger.LogWarning("Unable to add TCP server connection for '{Endpoint}'.", endpoint);
+
+                serverConnection.ConnectionClosed += ServerConnection_ConnectionClosed;
+            }
+            catch (SocketException ex) when (cancellationToken.IsCancellationRequested)
+            {
+                logger.LogTrace(ex, $"Swallowing {nameof(IOException)} in {nameof(ModbusTcpServerNetworkTransport)}.{nameof(ListenAsync)}");
             }
         }
 

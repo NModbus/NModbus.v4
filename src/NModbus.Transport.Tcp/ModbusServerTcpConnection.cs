@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.Interfaces;
+using System.Net.Security;
 using System.Net.Sockets;
 
 namespace NModbus.Transport.Tcp
@@ -11,7 +12,7 @@ namespace NModbus.Transport.Tcp
     {
         private readonly TcpClient tcpClient;
         private readonly IModbusServerNetwork serverNetwork;
-        private readonly NetworkStream stream;
+        private readonly Stream stream;
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private readonly Task listenTask;
         private readonly ILogger logger;
@@ -24,7 +25,8 @@ namespace NModbus.Transport.Tcp
         internal ModbusServerTcpConnection(
             TcpClient tcpClient,
             IModbusServerNetwork serverNetwork,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            ModbusTcpServerOptions options)
         {
             connectionId = Interlocked.Increment(ref connectionIdSource);
 
@@ -34,7 +36,29 @@ namespace NModbus.Transport.Tcp
             logger = loggerFactory.CreateLogger<ModbusServerTcpConnection>();
             this.tcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
             this.serverNetwork = serverNetwork;
-            stream = tcpClient.GetStream();
+            if (options == null) throw new ArgumentNullException(nameof(options));
+
+            var stream = tcpClient.GetStream();
+
+            if (options.Certificate == null)
+            {
+                this.stream = stream;
+            }
+            else
+            {
+                var sslStream = new SslStream(stream, false, options.ClientCertificateValidation);
+
+                sslStream.AuthenticateAsServer(
+                    options.Certificate, 
+                    options.ClientCertificateRequired, 
+                    options.SslProtocols, 
+                    options.CheckCertificateRevocation);
+
+                options.ConfigureSslStream?.Invoke(sslStream);
+
+                this.stream = sslStream;
+            }
+
             listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));
         }
 
