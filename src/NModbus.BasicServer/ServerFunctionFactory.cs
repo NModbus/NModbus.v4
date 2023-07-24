@@ -74,6 +74,12 @@ namespace NModbus.BasicServer
                     ModbusFunctionCodes.ReadDiscreteInputs,
                     new ReadDiscreteInputsMessageSerilizer(),
                     new ReadDiscreteInputsImplementation(loggerFactory, storage.DiscreteInputs)),
+
+                //Mask Write Register
+                new ModbusServerFunction<MaskWriteRegisterRequest, MaskWriteRegisterResponse>(
+                    ModbusFunctionCodes.MaskWriteRegister,
+                    new MaskWriteRegisterMessageSerializer(),
+                    new MaskWriteRegisterImplementation(loggerFactory, storage.HoldingRegisters)),
             };
 
             var dictionary = serverFunctions
