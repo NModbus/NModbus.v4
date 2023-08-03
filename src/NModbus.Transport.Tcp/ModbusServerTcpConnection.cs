@@ -12,12 +12,13 @@ namespace NModbus.Transport.Tcp
     {
         private readonly TcpClient tcpClient;
         private readonly IModbusServerNetwork serverNetwork;
-        private readonly Stream stream;
+        private readonly SslServerAuthenticationOptions options;
         private readonly CancellationTokenSource cancellationTokenSource = new();
-        private readonly Task listenTask;
+        private Task listenTask;
         private readonly ILogger logger;
         private readonly int connectionId;
 
+        private Stream stream;
         private static int connectionIdSource;
 
         public event EventHandler<TcpConnectionEventArgs> ConnectionClosed;
@@ -26,7 +27,7 @@ namespace NModbus.Transport.Tcp
             TcpClient tcpClient,
             IModbusServerNetwork serverNetwork,
             ILoggerFactory loggerFactory,
-            ModbusTcpServerOptions options)
+            SslServerAuthenticationOptions options)
         {
             connectionId = Interlocked.Increment(ref connectionIdSource);
 
@@ -35,28 +36,31 @@ namespace NModbus.Transport.Tcp
 
             logger = loggerFactory.CreateLogger<ModbusServerTcpConnection>();
             this.tcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
-            this.serverNetwork = serverNetwork;
-            if (options == null) throw new ArgumentNullException(nameof(options));
+            this.serverNetwork = serverNetwork ?? throw new ArgumentNullException(nameof(serverNetwork));
+            this.options = options;
+        }
 
-            var stream = tcpClient.GetStream();
+        /// <summary>
+        /// Initializes the connection.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <remarks>This is broken out because we can't do async in the constructor, and we want to report errors back to the caller.</remarks>
+        internal async Task IntializeAsync(CancellationToken cancellationToken)
+        {
+            var localStream = tcpClient.GetStream();
 
-            if (options.Certificate == null)
+            if (options == null)
             {
-                this.stream = stream;
+                stream = localStream;
             }
             else
             {
-                var sslStream = new SslStream(stream, false, options.ClientCertificateValidation);
+                var sslStream = new SslStream(localStream, false);
 
-                sslStream.AuthenticateAsServer(
-                    options.Certificate, 
-                    options.ClientCertificateRequired, 
-                    options.SslProtocols, 
-                    options.CheckCertificateRevocation);
+                await sslStream.AuthenticateAsServerAsync(options, cancellationToken);
 
-                options.ConfigureSslStream?.Invoke(sslStream);
-
-                this.stream = sslStream;
+                stream = sslStream;
             }
 
             listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));
@@ -64,26 +68,37 @@ namespace NModbus.Transport.Tcp
 
         private async Task ListenAsync(CancellationToken cancellationToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            try
             {
-                var requestMessage = await stream.ReadTcpMessageAsync(cancellationToken);
 
-                if (requestMessage == null)
+                if (stream == null)
+                    throw new InvalidOperationException("You must call " + nameof(IntializeAsync) + " first.");
+
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    logger.LogInformation("{ConnectionId} closed after receiving 0 bytes.", connectionId);
-                    OnConnectionClosed();
-                    return;
-                }
+                    var requestMessage = await stream.ReadTcpMessageAsync(cancellationToken);
 
-                logger.LogInformation("{ConnectionId} ModbusServerTcpConnection received ADU for unit {UnitIdentifier} with PDU FunctionCode {FunctionCode}.",
-                    connectionId,
-                    requestMessage.UnitIdentifier,
-                    requestMessage.ProtocolDataUnit.FunctionCode);
+                    if (requestMessage == null)
+                    {
+                        logger.LogInformation("{ConnectionId} closed after receiving 0 bytes.", connectionId);
+                        OnConnectionClosed();
+                        return;
+                    }
 
-                await using (var backchannelTransport = new BackchannelTcpClientTransport(stream, requestMessage.Header.TransactionIdentifier))
-                {
-                    await serverNetwork.ProcessRequestAsync(requestMessage, backchannelTransport, cancellationToken);
+                    logger.LogInformation("{ConnectionId} ModbusServerTcpConnection received ADU for unit {UnitIdentifier} with PDU FunctionCode {FunctionCode}.",
+                        connectionId,
+                        requestMessage.UnitIdentifier,
+                        requestMessage.ProtocolDataUnit.FunctionCode);
+
+                    await using (var backchannelTransport = new BackchannelTcpClientTransport(stream, requestMessage.Header.TransactionIdentifier))
+                    {
+                        await serverNetwork.ProcessRequestAsync(requestMessage, backchannelTransport, cancellationToken);
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                logger.LogError(ex, "Error occured in ListenAsync.");
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.Interfaces;
 using System.Collections.Concurrent;
+using System.Net.Security;
 using System.Net.Sockets;
 
 namespace NModbus.Transport.Tcp
@@ -11,29 +12,45 @@ namespace NModbus.Transport.Tcp
         private readonly IModbusServerNetwork serverNetwork;
         private readonly ILoggerFactory loggerFactory;
         private readonly ILogger<ModbusTcpServerNetworkTransport> logger;
-        private readonly ModbusTcpServerOptions options;
+        private readonly SslServerAuthenticationOptions options;
         private readonly ConcurrentDictionary<string, ModbusServerTcpConnection> connections = new();
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private readonly Task listenTask;
 
+        /// <summary>
+        /// Creates an in stance of <see cref="ModbusTcpServerNetworkTransport"/>.
+        /// </summary>
+        /// <param name="tcpListener">A configured <see cref="TcpListener"/> that will listen for incoming connections.</param>
+        /// <param name="serverNetwork">The network of Modbus servers.</param>
+        /// <param name="loggerFactory"></param>
+        /// <param name="options">Specify a value to enable Tls (Modbus Security Spec).</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public ModbusTcpServerNetworkTransport(
             TcpListener tcpListener,
             IModbusServerNetwork serverNetwork,
             ILoggerFactory loggerFactory,
-            ModbusTcpServerOptions options = null)
+            SslServerAuthenticationOptions options = null)
         {
             this.tcpListener = tcpListener ?? throw new ArgumentNullException(nameof(tcpListener));
             this.serverNetwork = serverNetwork ?? throw new ArgumentNullException(nameof(serverNetwork));
             this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            this.options = options ?? new ModbusTcpServerOptions();
+            this.options = options;
             logger = loggerFactory.CreateLogger<ModbusTcpServerNetworkTransport>();
 
             listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));
         }
 
+        
         private async Task ListenAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("Starting ModbusTcpServerNetworkTransport");
+            if (options == null)
+            {
+                logger.LogInformation("Starting " + nameof(ModbusTcpServerNetworkTransport) + " with insecure endpoint on {Endpoint}", tcpListener.LocalEndpoint);
+            }
+            else
+            {
+                logger.LogInformation("Starting " + nameof(ModbusTcpServerNetworkTransport) + " with secure endpoint on {Endpoint}", tcpListener.LocalEndpoint);
+            }
 
             tcpListener.Start();
 
@@ -44,12 +61,12 @@ namespace NModbus.Transport.Tcp
                     var tcpClient = await tcpListener.AcceptTcpClientAsync()
                         .ConfigureAwait(false);
 
-                    ProcessClient(tcpClient, cancellationToken);
+                    await StartClientProcessing(tcpClient, cancellationToken);
                 }
             }
         }
 
-        private void ProcessClient(TcpClient tcpClient, CancellationToken cancellationToken)
+        private async Task StartClientProcessing(TcpClient tcpClient, CancellationToken cancellationToken)
         {
             try
             {
@@ -59,6 +76,9 @@ namespace NModbus.Transport.Tcp
 
                 var serverConnection = new ModbusServerTcpConnection(tcpClient, serverNetwork, loggerFactory, options);
 
+                await serverConnection.IntializeAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
                 if (!connections.TryAdd(endpoint, serverConnection))
                     logger.LogWarning("Unable to add TCP server connection for '{Endpoint}'.", endpoint);
 
@@ -66,7 +86,11 @@ namespace NModbus.Transport.Tcp
             }
             catch (SocketException ex) when (cancellationToken.IsCancellationRequested)
             {
-                logger.LogTrace(ex, $"Swallowing {nameof(IOException)} in {nameof(ModbusTcpServerNetworkTransport)}.{nameof(ListenAsync)}");
+                logger.LogWarning(ex, $"Swallowing {nameof(IOException)} in {nameof(ModbusTcpServerNetworkTransport)}.{nameof(ListenAsync)}");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Problem in {nameof(StartClientProcessing)}");
             }
         }
 

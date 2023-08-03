@@ -3,6 +3,7 @@ using NModbus;
 using NModbus.BasicServer;
 using NModbus.Transport.Tcp;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 
@@ -25,10 +26,10 @@ await using var transport = new ModbusTcpServerNetworkTransport(tcpListener, ser
 
 var tcpListener = new TcpListener(IPAddress.Loopback, ModbusTcpPorts.Secure);
 
-var options = new ModbusTcpServerOptions
+var options = new SslServerAuthenticationOptions
 {
-    Certificate = X509Certificate.CreateFromCertFile("../../../../../certificates/modbus-test.pfx"),
-    SslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls12,
+    ServerCertificate = X509Certificate.CreateFromCertFile("../../../../../certificates/modbus-test.pfx"),
+    EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls12,
 };
 
 await using var transport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory, options);
