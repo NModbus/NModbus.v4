@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.Interfaces;
+using NModbus.Transport.IP.ConnectionStrategies;
 using NModbus.Transport.Tcp;
-using NModbus.Transport.Tcp.ConnectionStrategies;
 using System.Net;
 using System.Net.Sockets;
 
@@ -33,7 +33,7 @@ namespace NModbus.BasicServer.Tests.Transport
 
             serverTransport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
 
-            var tcpClientFactory = new TcpClientFactory(IPAddress.Loopback);
+            var tcpClientFactory = new TcpStreamFactory(IPAddress.Loopback);
 
             //Create the client
             var tcpClientLifetime = new SingletonTcpClientConnectionStrategy(tcpClientFactory, loggerFactory);

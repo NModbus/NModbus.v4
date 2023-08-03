@@ -1,6 +1,6 @@
 ﻿using NModbus.Interfaces;
 
-namespace NModbus.Transport.Tcp.TcpMessages
+namespace NModbus.Transport.IP.Mbap
 {
     internal class ModbusTcpMessage : IModbusDataUnit
     {

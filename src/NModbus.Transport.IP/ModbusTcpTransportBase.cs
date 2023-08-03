@@ -1,12 +1,13 @@
 ﻿using NModbus.Interfaces;
-using NModbus.Transport.Tcp.TcpMessages;
+using NModbus.Transport.IP.Mbap;
 
 namespace NModbus.Transport.Tcp
 {
     /// <summary>
     /// This is the transport from the client point of view.
     /// </summary>
-    public abstract class ModbusTcpClientTransportBase : IModbusClientTransport
+    public abstract class ModbusTcpTransportBase 
+        : IModbusClientTransport
     {
         public abstract Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default);
 
@@ -19,7 +20,7 @@ namespace NModbus.Transport.Tcp
             CancellationToken cancellationToken = default)
         {
             //Create the header
-            var mbapHeader = MbapHeaderSerializer.SerializeMbapHeader(
+            var mbapHeader = MbapSerializer.SerializeMbapHeader(
                 transactionIdentifier,
                 (ushort)(message.ProtocolDataUnit.Length + 1),
                 message.UnitIdentifier);

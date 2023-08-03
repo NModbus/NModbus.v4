@@ -1,10 +1,12 @@
-﻿namespace NModbus.Transport.Tcp.ConnectionStrategies
-{
-    internal class PerRequestTcpClientRequestContainer : ITcpClientRequestContainer
-    {
-        private readonly TcpClientWrapper tcpClientWrapper;
+﻿using NModbus.Transport.Tcp;
 
-        internal PerRequestTcpClientRequestContainer(TcpClientWrapper tcpClientWrapper)
+namespace NModbus.Transport.IP.ConnectionStrategies
+{
+    internal class StreamPerRequestContainer : IPerRequestStreamContainer
+    {
+        private readonly StreamWrapper tcpClientWrapper;
+
+        internal StreamPerRequestContainer(StreamWrapper tcpClientWrapper)
         {
             this.tcpClientWrapper = tcpClientWrapper ?? throw new ArgumentNullException(nameof(tcpClientWrapper));
             Stream = tcpClientWrapper.Stream;

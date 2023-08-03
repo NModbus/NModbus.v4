@@ -1,8 +1,9 @@
 ﻿using NModbus.Endian;
 
-namespace NModbus.Transport.Tcp.TcpMessages
+namespace NModbus.Transport.IP.Mbap
 {
-    internal static class MbapHeaderSerializer
+    internal static class MbapSerializer
+
     {
         public const ushort ProtocolIdentifier = 0x0000;
 

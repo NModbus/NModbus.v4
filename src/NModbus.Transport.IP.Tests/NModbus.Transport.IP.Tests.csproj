@@ -25,7 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\NModbus.Transport.Tcp\NModbus.Transport.Tcp.csproj" />
+	  <ProjectReference Include="..\NModbus.Transport.IP\NModbus.Transport.IP.csproj" />
 	</ItemGroup>
 
 </Project>

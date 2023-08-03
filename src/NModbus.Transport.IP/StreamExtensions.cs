@@ -1,6 +1,6 @@
 ﻿using NModbus.Extensions;
 using NModbus.Interfaces;
-using NModbus.Transport.Tcp.TcpMessages;
+using NModbus.Transport.IP.Mbap;
 
 namespace NModbus.Transport.Tcp
 {
@@ -8,12 +8,12 @@ namespace NModbus.Transport.Tcp
     {
         internal static async Task<ModbusTcpMessage> ReadTcpMessageAsync(this Stream stream, CancellationToken cancellationToken)
         {
-            var mbapHeaderBuffer = new byte[MbapHeaderSerializer.MbapHeaderLength];
+            var mbapHeaderBuffer = new byte[MbapSerializer.MbapHeaderLength];
 
             if (!await stream.TryReadBufferAsync(mbapHeaderBuffer, cancellationToken))
                 return null;
 
-            var mbapHeader = MbapHeaderSerializer.DeserializeMbapHeader(mbapHeaderBuffer);
+            var mbapHeader = MbapSerializer.DeserializeMbapHeader(mbapHeaderBuffer);
 
             var pduBuffer = new byte[mbapHeader.Length - 1];
 

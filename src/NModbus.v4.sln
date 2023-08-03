@@ -19,11 +19,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9DC29837
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Examples.ModbusTcpClient", "NModbus.Examples.ModbusTcpClient\NModbus.Examples.ModbusTcpClient.csproj", "{560C2172-125E-46B2-99ED-6FD0FE40CD32}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Transport.Tcp", "NModbus.Transport.Tcp\NModbus.Transport.Tcp.csproj", "{06101EB7-D940-4414-B27E-EA067E1E3A6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Transport.IP", "NModbus.Transport.IP\NModbus.Transport.IP.csproj", "{06101EB7-D940-4414-B27E-EA067E1E3A6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.BasicServer.Tests", "NModbus.BasicServer.Tests\NModbus.BasicServer.Tests.csproj", "{3D13E2A4-CBA3-461E-9127-8816F0A1D73A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.BasicServer.Tests", "NModbus.BasicServer.Tests\NModbus.BasicServer.Tests.csproj", "{3D13E2A4-CBA3-461E-9127-8816F0A1D73A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NModbus.Transports.Tcp.Tests", "NModbus.Transports.Tcp.Tests\NModbus.Transports.Tcp.Tests.csproj", "{81367A82-7022-4D21-9C81-A05F1688915F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Transport.IP.Tests", "NModbus.Transport.IP.Tests\NModbus.Transport.IP.Tests.csproj", "{81367A82-7022-4D21-9C81-A05F1688915F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

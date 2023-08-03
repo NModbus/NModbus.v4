@@ -5,7 +5,7 @@ namespace NModbus.Transport.Tcp
     /// <summary>
     /// This is used to communicate to a connected Modbus TCP client. This is only used internally by a Modbus Server.
     /// </summary>
-    internal class BackchannelTcpClientTransport : ModbusTcpClientTransportBase
+    internal class BackchannelTcpClientTransport : ModbusTcpTransportBase
     {
         private readonly Stream stream;
         private readonly ushort transactionIdentifier;

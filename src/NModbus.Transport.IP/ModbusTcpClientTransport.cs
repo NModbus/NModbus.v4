@@ -3,15 +3,15 @@ using NModbus.Interfaces;
 
 namespace NModbus.Transport.Tcp
 {
-    public class ModbusTcpClientTransport : ModbusTcpClientTransportBase
+    public class ModbusTcpClientTransport : ModbusTcpTransportBase
     {
         private readonly ILogger<ModbusTcpClientTransport> logger;
-        private readonly ITcpClientConnectionStrategy tcpClientStrategy;
+        private readonly ITcpConnectionStrategy tcpClientStrategy;
         private readonly object transactionIdenfitierLock = new();
 
         private ushort transactionIdentifierCounter;
 
-        public ModbusTcpClientTransport(ITcpClientConnectionStrategy tcpClientStrategy,
+        public ModbusTcpClientTransport(ITcpConnectionStrategy tcpClientStrategy,
             ILoggerFactory loggerFactory)
         {
             if (loggerFactory is null)
@@ -68,6 +68,8 @@ namespace NModbus.Transport.Tcp
         public override async ValueTask DisposeAsync()
         {
             await tcpClientStrategy.DisposeAsync();
+
+            GC.SuppressFinalize(this);
         }
     }
 }
