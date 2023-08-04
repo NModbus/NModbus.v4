@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 
-namespace NModbus.Transport.IP.ConnectionStrategies
+namespace NModbus.Transport.IP
 {
     /// <summary>
     /// Responsible for creating a client.

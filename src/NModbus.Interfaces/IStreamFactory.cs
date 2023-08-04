@@ -1,6 +1,4 @@
-﻿using NModbus.Interfaces;
-
-namespace NModbus.Transport.IP
+﻿namespace NModbus.Interfaces
 {
     /// <summary>
     /// Responsible for creating streams.

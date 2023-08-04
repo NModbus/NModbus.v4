@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NModbus.Interfaces;
 
 namespace NModbus.Transport.IP.ConnectionStrategies
 {

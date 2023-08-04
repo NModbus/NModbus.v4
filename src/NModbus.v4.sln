@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.BasicServer.Tests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Transport.IP.Tests", "NModbus.Transport.IP.Tests\NModbus.Transport.IP.Tests.csproj", "{81367A82-7022-4D21-9C81-A05F1688915F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Transport.Serial", "NModbus.Transport.Serial\NModbus.Transport.Serial.csproj", "{3B454DEA-B1F7-463F-99A5-FE66204AA12E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{81367A82-7022-4D21-9C81-A05F1688915F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81367A82-7022-4D21-9C81-A05F1688915F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81367A82-7022-4D21-9C81-A05F1688915F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B454DEA-B1F7-463F-99A5-FE66204AA12E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B454DEA-B1F7-463F-99A5-FE66204AA12E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B454DEA-B1F7-463F-99A5-FE66204AA12E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B454DEA-B1F7-463F-99A5-FE66204AA12E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
