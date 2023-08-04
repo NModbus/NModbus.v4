@@ -1,10 +1,11 @@
 ﻿using NModbus.Interfaces;
+using NModbus.Transport.IP.Mbap;
 
-namespace NModbus.Transport.IP.Mbap
+namespace NModbus.Transport.IP
 {
-    internal class ModbusTcpMessage : IModbusDataUnit
+    internal class ModbusIPMessage : IModbusDataUnit
     {
-        public ModbusTcpMessage(MbapHeader header, ProtocolDataUnit protocolDataUnit)
+        public ModbusIPMessage(MbapHeader header, ProtocolDataUnit protocolDataUnit)
         {
             Header = header ?? throw new ArgumentNullException(nameof(header));
             ProtocolDataUnit = protocolDataUnit ?? throw new ArgumentNullException(nameof(protocolDataUnit));

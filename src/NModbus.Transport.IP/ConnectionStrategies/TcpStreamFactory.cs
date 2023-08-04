@@ -1,5 +1,4 @@
-﻿using NModbus.Transport.Tcp;
-using System.Net;
+﻿using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 
@@ -10,29 +9,25 @@ namespace NModbus.Transport.IP.ConnectionStrategies
     /// </summary>
     public class TcpStreamFactory : IStreamFactory
     {
-        private readonly IPAddress ipAddress;
-        private readonly int port;
-        private readonly SslClientAuthenticationOptions options;
+        private readonly IPEndPoint endPoint;
         private readonly Action<TcpClient> tcpClientConfig;
+        private readonly SslClientAuthenticationOptions sslOptions;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="ipAddress">The <see cref="IPAddress"/> to connect to.</param>
-        /// <param name="port">The port to connect to.</param>
+        /// <param name="endPoint"></param>
         /// <param name="tcpClientConfig">Custom configuration action for <see cref="TcpClient"/>.</param>
         /// <param name="sslOptions">If non-null, an ssl connection will be created with the specified options.</param>
         /// <exception cref="ArgumentNullException"></exception>
         public TcpStreamFactory(
-            IPAddress ipAddress,
-            int port = ModbusTcpPorts.Insecure,
+            IPEndPoint endPoint,
             Action<TcpClient> tcpClientConfig = null,
             SslClientAuthenticationOptions sslOptions = null)
         {
-            this.ipAddress = ipAddress ?? throw new ArgumentNullException(nameof(ipAddress));
-            this.port = port;
-            options = sslOptions;
+            this.endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
             this.tcpClientConfig = tcpClientConfig;
+            this.sslOptions = sslOptions;
         }
 
         /// <summary>
@@ -49,15 +44,15 @@ namespace NModbus.Transport.IP.ConnectionStrategies
 
             tcpClientConfig?.Invoke(tcpClient);
 
-            await tcpClient.ConnectAsync(ipAddress, port);
+            await tcpClient.ConnectAsync(endPoint.Address, endPoint.Port);
 
-            if (options != null)
+            if (sslOptions != null)
             {
                 var sslStream = new SslStream(
                     tcpClient.GetStream(),
                     false);
 
-                await sslStream.AuthenticateAsClientAsync(options, cancellationToken);
+                await sslStream.AuthenticateAsClientAsync(sslOptions, cancellationToken);
 
                 return new StreamWrapper(sslStream, tcpClient);
 

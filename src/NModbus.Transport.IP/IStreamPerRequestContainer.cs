@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 
-namespace NModbus.Transport.Tcp
+namespace NModbus.Transport.IP
 {
     /// <summary>
     /// This container will exist for the lifetime of a single TCP request and optional response.

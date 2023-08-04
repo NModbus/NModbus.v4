@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus;
 using NModbus.BasicServer;
-using NModbus.Transport.Tcp;
+using NModbus.Transport.IP;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -24,7 +24,7 @@ await using var transport = new ModbusTcpServerNetworkTransport(tcpListener, ser
 
 #else
 
-var tcpListener = new TcpListener(IPAddress.Loopback, ModbusTcpPorts.Secure);
+var tcpListener = new TcpListener(IPAddress.Loopback, ModbusIPPorts.Secure);
 
 var options = new SslServerAuthenticationOptions
 {

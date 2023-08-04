@@ -3,7 +3,7 @@ using NModbus.Interfaces;
 using System.Net.Security;
 using System.Net.Sockets;
 
-namespace NModbus.Transport.Tcp
+namespace NModbus.Transport.IP
 {
     /// <summary>
     /// This represents a connection from a client on a server.
@@ -76,7 +76,7 @@ namespace NModbus.Transport.Tcp
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    var requestMessage = await stream.ReadTcpMessageAsync(cancellationToken);
+                    var requestMessage = await stream.ReadIPMessageAsync(cancellationToken);
 
                     if (requestMessage == null)
                     {
@@ -96,7 +96,7 @@ namespace NModbus.Transport.Tcp
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError(ex, "Error occured in ListenAsync.");
             }

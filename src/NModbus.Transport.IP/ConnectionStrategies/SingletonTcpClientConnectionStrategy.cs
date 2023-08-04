@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using NModbus.Transport.Tcp;
 
 namespace NModbus.Transport.IP.ConnectionStrategies
 {
-    public class SingletonTcpClientConnectionStrategy : ITcpConnectionStrategy
+    public class SingletonTcpClientConnectionStrategy : IConnectionStrategy
     {
         private readonly IStreamFactory tcpClientFactory;
         private StreamWrapper tcpClientWrapper;
@@ -14,7 +13,7 @@ namespace NModbus.Transport.IP.ConnectionStrategies
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
         }
 
-        public async Task<IPerRequestStreamContainer> GetTcpClientAsync(CancellationToken cancellationToken)
+        public async Task<IPerRequestStreamContainer> GetStreamContainer(CancellationToken cancellationToken)
         {
             tcpClientWrapper ??= await tcpClientFactory.CreateAndConnectAsync(cancellationToken);
 

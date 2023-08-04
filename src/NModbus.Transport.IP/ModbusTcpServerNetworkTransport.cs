@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Net.Security;
 using System.Net.Sockets;
 
-namespace NModbus.Transport.Tcp
+namespace NModbus.Transport.IP
 {
     public class ModbusTcpServerNetworkTransport : IModbusServerNetworkTransport
     {
@@ -40,7 +40,7 @@ namespace NModbus.Transport.Tcp
             listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));
         }
 
-        
+
         private async Task ListenAsync(CancellationToken cancellationToken)
         {
             if (options == null)

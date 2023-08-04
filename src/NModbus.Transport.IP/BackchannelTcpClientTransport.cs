@@ -1,11 +1,11 @@
 ﻿using NModbus.Interfaces;
 
-namespace NModbus.Transport.Tcp
+namespace NModbus.Transport.IP
 {
     /// <summary>
     /// This is used to communicate to a connected Modbus TCP client. This is only used internally by a Modbus Server.
     /// </summary>
-    internal class BackchannelTcpClientTransport : ModbusTcpTransportBase
+    internal class BackchannelTcpClientTransport : IModbusClientTransport
     {
         private readonly Stream stream;
         private readonly ushort transactionIdentifier;
@@ -16,17 +16,17 @@ namespace NModbus.Transport.Tcp
             this.transactionIdentifier = transactionIdentifier;
         }
 
-        public override Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
+        public Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException("Backchannel Tcp Transport cannot SendAndReceive as a Modbus Server can only respond to requests.");
         }
 
-        public override async Task SendAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
+        public async Task SendAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
-            await SendProtectedAsync(stream, transactionIdentifier, message, cancellationToken);
+            await stream.WriteIPMessageAsync(transactionIdentifier, message, cancellationToken);
         }
 
-        public override ValueTask DisposeAsync()
+        public ValueTask DisposeAsync()
         {
             return default;
         }

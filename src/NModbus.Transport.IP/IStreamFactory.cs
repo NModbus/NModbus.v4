@@ -1,6 +1,6 @@
 ﻿using NModbus.Transport.IP.ConnectionStrategies;
 
-namespace NModbus.Transport.Tcp
+namespace NModbus.Transport.IP
 {
     /// <summary>
     /// Responsible for creating streams.

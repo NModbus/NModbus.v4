@@ -1,6 +1,4 @@
-﻿using NModbus.Transport.Tcp;
-
-namespace NModbus.Transport.IP.ConnectionStrategies
+﻿namespace NModbus.Transport.IP.ConnectionStrategies
 {
     /// <summary>
     /// Does not dispose the <see cref="StreamWrapper"/> instance.

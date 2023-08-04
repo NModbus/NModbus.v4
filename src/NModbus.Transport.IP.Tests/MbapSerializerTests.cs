@@ -1,7 +1,7 @@
 ﻿using NModbus.Transport.IP.Mbap;
 using Shouldly;
 
-namespace NModbus.Transports.Tcp.Tests
+namespace NModbus.Transport.IP.Tests
 {
     public class MbapSerializerTests
     {

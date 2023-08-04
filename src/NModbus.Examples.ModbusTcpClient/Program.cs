@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus;
+using NModbus.Transport.IP;
 using NModbus.Transport.IP.ConnectionStrategies;
-using NModbus.Transport.Tcp;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -35,7 +35,7 @@ var options = new SslClientAuthenticationOptions
     RemoteCertificateValidationCallback = RemoteCertificateValidationCallback
 };
 
-var tcpClientFactory = new TcpStreamFactory(IPAddress.Loopback, ModbusTcpPorts.Secure, null, options);
+var tcpClientFactory = new TcpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Secure), null, options);
 
 var strategy = new SingletonTcpClientConnectionStrategy(tcpClientFactory, loggerFactory);
 

@@ -1,9 +1,9 @@
-﻿namespace NModbus.Transport.Tcp
+﻿namespace NModbus.Transport.IP
 {
     /// <summary>
     /// Default ports for Modbus over TCP.
     /// </summary>
-    public static class ModbusTcpPorts
+    public static class ModbusIPPorts
     {
         /// <summary>
         /// 502: mbap/TCP

@@ -1,4 +1,4 @@
-﻿namespace NModbus.Transport.Tcp
+﻿namespace NModbus.Transport.IP
 {
     internal class TcpConnectionEventArgs : EventArgs
     {

@@ -1,6 +1,4 @@
-﻿using NModbus.Transport.Tcp;
-
-namespace NModbus.Transport.IP.ConnectionStrategies
+﻿namespace NModbus.Transport.IP.ConnectionStrategies
 {
     internal class StreamPerRequestContainer : IPerRequestStreamContainer
     {
