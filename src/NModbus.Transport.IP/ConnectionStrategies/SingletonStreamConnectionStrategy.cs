@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
+using NModbus.Interfaces;
 
 namespace NModbus.Transport.IP.ConnectionStrategies
 {
-    public class SingletonTcpClientConnectionStrategy : IConnectionStrategy
+    public class SingletonStreamConnectionStrategy : IConnectionStrategy
     {
         private readonly IStreamFactory tcpClientFactory;
-        private StreamWrapper tcpClientWrapper;
+        private IModbusStream stream;
 
-        public SingletonTcpClientConnectionStrategy(IStreamFactory streamFactory, ILoggerFactory loggerFactory)
+        public SingletonStreamConnectionStrategy(IStreamFactory streamFactory, ILoggerFactory loggerFactory)
         {
             tcpClientFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
@@ -15,18 +16,19 @@ namespace NModbus.Transport.IP.ConnectionStrategies
 
         public async Task<IPerRequestStreamContainer> GetStreamContainer(CancellationToken cancellationToken)
         {
-            tcpClientWrapper ??= await tcpClientFactory.CreateAndConnectAsync(cancellationToken);
+            stream ??= await tcpClientFactory.CreateAndConnectAsync(cancellationToken);
 
-            return new SingletonStreamPerRequestContainer(tcpClientWrapper);
+            return new SingletonStreamPerRequestContainer(stream);
         }
 
-        public ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
             GC.SuppressFinalize(this);
 
-            tcpClientWrapper?.Dispose();
-
-            return default;
+            if (stream != null)
+            {
+                await stream.DisposeAsync();
+            }
         }
     }
 }

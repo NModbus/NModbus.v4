@@ -22,9 +22,19 @@ const byte unitIdentifier = 1;
 
 #if FALSE
 
-var tcpClientFactory = new TcpClientFactory(IPAddress.Loopback, ModbusTcpPorts.Insecure);
+var streamFactory = new TcpClientFactory(IPAddress.Loopback, ModbusTcpPorts.Insecure);
 
-var strategy = new SingletonTcpClientConnectionStrategy(tcpClientFactory, loggerFactory);
+var strategy = new SingletonStreamConnectionStrategy(streamFactory, loggerFactory);
+
+#elif TRUE
+
+var streamFactory = new UdpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Insecure), 
+    s => {
+        s.Client.ReceiveTimeout = 5000;
+        s.Client.SendTimeout = 5000;
+     });
+
+var strategy = new SingletonStreamConnectionStrategy(streamFactory, loggerFactory);
 
 #else
 
@@ -35,13 +45,13 @@ var options = new SslClientAuthenticationOptions
     RemoteCertificateValidationCallback = RemoteCertificateValidationCallback
 };
 
-var tcpClientFactory = new TcpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Secure), null, options);
+var streamFactory = new TcpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Secure), null, options);
 
-var strategy = new SingletonTcpClientConnectionStrategy(tcpClientFactory, loggerFactory);
+var strategy = new SingletonStreamConnectionStrategy(streamFactory, loggerFactory);
 
 #endif
 
-await using var transport = new ModbusTcpClientTransport(strategy, loggerFactory);
+await using var transport = new ModbusIPClientTransport(strategy, loggerFactory);
 
 var modbusClient = new ModbusClient(transport, loggerFactory);
 

@@ -7,10 +7,10 @@ namespace NModbus.Transport.IP
     /// </summary>
     internal class BackchannelTcpClientTransport : IModbusClientTransport
     {
-        private readonly Stream stream;
+        private readonly IModbusStream stream;
         private readonly ushort transactionIdentifier;
 
-        public BackchannelTcpClientTransport(Stream stream, ushort transactionIdentifier)
+        public BackchannelTcpClientTransport(IModbusStream stream, ushort transactionIdentifier)
         {
             this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
             this.transactionIdentifier = transactionIdentifier;

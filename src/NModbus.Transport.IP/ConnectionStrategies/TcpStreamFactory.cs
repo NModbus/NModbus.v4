@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using NModbus.Interfaces;
+using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 
@@ -38,7 +39,7 @@ namespace NModbus.Transport.IP.ConnectionStrategies
         /// <remarks>
         /// Optionally creates an <see cref="SslStream"/> if an <see cref="SslClientAuthenticationOptions"/> instance is provided in the constructor.
         /// </remarks>
-        public async Task<StreamWrapper> CreateAndConnectAsync(CancellationToken cancellationToken)
+        public async Task<IModbusStream> CreateAndConnectAsync(CancellationToken cancellationToken)
         {
             var tcpClient = new TcpClient();
 
@@ -54,12 +55,12 @@ namespace NModbus.Transport.IP.ConnectionStrategies
 
                 await sslStream.AuthenticateAsClientAsync(sslOptions, cancellationToken);
 
-                return new StreamWrapper(sslStream, tcpClient);
+                return new TcpModbusStream(tcpClient, sslStream);
 
             }
             else
             {
-                return new StreamWrapper(tcpClient.GetStream(), tcpClient);
+                return new TcpModbusStream(tcpClient, tcpClient.GetStream());
             }
         }
     }

@@ -1,18 +1,18 @@
-﻿namespace NModbus.Transport.IP.ConnectionStrategies
+﻿using NModbus.Interfaces;
+
+namespace NModbus.Transport.IP.ConnectionStrategies
 {
     /// <summary>
-    /// Does not dispose the <see cref="StreamWrapper"/> instance.
+    /// Does not dispose the <see cref="IModbusStream"/> instance.
     /// </summary>
     internal class SingletonStreamPerRequestContainer : IPerRequestStreamContainer
     {
-        public SingletonStreamPerRequestContainer(StreamWrapper streamWrapper)
+        public SingletonStreamPerRequestContainer(IModbusStream stream)
         {
-            if (streamWrapper is null) throw new ArgumentNullException(nameof(streamWrapper));
-
-            Stream = streamWrapper.Stream;
+            Stream = stream ?? throw new ArgumentNullException(nameof(stream));
         }
 
-        public Stream Stream { get; }
+        public IModbusStream Stream { get; }
 
         public ValueTask DisposeAsync()
         {

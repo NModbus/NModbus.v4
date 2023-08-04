@@ -3,19 +3,18 @@ using NModbus.Interfaces;
 
 namespace NModbus.Transport.IP
 {
-
-    public class ModbusTcpClientTransport : ModbusIPClientTransportBase
+    public class ModbusIPClientTransport : ModbusIPClientTransportBase
     {
-        private readonly ILogger<ModbusTcpClientTransport> logger;
+        private readonly ILogger<ModbusIPClientTransport> logger;
         private readonly IConnectionStrategy connectionStrategy;
 
-        public ModbusTcpClientTransport(IConnectionStrategy connectionStrategy,
+        public ModbusIPClientTransport(IConnectionStrategy connectionStrategy,
             ILoggerFactory loggerFactory)
         {
             if (loggerFactory is null)
                 throw new ArgumentNullException(nameof(loggerFactory));
 
-            logger = loggerFactory.CreateLogger<ModbusTcpClientTransport>();
+            logger = loggerFactory.CreateLogger<ModbusIPClientTransport>();
             this.connectionStrategy = connectionStrategy ?? throw new ArgumentNullException(nameof(connectionStrategy));
         }
 

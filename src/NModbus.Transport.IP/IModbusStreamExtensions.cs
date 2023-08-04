@@ -4,9 +4,11 @@ using NModbus.Transport.IP.Mbap;
 
 namespace NModbus.Transport.IP
 {
-    internal static class StreamExtensions
+    internal static class IModbusStreamExtensions
     {
-        internal static async Task<ModbusIPMessage> ReadIPMessageAsync(this Stream stream, CancellationToken cancellationToken)
+        internal static async Task<ModbusIPMessage> ReadIPMessageAsync(
+            this IModbusStream stream, 
+            CancellationToken cancellationToken = default)
         {
             var mbapHeaderBuffer = new byte[MbapSerializer.MbapHeaderLength];
 
@@ -24,7 +26,7 @@ namespace NModbus.Transport.IP
         }
 
         internal static async Task WriteIPMessageAsync(
-            this Stream stream,
+            this IModbusStream stream,
             ushort transactionIdentifier,
             IModbusDataUnit message,
             CancellationToken cancellationToken = default)
@@ -32,7 +34,7 @@ namespace NModbus.Transport.IP
             var buffer = message.Serialize(transactionIdentifier);
 
             //Write it
-            await stream.WriteAsync(buffer, cancellationToken);
+            await stream.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
         }
     }
 }

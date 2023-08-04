@@ -1,21 +1,21 @@
-﻿namespace NModbus.Transport.IP.ConnectionStrategies
+﻿using NModbus.Interfaces;
+
+namespace NModbus.Transport.IP.ConnectionStrategies
 {
     internal class StreamPerRequestContainer : IPerRequestStreamContainer
     {
-        private readonly StreamWrapper tcpClientWrapper;
+        private readonly IModbusStream stream;
 
-        internal StreamPerRequestContainer(StreamWrapper tcpClientWrapper)
+        internal StreamPerRequestContainer(IModbusStream stream)
         {
-            this.tcpClientWrapper = tcpClientWrapper ?? throw new ArgumentNullException(nameof(tcpClientWrapper));
-            Stream = tcpClientWrapper.Stream;
+            this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
         }
 
-        public Stream Stream { get; }
+        public IModbusStream Stream { get; }
 
-        public ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
-            tcpClientWrapper.Dispose();
-            return default;
+            await stream.DisposeAsync();
         }
     }
 }

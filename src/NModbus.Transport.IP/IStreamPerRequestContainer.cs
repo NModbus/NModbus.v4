@@ -1,4 +1,4 @@
-﻿using System.Net.Sockets;
+﻿using NModbus.Interfaces;
 
 namespace NModbus.Transport.IP
 {
@@ -10,6 +10,6 @@ namespace NModbus.Transport.IP
         /// <summary>
         /// Gets the underlying stream
         /// </summary>
-        Stream Stream { get; }
+        IModbusStream Stream { get; }
     }
 }

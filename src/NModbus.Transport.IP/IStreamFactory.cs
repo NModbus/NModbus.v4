@@ -1,4 +1,4 @@
-﻿using NModbus.Transport.IP.ConnectionStrategies;
+﻿using NModbus.Interfaces;
 
 namespace NModbus.Transport.IP
 {
@@ -12,6 +12,6 @@ namespace NModbus.Transport.IP
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<StreamWrapper> CreateAndConnectAsync(CancellationToken cancellationToken);
+        Task<IModbusStream> CreateAndConnectAsync(CancellationToken cancellationToken);
     }
 }

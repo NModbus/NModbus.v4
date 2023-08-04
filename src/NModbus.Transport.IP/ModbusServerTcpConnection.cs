@@ -18,7 +18,7 @@ namespace NModbus.Transport.IP
         private readonly ILogger logger;
         private readonly int connectionId;
 
-        private Stream stream;
+        private IModbusStream stream;
         private static int connectionIdSource;
 
         public event EventHandler<TcpConnectionEventArgs> ConnectionClosed;
@@ -52,7 +52,7 @@ namespace NModbus.Transport.IP
 
             if (options == null)
             {
-                stream = localStream;
+                stream = new ModbusStream(localStream);
             }
             else
             {
@@ -60,7 +60,7 @@ namespace NModbus.Transport.IP
 
                 await sslStream.AuthenticateAsServerAsync(options, cancellationToken);
 
-                stream = sslStream;
+                stream = new ModbusStream(sslStream);
             }
 
             listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));
