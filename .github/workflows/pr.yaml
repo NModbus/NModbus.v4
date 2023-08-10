@@ -41,3 +41,9 @@ jobs:
         with:
           recreate: true
           path: code-coverage-results.md
+
+      # Do a pack (we don't care about the version because we're just going to throw it away)
+      # just to make sure the solution is packable. It's unfortunate to make it to a post PR 
+      # build to find out that we can't pack.
+      - name: Pack
+        run: dotnet pack --configuration Release /p:Version=1.0.0 --output . ./src/
