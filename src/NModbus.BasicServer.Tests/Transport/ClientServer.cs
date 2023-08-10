@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.Interfaces;
-using NModbus.Transport.Tcp;
-using NModbus.Transport.Tcp.ConnectionStrategies;
+using NModbus.Transport.IP;
+using NModbus.Transport.IP.ConnectionStrategies;
 using System.Net;
 using System.Net.Sockets;
 
@@ -29,13 +29,15 @@ namespace NModbus.BasicServer.Tests.Transport
             if (!serverNetwork.TryAddServer(server))
                 throw new InvalidOperationException($"Unable to add server with unit number {server.UnitIdentifier}");
 
-            var tcpListener = new TcpListener(IPAddress.Loopback, ModbusTcpPorts.Insecure);
+            var tcpListener = new TcpListener(IPAddress.Loopback, ModbusIPPorts.Insecure);
 
             serverTransport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
 
+            var tcpClientFactory = new TcpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Insecure));
+
             //Create the client
-            var tcpClientLifetime = new SingletonTcpClientConnectionStrategy(IPAddress.Loopback, ModbusTcpPorts.Insecure, loggerFactory);
-            clientTransport = new ModbusTcpClientTransport(tcpClientLifetime, loggerFactory);
+            var tcpClientLifetime = new SingletonStreamConnectionStrategy(tcpClientFactory, loggerFactory);
+            clientTransport = new ModbusIPClientTransport(tcpClientLifetime, loggerFactory);
             Client = new ModbusClient(clientTransport, loggerFactory);
         }
 

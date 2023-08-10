@@ -22,3 +22,5 @@ Client / Server is per the Modbus org: https://www.modbus.org/docs/Client-Server
 |DiscreteInputs|1-bit registers used as inputs, and may only be read.|
 |HoldingRegisters|16-bit registers, may be read or written, and may be used for a variety of things including inputs, outputs, configuration data, or any requirement for "holding" data.|
 |InputRegisters|16-bit registers used for input, and may only be read.|
+
+

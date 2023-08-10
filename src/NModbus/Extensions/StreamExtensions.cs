@@ -1,4 +1,6 @@
-﻿namespace NModbus.Extensions
+﻿using NModbus.Interfaces;
+
+namespace NModbus.Extensions
 {
     public static class StreamExtensions
     {
@@ -10,7 +12,7 @@
         /// <param name="cancellationToken"></param>
         /// <returns>True if the read was successful, false if no data was returned (indiciating that the connection wsa closed).</returns>
         /// <exception cref="IOException"></exception>
-        public static async Task<bool> TryReadBufferAsync(this Stream stream, byte[] buffer, CancellationToken cancellationToken = default)
+        public static async Task<bool> TryReadBufferAsync(this IModbusStream stream, byte[] buffer, CancellationToken cancellationToken = default)
         {
             var totalRead = 0;
 
