@@ -2,7 +2,7 @@
 
 namespace NModbus.Transport.IP.Mbap
 {
-    internal static class MbapSerializer
+    public static class MbapSerializer
 
     {
         public const ushort ProtocolIdentifier = 0x0000;

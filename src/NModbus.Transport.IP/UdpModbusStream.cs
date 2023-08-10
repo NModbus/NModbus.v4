@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace NModbus.Transport.IP
 {
-    internal class UdpModbusStream : IModbusStream
+    public class UdpModbusStream : IModbusStream
     {
         private readonly UdpClient udpClient;
         private readonly byte[] receiveBuffer = new byte[ushort.MaxValue];
@@ -12,18 +12,6 @@ namespace NModbus.Transport.IP
         public UdpModbusStream(UdpClient udpClient)
         {
             this.udpClient = udpClient ?? throw new ArgumentNullException(nameof(udpClient));
-        }
-
-        public int ReceiveTimeout
-        {
-            get => udpClient.Client.ReceiveTimeout;
-            set => udpClient.Client.ReceiveTimeout = value;
-        }
-
-        public int SendTimeout
-        {
-            get => udpClient.Client.SendTimeout;
-            set => udpClient.Client.SendTimeout = value;
         }
 
         public Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken = default)

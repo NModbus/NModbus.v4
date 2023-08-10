@@ -3,7 +3,7 @@ using NModbus.Transport.IP.Mbap;
 
 namespace NModbus.Transport.IP
 {
-    internal class ModbusIPMessage : IModbusDataUnit
+    public class ModbusIPMessage : IModbusDataUnit
     {
         public ModbusIPMessage(MbapHeader header, ProtocolDataUnit protocolDataUnit)
         {

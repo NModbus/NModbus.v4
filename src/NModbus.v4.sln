@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.BasicServer", "NMod
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{0C26A446-4E45-4AB2-A00D-62EDFACFC1FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Examples.ModbusTcpServer", "NModbus.Examples.ModbusTcpServer\NModbus.Examples.ModbusTcpServer.csproj", "{20E1A26F-9316-40F5-B793-C2D619F12819}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Examples.ModbusServer", "NModbus.Examples.ModbusServer\NModbus.Examples.ModbusServer.csproj", "{20E1A26F-9316-40F5-B793-C2D619F12819}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9DC29837-8406-4634-A209-99F448681DCA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Examples.ModbusTcpClient", "NModbus.Examples.ModbusTcpClient\NModbus.Examples.ModbusTcpClient.csproj", "{560C2172-125E-46B2-99ED-6FD0FE40CD32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Examples.ModbusClient", "NModbus.Examples.ModbusClient\NModbus.Examples.ModbusClient.csproj", "{560C2172-125E-46B2-99ED-6FD0FE40CD32}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NModbus.Transport.IP", "NModbus.Transport.IP\NModbus.Transport.IP.csproj", "{06101EB7-D940-4414-B27E-EA067E1E3A6F}"
 EndProject

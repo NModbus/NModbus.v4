@@ -4,9 +4,9 @@ using NModbus.Transport.IP.Mbap;
 
 namespace NModbus.Transport.IP
 {
-    internal static class IModbusStreamExtensions
+    public static class IModbusStreamExtensions
     {
-        internal static async Task<ModbusIPMessage> ReadIPMessageAsync(
+        public static async Task<ModbusIPMessage> ReadIPMessageAsync(
             this IModbusStream stream, 
             CancellationToken cancellationToken = default)
         {
@@ -25,7 +25,7 @@ namespace NModbus.Transport.IP
             return new ModbusIPMessage(mbapHeader, new ProtocolDataUnit(pduBuffer));
         }
 
-        internal static async Task WriteIPMessageAsync(
+        public static async Task WriteIPMessageAsync(
             this IModbusStream stream,
             ushort transactionIdentifier,
             IModbusDataUnit message,

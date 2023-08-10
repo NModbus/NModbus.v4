@@ -6,16 +6,6 @@
     public  interface IModbusStream : IAsyncDisposable
     {
         /// <summary>
-        /// Gets or sets the number of milliseconds before a timeout occurs when a read operation does not finish.
-        /// </summary>
-        int ReceiveTimeout { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of milliseconds before a timeout occurs when a write operation does not finish.
-        /// </summary>
-        int SendTimeout { get; set; }
-
-        /// <summary>
         /// Reads a number of bytes from the input buffer.
         /// </summary>
         /// <param name="buffer">The byte array to write the collected data to.</param>

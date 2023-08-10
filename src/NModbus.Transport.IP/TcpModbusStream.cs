@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace NModbus.Transport.IP
 {
-    internal class TcpModbusStream : IModbusStream
+    public class TcpModbusStream : IModbusStream
     {
         private readonly TcpClient tcpClient;
         private readonly Stream stream;
@@ -12,17 +12,6 @@ namespace NModbus.Transport.IP
         {
             this.tcpClient = tcpClient ?? throw new ArgumentNullException(nameof(tcpClient));
             this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        }
-
-        public int ReceiveTimeout 
-        {
-            get => tcpClient.ReceiveTimeout;
-            set => tcpClient.ReceiveTimeout = value;
-        }
-        public int SendTimeout 
-        {
-            get => tcpClient.SendTimeout;
-            set => tcpClient.SendTimeout = value;
         }
 
         public async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken = default)
