@@ -15,17 +15,21 @@ var logger = loggerFactory.CreateLogger<Program>();
 //The unit number of the modbus server
 const byte unitIdentifier = 1;
 
-// options = null
-
 var sampleFactory = new ModbusIpClientSampleTransportFactory(loggerFactory);
 
-string sample = "ip";
+string sample = "insecure";
 
 await using var transport = sample switch
 {
+    // create a "standard" modbus tcp client
     "insecure" => sampleFactory.CreateTcpInsecureClient(IPAddress.Loopback),
+
+    // create a modbus secure client, accepting all certificates
     "secure" => await sampleFactory.CreateTcpSecureClient("localhost", (snd, cert, chain, errors) => true),
+
+    // create a "standard" modbus upd client
     "udp" => sampleFactory.CreateUpdClient(IPAddress.Loopback),
+
     _ => throw new NotSupportedException("Only 'insecure', 'secure' or 'udp' is supported as option")
 };
 
