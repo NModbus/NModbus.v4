@@ -9,6 +9,19 @@ namespace NModbus.BasicServer.Tests.Integration
         }
 
         [Theory]
+        [InlineData(10, true)]
+        [InlineData(100, false)]
+        [InlineData(1000, true)]
+        public async Task WriteSingleCoilShouldWork(ushort address, bool value)
+        {
+            await using var clientServer = await CreateClientServerAsync(1);
+
+            await clientServer.Client.WriteSingleCoilAsync(clientServer.UnitIdentifier, address, value);
+
+            clientServer.Storage.Coils[address].ShouldBe(value);
+        }
+
+        [Theory]
         [InlineData(10, 42)]
         [InlineData(100, 420)]
         public async Task WriteSingleRegisterShouldWork(ushort address, ushort value)
