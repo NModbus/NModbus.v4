@@ -136,6 +136,17 @@ namespace NModbus
             return response.InputRegisters;
         }
 
+        public static async Task WriteSingleCoilAsync(this IModbusClient client, byte unitIdentifier, ushort outputAddress, bool value, CancellationToken cancellationToken = default)
+        {
+            var request = new WriteSingleCoilRequest(outputAddress, value);
+
+            await client.ExecuteAsync<WriteSingleCoilRequest, WriteSingleCoilResponse>(
+                ModbusFunctionCodes.WriteSingleCoil,
+                unitIdentifier,
+                request,
+                cancellationToken);
+        }
+
         public static async Task WriteMultipleCoils(
             this IModbusClient client, 
             byte unitIdentifier, 
