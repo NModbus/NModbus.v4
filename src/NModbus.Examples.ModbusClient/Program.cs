@@ -1,12 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus;
-using NModbus.Transport.IP;
-using NModbus.Transport.IP.ConnectionStrategies;
+using NModbus.Examples.ModbusClient;
 using System.Net;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 
-var loggerFactory = LoggerFactory.Create(builder =>
+ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
 {
     builder
         .SetMinimumLevel(LogLevel.Debug)
@@ -18,47 +15,29 @@ var logger = loggerFactory.CreateLogger<Program>();
 //The unit number of the modbus server
 const byte unitIdentifier = 1;
 
-// options = null
+var sampleFactory = new ModbusIpClientSampleTransportFactory(loggerFactory);
 
-#if FALSE
+string sample = "insecure";
 
-var streamFactory = new TcpClientFactory(IPAddress.Loopback, ModbusTcpPorts.Insecure);
-
-var strategy = new SingletonStreamConnectionStrategy(streamFactory, loggerFactory);
-
-#elif TRUE
-
-var streamFactory = new UdpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Insecure), 
-    s => {
-        s.Client.ReceiveTimeout = 5000;
-        s.Client.SendTimeout = 5000;
-     });
-
-var strategy = new SingletonStreamConnectionStrategy(streamFactory, loggerFactory);
-
-#else
-
-var options = new SslClientAuthenticationOptions
+await using var transport = sample switch
 {
-    TargetHost = "127.0.0.1",
-    EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13,
-    RemoteCertificateValidationCallback = RemoteCertificateValidationCallback
+    // create a "standard" modbus tcp client
+    "insecure" => sampleFactory.CreateTcpInsecureClient(IPAddress.Loopback),
+
+    // create a modbus secure client, accepting all certificates
+    "secure" => await sampleFactory.CreateTcpSecureClient("localhost", (snd, cert, chain, errors) => true),
+
+    // create a "standard" modbus upd client
+    "udp" => sampleFactory.CreateUpdClient(IPAddress.Loopback),
+
+    _ => throw new NotSupportedException("Only 'insecure', 'secure' or 'udp' is supported as option")
 };
-
-var streamFactory = new TcpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Secure), null, options);
-
-var strategy = new SingletonStreamConnectionStrategy(streamFactory, loggerFactory);
-
-#endif
-
-await using var transport = new ModbusIPClientTransport(strategy, loggerFactory);
 
 var modbusClient = new ModbusClient(transport, loggerFactory);
 
 logger.LogInformation("Writing a single register...");
 
 await modbusClient.WriteSingleRegisterAsync(unitIdentifier, 0, 44);
-
 {
     var holdingRegisters = await modbusClient.ReadHoldingRegistersAsync(unitIdentifier, 0, 5);
 
@@ -79,7 +58,3 @@ Console.WriteLine("Press any key to exit...");
 Console.ReadKey();
 
 
-static bool RemoteCertificateValidationCallback(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslPolicyErrors)
-{
-    return true;
-}
