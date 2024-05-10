@@ -10,9 +10,9 @@ namespace NModbus.Transport.IP
     /// </summary>
     public class TcpStreamFactory : IStreamFactory
     {
-        private readonly IPEndPoint endPoint;
-        private readonly Action<TcpClient> tcpClientConfig;
-        private readonly SslClientAuthenticationOptions sslOptions;
+        private readonly IPEndPoint _endPoint;
+        private readonly Action<TcpClient> _tcpClientConfig;
+        private readonly SslClientAuthenticationOptions _sslOptions;
 
         /// <summary>
         /// Constructor
@@ -26,9 +26,9 @@ namespace NModbus.Transport.IP
             Action<TcpClient> tcpClientConfig = null,
             SslClientAuthenticationOptions sslOptions = null)
         {
-            this.endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
-            this.tcpClientConfig = tcpClientConfig;
-            this.sslOptions = sslOptions;
+            _endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+            _tcpClientConfig = tcpClientConfig;
+            _sslOptions = sslOptions;
         }
 
         /// <summary>
@@ -43,17 +43,17 @@ namespace NModbus.Transport.IP
         {
             var tcpClient = new TcpClient();
 
-            tcpClientConfig?.Invoke(tcpClient);
+            _tcpClientConfig?.Invoke(tcpClient);
 
-            await tcpClient.ConnectAsync(endPoint.Address, endPoint.Port);
+            await tcpClient.ConnectAsync(_endPoint.Address, _endPoint.Port);
 
-            if (sslOptions != null)
+            if (_sslOptions != null)
             {
                 var sslStream = new SslStream(
                     tcpClient.GetStream(),
                     false);
 
-                await sslStream.AuthenticateAsClientAsync(sslOptions, cancellationToken);
+                await sslStream.AuthenticateAsClientAsync(_sslOptions, cancellationToken);
 
                 return new TcpModbusStream(tcpClient, sslStream);
 

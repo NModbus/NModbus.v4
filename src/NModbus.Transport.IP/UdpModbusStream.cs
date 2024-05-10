@@ -5,13 +5,13 @@ namespace NModbus.Transport.IP
 {
     public class UdpModbusStream : IModbusStream
     {
-        private readonly UdpClient udpClient;
-        private readonly byte[] receiveBuffer = new byte[ushort.MaxValue];
-        private int bufferOffset;
+        private readonly UdpClient _udpClient;
+        private readonly byte[] _receiveBuffer = new byte[ushort.MaxValue];
+        private int _bufferOffset;
 
         public UdpModbusStream(UdpClient udpClient)
         {
-            this.udpClient = udpClient ?? throw new ArgumentNullException(nameof(udpClient));
+            _udpClient = udpClient ?? throw new ArgumentNullException(nameof(udpClient));
         }
 
         public Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken = default)
@@ -46,14 +46,14 @@ namespace NModbus.Transport.IP
                     "Argument count cannot be greater than the length of buffer minus offset.");
             }
 
-            if (bufferOffset == 0)
+            if (_bufferOffset == 0)
             {
-                bufferOffset = udpClient.Client.Receive(receiveBuffer);
+                _bufferOffset = _udpClient.Client.Receive(_receiveBuffer);
             }
 
-            Array.Copy(receiveBuffer, 0, buffer, offset, count);
-            bufferOffset -= count;
-            Buffer.BlockCopy(receiveBuffer, count, receiveBuffer, 0, bufferOffset);
+            Array.Copy(_receiveBuffer, 0, buffer, offset, count);
+            _bufferOffset -= count;
+            Buffer.BlockCopy(_receiveBuffer, count, _receiveBuffer, 0, _bufferOffset);
 
             return Task.FromResult(count);
         }
@@ -97,12 +97,12 @@ namespace NModbus.Transport.IP
 
             Array.Copy(buffer, offset, datagram, 0, count);
 
-            await udpClient.SendAsync(datagram, count);
+            await _udpClient.SendAsync(datagram, count);
         }
 
         public ValueTask DisposeAsync()
         {
-            udpClient.Dispose();
+            _udpClient.Dispose();
             return default;
         }
     }

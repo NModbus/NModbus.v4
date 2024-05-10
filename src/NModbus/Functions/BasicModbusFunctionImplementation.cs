@@ -9,7 +9,7 @@ namespace NModbus.Functions
     /// <typeparam name="TResponse"></typeparam>
     public class BasicModbusFunctionImplementation<TRequest, TResponse> : IModbusFunctionImplementation<TRequest, TResponse>
     {
-        private readonly Func<TRequest, CancellationToken, Task<TResponse>> func;
+        private readonly Func<TRequest, CancellationToken, Task<TResponse>> _func;
 
         /// <summary>
         /// 
@@ -18,13 +18,13 @@ namespace NModbus.Functions
         /// <exception cref="ArgumentNullException"></exception>
         public BasicModbusFunctionImplementation(Func<TRequest, CancellationToken, Task<TResponse>> func)
         {
-            this.func = func ?? throw new ArgumentNullException(nameof(func));
+            _func = func ?? throw new ArgumentNullException(nameof(func));
         }
 
         /// <inheritdoc/>
         public async Task<TResponse> ProcessAsync(TRequest request, CancellationToken cancellationToken)
         {
-            return await func(request, cancellationToken);
+            return await _func(request, cancellationToken);
         }
     }
 }

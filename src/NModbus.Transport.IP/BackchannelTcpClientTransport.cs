@@ -7,13 +7,13 @@ namespace NModbus.Transport.IP
     /// </summary>
     internal class BackchannelTcpClientTransport : IModbusClientTransport
     {
-        private readonly IModbusStream stream;
-        private readonly ushort transactionIdentifier;
+        private readonly IModbusStream _stream;
+        private readonly ushort _transactionIdentifier;
 
         public BackchannelTcpClientTransport(IModbusStream stream, ushort transactionIdentifier)
         {
-            this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
-            this.transactionIdentifier = transactionIdentifier;
+            _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            _transactionIdentifier = transactionIdentifier;
         }
 
         public Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
@@ -23,7 +23,7 @@ namespace NModbus.Transport.IP
 
         public async Task SendAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
-            await stream.WriteIPMessageAsync(transactionIdentifier, message, cancellationToken);
+            await _stream.WriteIpMessageAsync(_transactionIdentifier, message, cancellationToken);
         }
 
         public ValueTask DisposeAsync()

@@ -3,7 +3,7 @@ using NModbus.Transport.IP.Mbap;
 
 namespace NModbus.Transport.IP
 {
-    internal static class ModbusIPMessageSerializer
+    internal static class ModbusIpMessageSerializer
     {
         internal static byte[] Serialize(this IModbusDataUnit message, ushort transactionIdentifier)
         {

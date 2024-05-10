@@ -4,11 +4,11 @@ namespace NModbus.Endian
 {
     public class EndianReader : IDisposable
     {
-        private readonly Stream stream;
+        private readonly Stream _stream;
 
         public EndianReader(byte[] source, Endianness endianness)
         {
-            stream = new MemoryStream(source);
+            _stream = new MemoryStream(source);
             Endianness = endianness;
         }
 
@@ -18,7 +18,7 @@ namespace NModbus.Endian
         {
             var buffer = new byte[1];
 
-            var numberRead = stream.Read(buffer, 0, 1);
+            var numberRead = _stream.Read(buffer, 0, 1);
 
             if (numberRead != 1)
             {
@@ -39,7 +39,7 @@ namespace NModbus.Endian
         {
             var buffer = new byte[length];
 
-            if (!stream.TryReadBuffer(buffer))
+            if (!_stream.TryReadBuffer(buffer))
                 return null;
 
             return buffer;
@@ -49,7 +49,7 @@ namespace NModbus.Endian
         {
             var buffer = new byte[count];
 
-            var numberRead = stream.Read(buffer, 0, count);
+            var numberRead = _stream.Read(buffer, 0, count);
 
             if (numberRead != count)
             {
@@ -66,7 +66,7 @@ namespace NModbus.Endian
 
         public void Dispose()
         {
-            stream.Dispose();
+            _stream.Dispose();
         }
     }
 }

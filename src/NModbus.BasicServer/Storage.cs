@@ -4,10 +4,10 @@ namespace NModbus.BasicServer
 {
     public class Storage : IDeviceStorage
     {
-        private readonly IPointStorage<ushort> holdingRegisters;
-        private readonly IPointStorage<ushort> inputRegisters;
-        private readonly IPointStorage<bool> coils;
-        private readonly IPointStorage<bool> discreteInputs;
+        private readonly IPointStorage<ushort> _holdingRegisters;
+        private readonly IPointStorage<ushort> _inputRegisters;
+        private readonly IPointStorage<bool> _coils;
+        private readonly IPointStorage<bool> _discreteInputs;
 
         public Storage(
             IPointStorage<ushort> holdingRegisters = null,
@@ -15,26 +15,26 @@ namespace NModbus.BasicServer
             IPointStorage<bool> coils = null,
             IPointStorage<bool> discreteInputs = null)
         {
-            this.holdingRegisters = holdingRegisters ?? new SparsePointStorage<ushort>();
-            this.inputRegisters = inputRegisters ?? new SparsePointStorage<ushort>();
-            this.coils = coils ?? new SparsePointStorage<bool>();
-            this.discreteInputs = discreteInputs ?? new SparsePointStorage<bool>();
+            _holdingRegisters = holdingRegisters ?? new SparsePointStorage<ushort>();
+            _inputRegisters = inputRegisters ?? new SparsePointStorage<ushort>();
+            _coils = coils ?? new SparsePointStorage<bool>();
+            _discreteInputs = discreteInputs ?? new SparsePointStorage<bool>();
         }
 
-        public IApplicationPointStorage<ushort> HoldingRegisters => holdingRegisters;
+        public IApplicationPointStorage<ushort> HoldingRegisters => _holdingRegisters;
 
-        public IApplicationPointStorage<ushort> InputRegisters => inputRegisters;
+        public IApplicationPointStorage<ushort> InputRegisters => _inputRegisters;
 
-        public IApplicationPointStorage<bool> Coils => coils;
+        public IApplicationPointStorage<bool> Coils => _coils;
 
-        public IApplicationPointStorage<bool> DiscreteInputs => discreteInputs;
+        public IApplicationPointStorage<bool> DiscreteInputs => _discreteInputs;
 
-        IDevicePointStorage<ushort> IDeviceStorage.HoldingRegisters => holdingRegisters;
+        IDevicePointStorage<ushort> IDeviceStorage.HoldingRegisters => _holdingRegisters;
 
-        IDevicePointStorage<ushort> IDeviceStorage.InputRegisters => inputRegisters;
+        IDevicePointStorage<ushort> IDeviceStorage.InputRegisters => _inputRegisters;
 
-        IDevicePointStorage<bool> IDeviceStorage.Coils => coils;
+        IDevicePointStorage<bool> IDeviceStorage.Coils => _coils;
 
-        IDevicePointStorage<bool> IDeviceStorage.DiscreteInputs => discreteInputs;
+        IDevicePointStorage<bool> IDeviceStorage.DiscreteInputs => _discreteInputs;
     }
 }

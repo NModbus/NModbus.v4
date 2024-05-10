@@ -9,9 +9,9 @@ namespace NModbus.BasicServer.Tests.Transport
 {
     public class ClientServer : IAsyncDisposable
     {
-        private readonly ModbusTcpServerNetworkTransport serverTransport;
-        private readonly IModbusClientTransport clientTransport;
-        private readonly IModbusServerNetwork serverNetwork;
+        private readonly ModbusTcpServerNetworkTransport _serverTransport;
+        private readonly IModbusClientTransport _clientTransport;
+        private readonly IModbusServerNetwork _serverNetwork;
 
         public ClientServer(byte unitIdentifier, ILoggerFactory loggerFactory)
         {
@@ -20,25 +20,25 @@ namespace NModbus.BasicServer.Tests.Transport
             UnitIdentifier = unitIdentifier;
 
             //Create the server
-            serverNetwork = new ModbusServerNetwork(loggerFactory);
+            _serverNetwork = new ModbusServerNetwork(loggerFactory);
 
             var serverFunctions = ServerFunctionFactory.CreateBasicServerFunctions(Storage, loggerFactory);
 
             var server = new ModbusServer(UnitIdentifier, serverFunctions, loggerFactory);
 
-            if (!serverNetwork.TryAddServer(server))
+            if (!_serverNetwork.TryAddServer(server))
                 throw new InvalidOperationException($"Unable to add server with unit number {server.UnitIdentifier}");
 
             var tcpListener = new TcpListener(IPAddress.Loopback, ModbusIPPorts.Insecure);
 
-            serverTransport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
+            _serverTransport = new ModbusTcpServerNetworkTransport(tcpListener, _serverNetwork, loggerFactory);
 
             var tcpClientFactory = new TcpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Insecure));
 
             //Create the client
             var tcpClientLifetime = new SingletonStreamConnectionStrategy(tcpClientFactory, loggerFactory);
-            clientTransport = new ModbusIPClientTransport(tcpClientLifetime, loggerFactory);
-            Client = new ModbusClient(clientTransport, loggerFactory);
+            _clientTransport = new ModbusIPClientTransport(tcpClientLifetime, loggerFactory);
+            Client = new ModbusClient(_clientTransport, loggerFactory);
         }
 
         public byte UnitIdentifier { get; }
@@ -49,8 +49,8 @@ namespace NModbus.BasicServer.Tests.Transport
 
         public async ValueTask DisposeAsync()
         {
-            await serverTransport.DisposeAsync();
-            await clientTransport.DisposeAsync();
+            await _serverTransport.DisposeAsync();
+            await _clientTransport.DisposeAsync();
 
             GC.SuppressFinalize(this);
         }

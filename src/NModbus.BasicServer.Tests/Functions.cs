@@ -11,11 +11,11 @@ namespace NModbus.Tests
 {
     public class Functions
     {
-        private readonly ILoggerFactory loggerFactory;
+        private readonly ILoggerFactory _loggerFactory;
 
         public Functions(ITestOutputHelper output)
         {
-            loggerFactory = LogFactory.Create(output);
+            _loggerFactory = LogFactory.Create(output);
         }
 
         [Theory]
@@ -25,7 +25,7 @@ namespace NModbus.Tests
         {
             var storageMock = new Mock<IDevicePointStorage<ushort>>();
 
-            var implementation = new WriteMultipleRegistersImplementation(loggerFactory, storageMock.Object);
+            var implementation = new WriteMultipleRegistersImplementation(_loggerFactory, storageMock.Object);
 
             var request = new WriteMultipleRegistersRequest(startingAddress, values);
 
@@ -45,7 +45,7 @@ namespace NModbus.Tests
                 storage[(ushort)(index + startingAddress)] = values[index];
             }
 
-            var implementation = new ReadCoilsImplementation(loggerFactory, storage);
+            var implementation = new ReadCoilsImplementation(_loggerFactory, storage);
 
             var request = new ReadCoilsRequest(startingAddress, (ushort)values.Length);
 
@@ -60,7 +60,7 @@ namespace NModbus.Tests
         {
             var storageMock = new Mock<IDevicePointStorage<bool>>();
 
-            var implementation = new WriteSingleCoilImplementation(loggerFactory, storageMock.Object);
+            var implementation = new WriteSingleCoilImplementation(_loggerFactory, storageMock.Object);
 
             var request = new WriteSingleCoilRequest(outputAddress, outputValue);
 
@@ -75,7 +75,7 @@ namespace NModbus.Tests
         {
             var storageMock = new Mock<IDevicePointStorage<bool>>();
 
-            var implementation = new WriteMultipleCoilsImplementation(loggerFactory, storageMock.Object);
+            var implementation = new WriteMultipleCoilsImplementation(_loggerFactory, storageMock.Object);
 
             var request = new WriteMultipleCoilsRequest(startingAddress, values);
 
@@ -86,16 +86,16 @@ namespace NModbus.Tests
 
         [Theory]
         [InlineData(1000, new ushort[] { 1, 2, 3, 4, 5 }, 2000, new ushort[] { 500, 501, 503 })]
-        public async Task ReadWriteMultipleRegisters_NonOverlappingShouldWork(ushort ReadStartingAddress, ushort[] ReadValues, ushort writeStartingAddress, ushort[] writeValues)
+        public async Task ReadWriteMultipleRegisters_NonOverlappingShouldWork(ushort readStartingAddress, ushort[] readValues, ushort writeStartingAddress, ushort[] writeValues)
         {
             var storageMock = new Mock<IDevicePointStorage<ushort>>();
 
-            storageMock.Setup(s => s.ReadPoints(ReadStartingAddress, (ushort)ReadValues.Length))
-                .Returns(ReadValues);
+            storageMock.Setup(s => s.ReadPoints(readStartingAddress, (ushort)readValues.Length))
+                .Returns(readValues);
 
-            var implementation = new ReadWriteMultipleRegistersImplementation(loggerFactory, storageMock.Object);
+            var implementation = new ReadWriteMultipleRegistersImplementation(_loggerFactory, storageMock.Object);
 
-            var request = new ReadWriteMultipleRegistersRequest(ReadStartingAddress, (ushort)ReadValues.Length, writeStartingAddress, writeValues);
+            var request = new ReadWriteMultipleRegistersRequest(readStartingAddress, (ushort)readValues.Length, writeStartingAddress, writeValues);
 
             var response = await implementation.ProcessAsync(request, default);
 
@@ -111,7 +111,7 @@ namespace NModbus.Tests
             storageMock.Setup(s => s.ReadPoints(startingAddress, (ushort)expectedValues.Length))
                 .Returns(expectedValues);
 
-            var implementation = new ReadDiscreteInputsImplementation(loggerFactory, storageMock.Object);
+            var implementation = new ReadDiscreteInputsImplementation(_loggerFactory, storageMock.Object);
 
             var request = new ReadDiscreteInputsRequest(startingAddress, (ushort)expectedValues.Length);
 

@@ -7,16 +7,16 @@ namespace NModbus.BasicServer.Tests.Integration
 {
     public abstract class ClientServerTestBase
     {
-        protected readonly ILoggerFactory loggerFactory;
+        protected readonly ILoggerFactory LoggerFactory;
 
         protected ClientServerTestBase(ITestOutputHelper output)
         {
-            loggerFactory = LogFactory.Create(output);
+            LoggerFactory = LogFactory.Create(output);
         }
 
         protected async Task<ClientServer> CreateClientServerAsync(byte unitIdentifier)
         {
-            var clientServer = new ClientServer(unitIdentifier, loggerFactory);
+            var clientServer = new ClientServer(unitIdentifier, LoggerFactory);
 
             //Give the server (TcpListener) time to start up
             await Task.Delay(TimeSpan.FromSeconds(0.1));

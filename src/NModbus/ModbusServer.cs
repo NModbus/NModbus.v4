@@ -6,17 +6,17 @@ namespace NModbus
 {
     public class ModbusServer : IModbusServer
     {
-        private readonly Dictionary<byte, IServerFunction> serverFunctions;
-        protected readonly ILogger<ModbusServer> logger;
+        private readonly Dictionary<byte, IServerFunction> _serverFunctions;
+        protected readonly ILogger<ModbusServer> Logger;
 
         public ModbusServer(
             byte unitIdentifier,
             IEnumerable<IServerFunction> serverFunctions,
             ILoggerFactory loggerFactory)
         {
-            this.serverFunctions = serverFunctions.ToDictionary(f => f.FunctionCode);
+            _serverFunctions = serverFunctions.ToDictionary(f => f.FunctionCode);
             UnitIdentifier = unitIdentifier;
-            logger = loggerFactory.CreateLogger<ModbusServer>();
+            Logger = loggerFactory.CreateLogger<ModbusServer>();
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace NModbus
         public async virtual Task<ProtocolDataUnit> ProcessRequestAsync(ProtocolDataUnit request, CancellationToken cancellationToken)
         {
             //Try to find the function for this request
-            if (!serverFunctions.TryGetValue(request.FunctionCode, out var serverFunction))
+            if (!_serverFunctions.TryGetValue(request.FunctionCode, out var serverFunction))
             {
                 //This function code isn't supported.
                 return ProtocolDataUnitFactory.CreateException(request.FunctionCode, ModbusExceptionCode.IllegalFunction);
@@ -43,14 +43,14 @@ namespace NModbus
             }
             catch (ModbusServerException exception)
             {
-                logger.LogError(exception, "A Modbus error {ExceptionCode} occurred while processing function 0x{FunctionCode:X2}", exception.ExceptionCode, request.FunctionCode);
+                Logger.LogError(exception, "A Modbus error {ExceptionCode} occurred while processing function 0x{FunctionCode:X2}", exception.ExceptionCode, request.FunctionCode);
 
                 //Create a message that passes on the exception code that was specified in the exception.
                 return ProtocolDataUnitFactory.CreateException(request.FunctionCode, exception.ExceptionCode);
             }
             catch (Exception exception)
             {
-                logger.LogError(exception, "An error occurred while processing function 0x{FunctionCode:X2}", request.FunctionCode);
+                Logger.LogError(exception, "An error occurred while processing function 0x{FunctionCode:X2}", request.FunctionCode);
 
                 //We're not sure what happened here, so just return a catastrohpic error.
                 return ProtocolDataUnitFactory.CreateException(request.FunctionCode, ModbusExceptionCode.ServerDeviceFailure);

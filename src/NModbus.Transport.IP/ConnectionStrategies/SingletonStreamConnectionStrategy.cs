@@ -5,29 +5,29 @@ namespace NModbus.Transport.IP.ConnectionStrategies
 {
     public class SingletonStreamConnectionStrategy : IConnectionStrategy
     {
-        private readonly IStreamFactory tcpClientFactory;
-        private IModbusStream stream;
+        private readonly IStreamFactory _tcpClientFactory;
+        private IModbusStream _stream;
 
         public SingletonStreamConnectionStrategy(IStreamFactory streamFactory, ILoggerFactory loggerFactory)
         {
-            tcpClientFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
+            _tcpClientFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         public async Task<IPerRequestStreamContainer> GetStreamContainer(CancellationToken cancellationToken)
         {
-            stream ??= await tcpClientFactory.CreateAndConnectAsync(cancellationToken);
+            _stream ??= await _tcpClientFactory.CreateAndConnectAsync(cancellationToken);
 
-            return new SingletonStreamPerRequestContainer(stream);
+            return new SingletonStreamPerRequestContainer(_stream);
         }
 
         public async ValueTask DisposeAsync()
         {
             GC.SuppressFinalize(this);
 
-            if (stream != null)
+            if (_stream != null)
             {
-                await stream.DisposeAsync();
+                await _stream.DisposeAsync();
             }
         }
     }

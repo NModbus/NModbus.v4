@@ -8,14 +8,14 @@ namespace NModbus.Transport.IP
 {
     public class ModbusTcpServerNetworkTransport : IModbusServerNetworkTransport
     {
-        private readonly TcpListener tcpListener;
-        private readonly IModbusServerNetwork serverNetwork;
-        private readonly ILoggerFactory loggerFactory;
-        private readonly ILogger<ModbusTcpServerNetworkTransport> logger;
-        private readonly SslServerAuthenticationOptions options;
-        private readonly ConcurrentDictionary<string, ModbusServerTcpConnection> connections = new();
-        private readonly CancellationTokenSource cancellationTokenSource = new();
-        private readonly Task listenTask;
+        private readonly TcpListener _tcpListener;
+        private readonly IModbusServerNetwork _serverNetwork;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger<ModbusTcpServerNetworkTransport> _logger;
+        private readonly SslServerAuthenticationOptions _options;
+        private readonly ConcurrentDictionary<string, ModbusServerTcpConnection> _connections = new();
+        private readonly CancellationTokenSource _cancellationTokenSource = new();
+        private readonly Task _listenTask;
 
         /// <summary>
         /// Creates an in stance of <see cref="ModbusTcpServerNetworkTransport"/>.
@@ -31,34 +31,34 @@ namespace NModbus.Transport.IP
             ILoggerFactory loggerFactory,
             SslServerAuthenticationOptions options = null)
         {
-            this.tcpListener = tcpListener ?? throw new ArgumentNullException(nameof(tcpListener));
-            this.serverNetwork = serverNetwork ?? throw new ArgumentNullException(nameof(serverNetwork));
-            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            this.options = options;
-            logger = loggerFactory.CreateLogger<ModbusTcpServerNetworkTransport>();
+            _tcpListener = tcpListener ?? throw new ArgumentNullException(nameof(tcpListener));
+            _serverNetwork = serverNetwork ?? throw new ArgumentNullException(nameof(serverNetwork));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _options = options;
+            _logger = loggerFactory.CreateLogger<ModbusTcpServerNetworkTransport>();
 
-            listenTask = Task.Run(() => ListenAsync(cancellationTokenSource.Token));
+            _listenTask = Task.Run(() => ListenAsync(_cancellationTokenSource.Token));
         }
 
 
         private async Task ListenAsync(CancellationToken cancellationToken)
         {
-            if (options == null)
+            if (_options == null)
             {
-                logger.LogInformation("Starting " + nameof(ModbusTcpServerNetworkTransport) + " with insecure endpoint on {Endpoint}", tcpListener.LocalEndpoint);
+                _logger.LogInformation("Starting " + nameof(ModbusTcpServerNetworkTransport) + " with insecure endpoint on {Endpoint}", _tcpListener.LocalEndpoint);
             }
             else
             {
-                logger.LogInformation("Starting " + nameof(ModbusTcpServerNetworkTransport) + " with secure endpoint on {Endpoint}", tcpListener.LocalEndpoint);
+                _logger.LogInformation("Starting " + nameof(ModbusTcpServerNetworkTransport) + " with secure endpoint on {Endpoint}", _tcpListener.LocalEndpoint);
             }
 
-            tcpListener.Start();
+            _tcpListener.Start();
 
-            using (cancellationToken.Register(() => tcpListener?.Stop()))
+            using (cancellationToken.Register(() => _tcpListener?.Stop()))
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    var tcpClient = await tcpListener.AcceptTcpClientAsync()
+                    var tcpClient = await _tcpListener.AcceptTcpClientAsync()
                         .ConfigureAwait(false);
 
                     await StartClientProcessing(tcpClient, cancellationToken);
@@ -72,51 +72,51 @@ namespace NModbus.Transport.IP
             {
                 var endpoint = tcpClient.Client.RemoteEndPoint.ToString();
 
-                logger.LogInformation("Accepted a client from {Endpoint}", endpoint);
+                _logger.LogInformation("Accepted a client from {Endpoint}", endpoint);
 
-                var serverConnection = new ModbusServerTcpConnection(tcpClient, serverNetwork, loggerFactory, options);
+                var serverConnection = new ModbusServerTcpConnection(tcpClient, _serverNetwork, _loggerFactory, _options);
 
                 await serverConnection.IntializeAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                if (!connections.TryAdd(endpoint, serverConnection))
-                    logger.LogWarning("Unable to add TCP server connection for '{Endpoint}'.", endpoint);
+                if (!_connections.TryAdd(endpoint, serverConnection))
+                    _logger.LogWarning("Unable to add TCP server connection for '{Endpoint}'.", endpoint);
 
                 serverConnection.ConnectionClosed += ServerConnection_ConnectionClosed;
             }
             catch (SocketException ex) when (cancellationToken.IsCancellationRequested)
             {
-                logger.LogWarning(ex, $"Swallowing {nameof(IOException)} in {nameof(ModbusTcpServerNetworkTransport)}.{nameof(ListenAsync)}");
+                _logger.LogWarning(ex, $"Swallowing {nameof(IOException)} in {nameof(ModbusTcpServerNetworkTransport)}.{nameof(ListenAsync)}");
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"Problem in {nameof(StartClientProcessing)}");
+                _logger.LogError(ex, $"Problem in {nameof(StartClientProcessing)}");
             }
         }
 
         private void ServerConnection_ConnectionClosed(object sender, TcpConnectionEventArgs e)
         {
-            if (!connections.TryRemove(e.Endpoint, out _))
+            if (!_connections.TryRemove(e.Endpoint, out _))
             {
-                logger.LogWarning("Unable to remove '{Endpoint}' as it does not exist in the connections dictionary.", e.Endpoint);
+                _logger.LogWarning("Unable to remove '{Endpoint}' as it does not exist in the connections dictionary.", e.Endpoint);
             }
             else
             {
-                logger.LogInformation("Connection from '{Endpoint}' has been removed.", e.Endpoint);
+                _logger.LogInformation("Connection from '{Endpoint}' has been removed.", e.Endpoint);
             }
         }
 
         public async ValueTask DisposeAsync()
         {
-            cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Cancel();
 
             try
             {
-                await listenTask;
+                await _listenTask;
             }
             catch (Exception ex)
             {
-                logger.LogWarning(ex, "Error disposing {Object}", nameof(ModbusTcpServerNetworkTransport));
+                _logger.LogWarning(ex, "Error disposing {Object}", nameof(ModbusTcpServerNetworkTransport));
             }
         }
     }

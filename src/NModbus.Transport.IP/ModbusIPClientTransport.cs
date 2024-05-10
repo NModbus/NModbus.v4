@@ -5,8 +5,8 @@ namespace NModbus.Transport.IP
 {
     public class ModbusIPClientTransport : ModbusIPClientTransportBase
     {
-        private readonly ILogger<ModbusIPClientTransport> logger;
-        private readonly IConnectionStrategy connectionStrategy;
+        private readonly ILogger<ModbusIPClientTransport> _logger;
+        private readonly IConnectionStrategy _connectionStrategy;
 
         public ModbusIPClientTransport(IConnectionStrategy connectionStrategy,
             ILoggerFactory loggerFactory)
@@ -14,20 +14,20 @@ namespace NModbus.Transport.IP
             if (loggerFactory is null)
                 throw new ArgumentNullException(nameof(loggerFactory));
 
-            logger = loggerFactory.CreateLogger<ModbusIPClientTransport>();
-            this.connectionStrategy = connectionStrategy ?? throw new ArgumentNullException(nameof(connectionStrategy));
+            _logger = loggerFactory.CreateLogger<ModbusIPClientTransport>();
+            _connectionStrategy = connectionStrategy ?? throw new ArgumentNullException(nameof(connectionStrategy));
         }
 
         public override async Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
-            await using var streamContainer = await connectionStrategy.GetStreamContainer(cancellationToken)
+            await using var streamContainer = await _connectionStrategy.GetStreamContainer(cancellationToken)
                 .ConfigureAwait(false);
 
-            var transactionIdentifier = GetNextTransactionIdenfier();
+            var transactionIdentifier = GetNextTransactionIdentifier();
 
-            await streamContainer.Stream.WriteIPMessageAsync(transactionIdentifier, message, cancellationToken);
+            await streamContainer.Stream.WriteIpMessageAsync(transactionIdentifier, message, cancellationToken);
 
-            var receivedMessage = await streamContainer.Stream.ReadIPMessageAsync(cancellationToken);
+            var receivedMessage = await streamContainer.Stream.ReadIpMessageAsync(cancellationToken);
 
             if (receivedMessage.Header.TransactionIdentifier != transactionIdentifier)
                 throw new InvalidOperationException($"TransactionIdentifier {transactionIdentifier}");
@@ -37,17 +37,17 @@ namespace NModbus.Transport.IP
 
         public override async Task SendAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
-            var transactionIdentifier = GetNextTransactionIdenfier();
+            var transactionIdentifier = GetNextTransactionIdentifier();
 
-            await using var streamContainer = await connectionStrategy.GetStreamContainer(cancellationToken)
+            await using var streamContainer = await _connectionStrategy.GetStreamContainer(cancellationToken)
                .ConfigureAwait(false);
 
-            await streamContainer.Stream.WriteIPMessageAsync(transactionIdentifier, message, cancellationToken);
+            await streamContainer.Stream.WriteIpMessageAsync(transactionIdentifier, message, cancellationToken);
         }
 
         public override async ValueTask DisposeAsync()
         {
-            await connectionStrategy.DisposeAsync();
+            await _connectionStrategy.DisposeAsync();
 
             GC.SuppressFinalize(this);
         }

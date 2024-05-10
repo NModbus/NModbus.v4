@@ -8,8 +8,8 @@ namespace NModbus
 {
     public class ModbusClient : IModbusClient
     {
-        private readonly Dictionary<byte, IClientFunction> clientFunctions;
-        private readonly ILogger logger;
+        private readonly Dictionary<byte, IClientFunction> _clientFunctions;
+        private readonly ILogger _logger;
 
         public ModbusClient(
             IModbusClientTransport transport,
@@ -20,7 +20,7 @@ namespace NModbus
                 throw new ArgumentNullException(nameof(loggerFactory));
 
             Transport = transport ?? throw new ArgumentNullException(nameof(transport));
-            logger = loggerFactory.CreateLogger<ModbusClient>();
+            _logger = loggerFactory.CreateLogger<ModbusClient>();
 
             var defaultClientFunctions = new IClientFunction[]
             {
@@ -39,7 +39,7 @@ namespace NModbus
                 new ModbusClientFunction<ReadFifoQueueRequest, ReadFifoQueueResponse>(ModbusFunctionCodes.ReadFifoQueue, new ReadFifoQueueMessageSerializer()),
             };  
 
-            clientFunctions = defaultClientFunctions
+            _clientFunctions = defaultClientFunctions
                 .ToDictionary(f => f.FunctionCode);
 
             //Now allow the caller to override any of the client functions (or add new ones).
@@ -47,8 +47,8 @@ namespace NModbus
             {
                 foreach(var clientFunction in customClientFunctions)
                 {
-                    logger.LogInformation("Custom implementation of function code {FunctionCode} with type {Type}.", $"0x{clientFunction.FunctionCode}", clientFunction.GetType().Name);
-                    clientFunctions[clientFunction.FunctionCode] = clientFunction;
+                    _logger.LogInformation("Custom implementation of function code {FunctionCode} with type {Type}.", $"0x{clientFunction.FunctionCode}", clientFunction.GetType().Name);
+                    _clientFunctions[clientFunction.FunctionCode] = clientFunction;
                 }
             }
         }
@@ -59,9 +59,9 @@ namespace NModbus
         {
             clientFunction = null;
 
-            if (!clientFunctions.TryGetValue(functionCode, out var baseClientFunction))
+            if (!_clientFunctions.TryGetValue(functionCode, out var baseClientFunction))
             {
-                logger.LogWarning("Unable to find client function with function code {FunctionCode}", functionCode.ToHex());
+                _logger.LogWarning("Unable to find client function with function code {FunctionCode}", functionCode.ToHex());
                 return false;
             }
 
@@ -69,7 +69,7 @@ namespace NModbus
 
             if (clientFunction == null)
             {
-                logger.LogWarning("A client function was found for function code {functionCode} but it was not of type " + nameof(IClientFunction) + "<{TRequest},{TResponse}>", functionCode, typeof(TRequest).Name, typeof(TResponse).Name);
+                _logger.LogWarning("A client function was found for function code {functionCode} but it was not of type " + nameof(IClientFunction) + "<{TRequest},{TResponse}>", functionCode, typeof(TRequest).Name, typeof(TResponse).Name);
             }
 
             return clientFunction != null;

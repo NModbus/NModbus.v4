@@ -38,9 +38,9 @@ namespace NModbus.Messages
 
     public record ReadDiscreteInputsResponse(byte[] InputStatus)
     {
-        public bool[] Unpack(ushort QuantityOfInputs)
+        public bool[] Unpack(ushort quantityOfInputs)
         {
-            return BitPacker.Unpack(InputStatus, QuantityOfInputs);
+            return BitPacker.Unpack(InputStatus, quantityOfInputs);
         }
     }
 }

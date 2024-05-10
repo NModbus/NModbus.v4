@@ -2,7 +2,7 @@
 {
     public class EndianWriter : IDisposable
     {
-        private readonly MemoryStream stream = new();
+        private readonly MemoryStream _stream = new();
 
         public EndianWriter(Endianness endianness)
         {
@@ -13,7 +13,7 @@
 
         public void Write(byte value)
         {
-            stream.Write(new byte[] { value });
+            _stream.Write(new byte[] { value });
         }
 
         public void Write(ushort value)
@@ -25,7 +25,7 @@
 
         public void Write(byte[] value)
         {
-            stream.Write(value);
+            _stream.Write(value);
         }
 
         /// <summary>
@@ -40,17 +40,17 @@
                 Array.Reverse(bytes);
             }
 
-            stream.Write(bytes);
+            _stream.Write(bytes);
         }
 
         public byte[] ToArray()
         {
-            return stream.ToArray();
+            return _stream.ToArray();
         }
 
         public void Dispose()
         {
-            stream.Dispose();
+            _stream.Dispose();
         }
     }
 }

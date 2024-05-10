@@ -4,20 +4,20 @@ namespace NModbus.Transport.IP
 {
     public abstract class ModbusIPClientTransportBase : IModbusClientTransport
     {
-        private readonly object transactionIdenfitierLock = new();
-        private ushort transactionIdentifierCounter;
+        private readonly object _transactionIdentifierLock = new();
+        private ushort _transactionIdentifierCounter;
 
-        protected ushort GetNextTransactionIdenfier()
+        protected ushort GetNextTransactionIdentifier()
         {
             ushort transactionIdentifier;
 
-            lock (transactionIdenfitierLock)
+            lock (_transactionIdentifierLock)
             {
                 unchecked
                 {
-                    transactionIdentifierCounter++;
+                    _transactionIdentifierCounter++;
 
-                    transactionIdentifier = transactionIdentifierCounter;
+                    transactionIdentifier = _transactionIdentifierCounter;
                 }
             }
 

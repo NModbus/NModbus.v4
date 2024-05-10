@@ -7,7 +7,7 @@ namespace NModbus
     /// <summary>
     /// Convenient methods for calling Modbus functions on <see cref="IModbusClient"/>.
     /// </summary>
-    public static class IModbusClientExtensions
+    public static class ModbusClientExtensions
     {
         /// <summary>
         /// Throws an exception of the specified function isn't available.

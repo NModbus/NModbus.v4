@@ -7,20 +7,20 @@ namespace NModbus.BasicServer.Functions
 {
     public class ReadWriteMultipleRegistersImplementation : IModbusFunctionImplementation<ReadWriteMultipleRegistersRequest, ReadWriteMultipleRegistersResponse>
     {
-        private readonly ILoggerFactory loggerFactory;
-        private readonly IDevicePointStorage<ushort> storage;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly IDevicePointStorage<ushort> _storage;
 
         public ReadWriteMultipleRegistersImplementation(ILoggerFactory loggerFactory, IDevicePointStorage<ushort> storage)
         {
-            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
         public Task<ReadWriteMultipleRegistersResponse> ProcessAsync(ReadWriteMultipleRegistersRequest request, CancellationToken cancellationToken)
         {
-            storage.WritePoints(request.WriteStartingAddress, request.WriteRegistersValue);
+            _storage.WritePoints(request.WriteStartingAddress, request.WriteRegistersValue);
 
-            var readRegisters = storage.ReadPoints(request.ReadStartingAddress, request.QuantityToRead);
+            var readRegisters = _storage.ReadPoints(request.ReadStartingAddress, request.QuantityToRead);
 
             return Task.FromResult(new ReadWriteMultipleRegistersResponse(readRegisters));
         }

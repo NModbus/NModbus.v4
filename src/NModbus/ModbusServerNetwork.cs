@@ -6,24 +6,24 @@ namespace NModbus
 {
     public class ModbusServerNetwork : IModbusServerNetwork
     {
-        private readonly ConcurrentDictionary<byte, IModbusServer> servers = new();
-        private readonly ILogger logger;
-        private readonly ILoggerFactory loggerFactory;
+        private readonly ConcurrentDictionary<byte, IModbusServer> _servers = new();
+        private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
         public ModbusServerNetwork(ILoggerFactory loggerFactory)
         {
-            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            this.logger = loggerFactory.CreateLogger<ModbusServerNetwork>();
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _logger = loggerFactory.CreateLogger<ModbusServerNetwork>();
         }
 
         public bool TryAddServer(IModbusServer server)
         {
-            return servers.TryAdd(server.UnitIdentifier, server);
+            return _servers.TryAdd(server.UnitIdentifier, server);
         }
 
         public bool TryRemoveServer(byte unitNumnber)
         {
-            return servers.TryRemove(unitNumnber, out _);
+            return _servers.TryRemove(unitNumnber, out _);
         }
 
         public async Task ProcessRequestAsync(
@@ -33,14 +33,14 @@ namespace NModbus
         {
             if (requestMessage.UnitIdentifier == 0)
             {
-                foreach (var server in servers.Values)
+                foreach (var server in _servers.Values)
                 {
                     await server.ProcessRequestAsync(requestMessage.ProtocolDataUnit, cancellationToken);
                 }
             }
             else
             {
-                if (servers.TryGetValue(requestMessage.UnitIdentifier, out var server))
+                if (_servers.TryGetValue(requestMessage.UnitIdentifier, out var server))
                 {
                     var response = await server.ProcessRequestAsync(requestMessage.ProtocolDataUnit, cancellationToken);
 

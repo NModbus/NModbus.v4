@@ -13,19 +13,19 @@ namespace NModbus.BasicServer
     /// <typeparam name="T"></typeparam>
     public class SparsePointStorage<T> : IPointStorage<T>
     {
-        private readonly Dictionary<ushort, T> values = new Dictionary<ushort, T>();
+        private readonly Dictionary<ushort, T> _values = new Dictionary<ushort, T>();
 
         public T this[ushort address] 
         { 
             get
             {
-                values.TryGetValue(address, out var value);
+                _values.TryGetValue(address, out var value);
 
                 return value;
             }
             set
             {
-                values[address] = value;
+                _values[address] = value;
             }
         }
 
@@ -52,7 +52,7 @@ namespace NModbus.BasicServer
 
             for (var index = 0; index < numberOfPoints; index++)
             {
-                values.TryGetValue((ushort)(startingAddress + index), out var value);
+                _values.TryGetValue((ushort)(startingAddress + index), out var value);
 
                 points[index] = value;
             }
@@ -72,7 +72,7 @@ namespace NModbus.BasicServer
 
             for (var index = 0; index < values.Length; index++)
             {
-                this.values[(ushort)(startingAddress + index)] = values[index];
+                _values[(ushort)(startingAddress + index)] = values[index];
             }
 
             AfterDeviceWrite?.Invoke(this, args);
