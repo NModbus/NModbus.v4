@@ -1,5 +1,6 @@
 ﻿using NModbus.BasicServer.Interfaces;
 using NModbus.Interfaces;
+using System.Collections.Concurrent;
 
 namespace NModbus.BasicServer
 {
@@ -7,13 +8,13 @@ namespace NModbus.BasicServer
     /// Stores points using a Dictionary rather than an array.
     /// </summary>
     /// <remarks>
-    /// Rather than allocate a full array of <see cref="UInt16.MaxValue"/> values, we use a <see cref="Dictionary{UInt16, TValue}"/> 
+    /// Rather than allocate a full array of <see cref="UInt16.MaxValue"/> values, we use a <see cref="ConcurrentDictionary{UInt16, TValue}"/> 
     /// to store only those addresses which have been set.
     /// </remarks>
     /// <typeparam name="T"></typeparam>
     public class SparsePointStorage<T> : IPointStorage<T>
     {
-        private readonly Dictionary<ushort, T> values = new Dictionary<ushort, T>();
+        private readonly ConcurrentDictionary<ushort, T> values = new ConcurrentDictionary<ushort, T>();
 
         public T this[ushort address] 
         { 
