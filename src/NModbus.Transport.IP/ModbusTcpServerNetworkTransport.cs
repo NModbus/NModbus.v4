@@ -52,17 +52,38 @@ namespace NModbus.Transport.IP
                 logger.LogInformation("Starting " + nameof(ModbusTcpServerNetworkTransport) + " with secure endpoint on {Endpoint}", tcpListener.LocalEndpoint);
             }
 
-            tcpListener.Start();
-
-            using (cancellationToken.Register(() => tcpListener?.Stop()))
+            try
             {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    var tcpClient = await tcpListener.AcceptTcpClientAsync()
-                        .ConfigureAwait(false);
+                tcpListener.Start();
 
-                    await StartClientProcessing(tcpClient, cancellationToken);
+                using (cancellationToken.Register(() => tcpListener?.Stop()))
+                {
+                    while (!cancellationToken.IsCancellationRequested)
+                    {
+#if NET6_0_OR_GREATER
+                        var tcpClient = await tcpListener.AcceptTcpClientAsync(cancellationToken).ConfigureAwait(false);
+#else
+                        var tcpClient = await tcpListener.AcceptTcpClientAsync().ConfigureAwait(false);
+#endif
+                        await StartClientProcessing(tcpClient, cancellationToken);
+                    }
                 }
+            }
+            catch (SocketException se) when (se.SocketErrorCode == SocketError.OperationAborted)
+            {
+                //this is thrown from AcceptTcpClientAsync() when `tcpListener?.Stop()` is called on netstandard2.1. It is not a real error.
+                // "The I/O operation has been aborted because of either a thread exit or an application request."
+                logger.LogInformation($"Listener is requested to stop. [{se.Message}]");
+            }
+            catch (OperationCanceledException oce)
+            {
+                //this is thrown from AcceptTcpClientAsync(cancellationToken) when token is cancelled on net6.0 or above. It is not a real error.
+                // "The operation was canceled."
+                logger.LogInformation($"Listener is requested to stop. [{oce.Message}]");   
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Problem in {nameof(ModbusTcpServerNetworkTransport)}");
             }
         }
 
