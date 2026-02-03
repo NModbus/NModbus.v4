@@ -11,9 +11,9 @@ namespace NModbus.BasicServer
     public static class ServerFunctionFactory
     {
         public static IServerFunction[] CreateBasicServerFunctions(
-            IDeviceStorage storage = null,
-            ILoggerFactory loggerFactory = null,
-            IEnumerable<IServerFunction> customServerFunctions = null)
+            IDeviceStorage? storage = null,
+            ILoggerFactory? loggerFactory = null,
+            IEnumerable<IServerFunction>? customServerFunctions = null)
         {
             loggerFactory ??= new NullLoggerFactory();
             storage ??= new Storage();

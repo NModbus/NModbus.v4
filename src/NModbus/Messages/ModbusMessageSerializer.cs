@@ -35,7 +35,7 @@ namespace NModbus.Messages
             return DeserializeRequestCore(reader);
         }
 
-        public TResponse DeserializeResponse(byte[] data)
+        public TResponse? DeserializeResponse(byte[] data)
         {
             var reader = new EndianReader(data, Endianness.BigEndian);
 
@@ -48,6 +48,6 @@ namespace NModbus.Messages
 
         protected abstract TRequest DeserializeRequestCore(EndianReader reader);
 
-        protected abstract TResponse DeserializeResponseCore(EndianReader reader);
+        protected abstract TResponse? DeserializeResponseCore(EndianReader reader);
     }
 }

@@ -35,7 +35,7 @@ namespace NModbus.Endian
             return BitConverter.ToUInt16(bytes);
         }
 
-        public byte[] ReadBytes(int length)
+        public byte[]? ReadBytes(int length)
         {
             var buffer = new byte[length];
 

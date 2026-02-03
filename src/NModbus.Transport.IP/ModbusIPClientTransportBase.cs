@@ -24,7 +24,7 @@ namespace NModbus.Transport.IP
             return transactionIdentifier;
         }
 
-        public abstract Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default);
+        public abstract Task<IModbusDataUnit?> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default);
 
         public abstract Task SendAsync(IModbusDataUnit message, CancellationToken cancellationToken = default);
 

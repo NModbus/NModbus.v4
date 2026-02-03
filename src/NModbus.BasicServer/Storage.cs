@@ -10,10 +10,10 @@ namespace NModbus.BasicServer
         private readonly IPointStorage<bool> discreteInputs;
 
         public Storage(
-            IPointStorage<ushort> holdingRegisters = null,
-            IPointStorage<ushort> inputRegisters = null,
-            IPointStorage<bool> coils = null,
-            IPointStorage<bool> discreteInputs = null)
+            IPointStorage<ushort>? holdingRegisters = null,
+            IPointStorage<ushort>? inputRegisters = null,
+            IPointStorage<bool>? coils = null,
+            IPointStorage<bool>? discreteInputs = null)
         {
             this.holdingRegisters = holdingRegisters ?? new SparsePointStorage<ushort>();
             this.inputRegisters = inputRegisters ?? new SparsePointStorage<ushort>();

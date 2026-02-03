@@ -12,22 +12,24 @@ namespace NModbus.Transport.IP
     {
         private readonly TcpClient tcpClient;
         private readonly IModbusServerNetwork serverNetwork;
-        private readonly SslServerAuthenticationOptions options;
+        private readonly SslServerAuthenticationOptions? options;
         private readonly CancellationTokenSource cancellationTokenSource = new();
-        private Task listenTask;
+        private Task? listenTask;
         private readonly ILogger logger;
         private readonly int connectionId;
 
-        private IModbusStream stream;
+        private bool isDisposed;
+
+        private IModbusStream? stream;
         private static int connectionIdSource;
 
-        public event EventHandler<TcpConnectionEventArgs> ConnectionClosed;
+        public event EventHandler<TcpConnectionEventArgs> ConnectionClosed = default!;
 
         internal ModbusServerTcpConnection(
             TcpClient tcpClient,
             IModbusServerNetwork serverNetwork,
             ILoggerFactory loggerFactory,
-            SslServerAuthenticationOptions options)
+            SslServerAuthenticationOptions? options)
         {
             connectionId = Interlocked.Increment(ref connectionIdSource);
 
@@ -104,14 +106,25 @@ namespace NModbus.Transport.IP
 
         protected void OnConnectionClosed()
         {
-            ConnectionClosed?.Invoke(this, new TcpConnectionEventArgs(tcpClient.Client.RemoteEndPoint.ToString()));
+            ConnectionClosed?.Invoke(this, new TcpConnectionEventArgs(tcpClient.Client.RemoteEndPoint?.ToString()!));
         }
 
         public async ValueTask DisposeAsync()
         {
+            if (isDisposed)
+                return;
+
+            isDisposed = true;
+
             cancellationTokenSource.Dispose();
 
-            await listenTask;
+            var task = listenTask;
+
+            if (task != null)
+            {
+                await task;
+            }
+            
         }
     }
 }
