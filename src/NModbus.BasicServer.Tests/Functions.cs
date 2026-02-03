@@ -1,6 +1,6 @@
-﻿using Divergic.Logging.Xunit;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
+using Neovolve.Logging.Xunit;
 using NModbus.BasicServer;
 using NModbus.BasicServer.Functions;
 using NModbus.BasicServer.Interfaces;
