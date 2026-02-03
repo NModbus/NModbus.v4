@@ -1,5 +1,5 @@
-﻿using Divergic.Logging.Xunit;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Neovolve.Logging.Xunit;
 using NModbus.BasicServer.Tests.Transport;
 using Xunit.Abstractions;
 
