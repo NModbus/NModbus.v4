@@ -4,7 +4,7 @@
     {
         TRequest DeserializeRequest(byte[] data);
 
-        TResponse DeserializeResponse(byte[] data);
+        TResponse? DeserializeResponse(byte[] data);
 
         byte[] SerializeRequest(TRequest request);
 

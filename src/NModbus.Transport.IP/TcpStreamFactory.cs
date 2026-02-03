@@ -11,8 +11,8 @@ namespace NModbus.Transport.IP
     public class TcpStreamFactory : IStreamFactory
     {
         private readonly IPEndPoint endPoint;
-        private readonly Action<TcpClient> tcpClientConfig;
-        private readonly SslClientAuthenticationOptions sslOptions;
+        private readonly Action<TcpClient>? tcpClientConfig;
+        private readonly SslClientAuthenticationOptions? sslOptions;
 
         /// <summary>
         /// Constructor
@@ -23,8 +23,8 @@ namespace NModbus.Transport.IP
         /// <exception cref="ArgumentNullException"></exception>
         public TcpStreamFactory(
             IPEndPoint endPoint,
-            Action<TcpClient> tcpClientConfig = null,
-            SslClientAuthenticationOptions sslOptions = null)
+            Action<TcpClient>? tcpClientConfig = null,
+            SslClientAuthenticationOptions? sslOptions = null)
         {
             this.endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
             this.tcpClientConfig = tcpClientConfig;

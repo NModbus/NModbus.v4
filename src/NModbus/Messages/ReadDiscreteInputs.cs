@@ -25,10 +25,13 @@ namespace NModbus.Messages
             return new ReadDiscreteInputsRequest(startingAddress, quantityOfInputs);
         }
 
-        protected override ReadDiscreteInputsResponse DeserializeResponseCore(EndianReader reader)
+        protected override ReadDiscreteInputsResponse? DeserializeResponseCore(EndianReader reader)
         {
             var byteCount = reader.ReadByte();
             var inputStatus = reader.ReadBytes(byteCount);
+
+            if (inputStatus == null)
+                return null;
 
             return new ReadDiscreteInputsResponse(inputStatus);
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NModbus.Interfaces;
 using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 
@@ -12,7 +13,7 @@ namespace NModbus.Transport.IP
         private readonly IModbusServerNetwork serverNetwork;
         private readonly ILoggerFactory loggerFactory;
         private readonly ILogger<ModbusTcpServerNetworkTransport> logger;
-        private readonly SslServerAuthenticationOptions options;
+        private readonly SslServerAuthenticationOptions? options;
         private readonly ConcurrentDictionary<string, ModbusServerTcpConnection> connections = new();
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private readonly Task listenTask;
@@ -29,7 +30,7 @@ namespace NModbus.Transport.IP
             TcpListener tcpListener,
             IModbusServerNetwork serverNetwork,
             ILoggerFactory loggerFactory,
-            SslServerAuthenticationOptions options = null)
+            SslServerAuthenticationOptions? options = null)
         {
             this.tcpListener = tcpListener ?? throw new ArgumentNullException(nameof(tcpListener));
             this.serverNetwork = serverNetwork ?? throw new ArgumentNullException(nameof(serverNetwork));
@@ -70,7 +71,13 @@ namespace NModbus.Transport.IP
         {
             try
             {
+                if (tcpClient.Client.RemoteEndPoint == null)
+                    throw new Exception("Unable to start processing: The remote endpoint was null.");
+
                 var endpoint = tcpClient.Client.RemoteEndPoint.ToString();
+
+                if (endpoint == null)
+                    throw new Exception("The endpoint string was snull.");
 
                 logger.LogInformation("Accepted a client from {Endpoint}", endpoint);
 
@@ -94,7 +101,7 @@ namespace NModbus.Transport.IP
             }
         }
 
-        private void ServerConnection_ConnectionClosed(object sender, TcpConnectionEventArgs e)
+        private void ServerConnection_ConnectionClosed(object? sender, TcpConnectionEventArgs e)
         {
             if (!connections.TryRemove(e.Endpoint, out _))
             {

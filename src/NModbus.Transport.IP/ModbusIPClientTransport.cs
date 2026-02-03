@@ -18,7 +18,7 @@ namespace NModbus.Transport.IP
             this.connectionStrategy = connectionStrategy ?? throw new ArgumentNullException(nameof(connectionStrategy));
         }
 
-        public override async Task<IModbusDataUnit> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
+        public override async Task<IModbusDataUnit?> SendAndReceiveAsync(IModbusDataUnit message, CancellationToken cancellationToken = default)
         {
             await using var streamContainer = await connectionStrategy.GetStreamContainer(cancellationToken)
                 .ConfigureAwait(false);
@@ -28,6 +28,9 @@ namespace NModbus.Transport.IP
             await streamContainer.Stream.WriteIPMessageAsync(transactionIdentifier, message, cancellationToken);
 
             var receivedMessage = await streamContainer.Stream.ReadIPMessageAsync(cancellationToken);
+
+            if (receivedMessage == null)
+                return null;
 
             if (receivedMessage.Header.TransactionIdentifier != transactionIdentifier)
                 throw new InvalidOperationException($"TransactionIdentifier {transactionIdentifier}");

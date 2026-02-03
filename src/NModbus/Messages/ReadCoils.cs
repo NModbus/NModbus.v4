@@ -25,10 +25,13 @@ namespace NModbus.Messages
             return new ReadCoilsRequest(startingAddress, quantityOfCoils);
         }
 
-        protected override ReadCoilsResponse DeserializeResponseCore(EndianReader reader)
+        protected override ReadCoilsResponse? DeserializeResponseCore(EndianReader reader)
         {
             var byteCount = reader.ReadByte();
             var coilStatus = reader.ReadBytes(byteCount);
+
+            if (coilStatus == null)
+                return null;
 
             return new ReadCoilsResponse(coilStatus);
         }

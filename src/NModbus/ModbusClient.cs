@@ -14,7 +14,7 @@ namespace NModbus
         public ModbusClient(
             IModbusClientTransport transport,
             ILoggerFactory loggerFactory,
-            IEnumerable<IClientFunction> customClientFunctions = null)
+            IEnumerable<IClientFunction>? customClientFunctions = null)
         {
             if (loggerFactory is null)
                 throw new ArgumentNullException(nameof(loggerFactory));
@@ -57,7 +57,7 @@ namespace NModbus
 
         public virtual bool TryGetClientFunction<TRequest, TResponse>(byte functionCode, out IClientFunction<TRequest, TResponse> clientFunction)
         {
-            clientFunction = null;
+            clientFunction = default!;
 
             if (!clientFunctions.TryGetValue(functionCode, out var baseClientFunction))
             {
@@ -65,7 +65,7 @@ namespace NModbus
                 return false;
             }
 
-            clientFunction = baseClientFunction as IClientFunction<TRequest, TResponse>;
+            clientFunction = (baseClientFunction as IClientFunction<TRequest, TResponse>)!;
 
             if (clientFunction == null)
             {
