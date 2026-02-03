@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    container: mcr.microsoft.com/dotnet/sdk:8.0
+    container: mcr.microsoft.com/dotnet/sdk:10.0
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
@@ -19,8 +19,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: | 
-            6.0.x
-            7.0.x
+            10.0.x
       - name: Test
         run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage ./src/ 
       # - name: Code Coverage Report

@@ -41,7 +41,14 @@ await modbusClient.WriteSingleRegisterAsync(unitIdentifier, 0, 44);
 {
     var holdingRegisters = await modbusClient.ReadHoldingRegistersAsync(unitIdentifier, 0, 5);
 
-    logger.LogInformation("Read Holding Registers: {Registers}", string.Join(", ", holdingRegisters.Select(r => r.ToString())));
+    if (holdingRegisters == null)
+    {
+        logger.LogInformation("No response.");
+    }
+    else
+    {
+        logger.LogInformation("Read Holding Registers: {Registers}", string.Join(", ", holdingRegisters.Select(r => r.ToString())));
+    }
 }
 
 logger.LogInformation("Write multiple registers..");
@@ -51,7 +58,15 @@ await modbusClient.WriteMultipleRegistersAsync(unitIdentifier, 0, new ushort[] {
 {
     var holdingRegisters = await modbusClient.ReadHoldingRegistersAsync(unitIdentifier, 0, 5);
 
-    logger.LogInformation("Read Holding Registers: {Registers}", string.Join(", ", holdingRegisters.Select(r => r.ToString())));
+    if (holdingRegisters == null)
+    {
+        logger.LogInformation("No response."); 
+    }
+    else
+    {
+        logger.LogInformation("Read Holding Registers: {Registers}", string.Join(", ", holdingRegisters.Select(r => r.ToString())));
+    }
+        
 }
 
 Console.WriteLine("Press any key to exit...");

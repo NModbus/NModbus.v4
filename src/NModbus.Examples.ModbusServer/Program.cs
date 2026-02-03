@@ -27,8 +27,8 @@ await using var transport = new ModbusTcpServerNetworkTransport(tcpListener, ser
 var tcpListener = new TcpListener(IPAddress.Loopback, ModbusIPPorts.Secure);
 
 var options = new SslServerAuthenticationOptions
-{
-    ServerCertificate = X509Certificate.CreateFromCertFile("../../../../../certificates/modbus-test.pfx"),
+{ 
+    ServerCertificate = X509CertificateLoader.LoadCertificateFromFile("../../../../../certificates/modbus-test.pfx"),
     EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls12,
 };
 

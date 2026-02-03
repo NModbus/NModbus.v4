@@ -1,0 +1,11 @@
+<Project>
+    <PropertyGroup>
+        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Authors>Rich Quackenbush</Authors>
+        <LangVersion>14.0</LangVersion>
+        <NoWarn>1701;1702;1591</NoWarn>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <Nullable>enable</Nullable> 
+    </PropertyGroup>
+</Project>

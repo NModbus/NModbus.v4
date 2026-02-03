@@ -13,6 +13,7 @@ namespace NModbus.BasicServer
     /// </remarks>
     /// <typeparam name="T"></typeparam>
     public class SparsePointStorage<T> : IPointStorage<T>
+        where T : struct
     {
         private readonly ConcurrentDictionary<ushort, T> values = new ConcurrentDictionary<ushort, T>();
 
@@ -20,9 +21,10 @@ namespace NModbus.BasicServer
         { 
             get
             {
-                values.TryGetValue(address, out var value);
+                if (values.TryGetValue(address, out var value))
+                    return value;
 
-                return value;
+                return default;
             }
             set
             {
@@ -30,10 +32,10 @@ namespace NModbus.BasicServer
             }
         }
 
-        public event EventHandler<DeviceReadArgs> BeforeDeviceRead;
-        public event EventHandler<DeviceReadArgs> AfterDeviceRead;
-        public event EventHandler<DeviceWriteArgs<T>> BeforeDeviceWrite;
-        public event EventHandler<DeviceWriteArgs<T>> AfterDeviceWrite;
+        public event EventHandler<DeviceReadArgs>? BeforeDeviceRead;
+        public event EventHandler<DeviceReadArgs>? AfterDeviceRead;
+        public event EventHandler<DeviceWriteArgs<T>>? BeforeDeviceWrite;
+        public event EventHandler<DeviceWriteArgs<T>>? AfterDeviceWrite;
 
         private void VerifyPointsAreInRange(ushort startingAddress, ushort numberOfPoints)
         {

@@ -6,7 +6,7 @@ namespace NModbus.Transport.IP.ConnectionStrategies
     public class SingletonStreamConnectionStrategy : IConnectionStrategy
     {
         private readonly IStreamFactory tcpClientFactory;
-        private IModbusStream stream;
+        private IModbusStream? stream;
 
         public SingletonStreamConnectionStrategy(IStreamFactory streamFactory, ILoggerFactory loggerFactory)
         {
