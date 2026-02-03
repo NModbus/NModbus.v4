@@ -6,6 +6,6 @@
         <LangVersion>14.0</LangVersion>
         <NoWarn>1701;1702;1591</NoWarn>
         <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-        <Nullable>enable</Nullable>
+        <Nullable>enable</Nullable> 
     </PropertyGroup>
 </Project>
