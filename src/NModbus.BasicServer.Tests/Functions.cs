@@ -5,7 +5,6 @@ using NModbus.BasicServer;
 using NModbus.BasicServer.Functions;
 using NModbus.BasicServer.Interfaces;
 using NModbus.Messages;
-using Xunit.Abstractions;
 
 namespace NModbus.Tests
 {
@@ -29,7 +28,7 @@ namespace NModbus.Tests
 
             var request = new WriteMultipleRegistersRequest(startingAddress, values);
 
-            await implementation.ProcessAsync(request, default);
+            await implementation.ProcessAsync(request, TestContext.Current.CancellationToken);
 
             storageMock.Verify(m => m.WritePoints(startingAddress, values), Times.Once);
         }
@@ -49,7 +48,7 @@ namespace NModbus.Tests
 
             var request = new ReadCoilsRequest(startingAddress, (ushort)values.Length);
 
-            var response = await implementation.ProcessAsync(request, default);
+            var response = await implementation.ProcessAsync(request, TestContext.Current.CancellationToken);
 
             response.Unpack((ushort)values.Length).ShouldBe(values);
         }
@@ -64,7 +63,7 @@ namespace NModbus.Tests
 
             var request = new WriteSingleCoilRequest(outputAddress, outputValue);
 
-            await implementation.ProcessAsync(request, default);
+            await implementation.ProcessAsync(request, TestContext.Current.CancellationToken);
 
             storageMock.Verify(m => m.WritePoints(outputAddress, new bool[] { outputValue }), Times.Once);
         }
@@ -79,7 +78,7 @@ namespace NModbus.Tests
 
             var request = new WriteMultipleCoilsRequest(startingAddress, values);
 
-            await implementation.ProcessAsync(request, default);
+            await implementation.ProcessAsync(request, TestContext.Current.CancellationToken);
 
             storageMock.Verify(m => m.WritePoints(startingAddress, values), Times.Once);
         }
@@ -97,7 +96,7 @@ namespace NModbus.Tests
 
             var request = new ReadWriteMultipleRegistersRequest(ReadStartingAddress, (ushort)ReadValues.Length, writeStartingAddress, writeValues);
 
-            var response = await implementation.ProcessAsync(request, default);
+            var response = await implementation.ProcessAsync(request, TestContext.Current.CancellationToken);
 
             storageMock.Verify(m => m.WritePoints(writeStartingAddress, writeValues), Times.Once);
         }
@@ -115,7 +114,7 @@ namespace NModbus.Tests
 
             var request = new ReadDiscreteInputsRequest(startingAddress, (ushort)expectedValues.Length);
 
-            var response = await implementation.ProcessAsync(request, default);
+            var response = await implementation.ProcessAsync(request, TestContext.Current.CancellationToken);
 
             var unpacked = response.Unpack((ushort)expectedValues.Length);
 

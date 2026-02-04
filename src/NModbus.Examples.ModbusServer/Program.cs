@@ -29,7 +29,7 @@ var tcpListener = new TcpListener(IPAddress.Loopback, ModbusIPPorts.Secure);
 var options = new SslServerAuthenticationOptions
 { 
     ServerCertificate = X509CertificateLoader.LoadCertificateFromFile("../../../../../certificates/modbus-test.pfx"),
-    EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls12,
+    EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls13
 };
 
 await using var transport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory, options);

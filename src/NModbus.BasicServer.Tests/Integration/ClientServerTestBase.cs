@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Neovolve.Logging.Xunit;
 using NModbus.BasicServer.Tests.Transport;
-using Xunit.Abstractions;
 
 namespace NModbus.BasicServer.Tests.Integration
 {

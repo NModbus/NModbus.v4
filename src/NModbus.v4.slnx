@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Examples/">
+    <Project Path="NModbus.Examples.ModbusClient/NModbus.Examples.ModbusClient.csproj" />
+    <Project Path="NModbus.Examples.ModbusServer/NModbus.Examples.ModbusServer.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="NModbus.BasicServer.Tests/NModbus.BasicServer.Tests.csproj" />
+    <Project Path="NModbus.Tests/NModbus.Tests.csproj" />
+    <Project Path="NModbus.Transport.IP.Tests/NModbus.Transport.IP.Tests.csproj" />
+  </Folder>
+  <Project Path="NModbus.BasicServer/NModbus.BasicServer.csproj" />
+  <Project Path="NModbus.Interfaces/NModbus.Interfaces.csproj" />
+  <Project Path="NModbus.Transport.IP/NModbus.Transport.IP.csproj" />
+  <Project Path="NModbus.Transport.Serial/NModbus.Transport.Serial.csproj" />
+  <Project Path="NModbus/NModbus.csproj" />
+</Solution>

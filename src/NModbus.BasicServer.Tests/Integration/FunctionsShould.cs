@@ -1,6 +1,4 @@
-﻿using Xunit.Abstractions;
-
-namespace NModbus.BasicServer.Tests.Integration
+﻿namespace NModbus.BasicServer.Tests.Integration
 {
     public class FunctionsShould : ClientServerTestBase
     {
@@ -16,7 +14,7 @@ namespace NModbus.BasicServer.Tests.Integration
         {
             await using var clientServer = await CreateClientServerAsync(1);
 
-            await clientServer.Client.WriteSingleCoilAsync(clientServer.UnitIdentifier, address, value);
+            await clientServer.Client.WriteSingleCoilAsync(clientServer.UnitIdentifier, address, value, TestContext.Current.CancellationToken);
 
             clientServer.Storage.Coils[address].ShouldBe(value);
         }
@@ -28,7 +26,7 @@ namespace NModbus.BasicServer.Tests.Integration
         {
             await using var clientServer = await CreateClientServerAsync(1);
 
-            await clientServer.Client.WriteSingleRegisterAsync(clientServer.UnitIdentifier, address, value);
+            await clientServer.Client.WriteSingleRegisterAsync(clientServer.UnitIdentifier, address, value, TestContext.Current.CancellationToken);
 
             clientServer.Storage.HoldingRegisters[address].ShouldBe(value);
         }
@@ -41,7 +39,7 @@ namespace NModbus.BasicServer.Tests.Integration
         {
             await using var clientServer = await CreateClientServerAsync(1);
 
-            await clientServer.Client.WriteMultipleRegistersAsync(clientServer.UnitIdentifier, startingAddress, new ushort[] { 1, 2, 3, 4, 5 });
+            await clientServer.Client.WriteMultipleRegistersAsync(clientServer.UnitIdentifier, startingAddress, new ushort[] { 1, 2, 3, 4, 5 }, TestContext.Current.CancellationToken);
 
             clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + 0)].ShouldBe((ushort)1);
             clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + 1)].ShouldBe((ushort)2);
@@ -63,7 +61,7 @@ namespace NModbus.BasicServer.Tests.Integration
                 clientServer.Storage.HoldingRegisters[(ushort)(startingAddress + x)] = values[x];
             }
 
-            var registers = await clientServer.Client.ReadHoldingRegistersAsync(clientServer.UnitIdentifier, startingAddress, (ushort)values.Length);
+            var registers = await clientServer.Client.ReadHoldingRegistersAsync(clientServer.UnitIdentifier, startingAddress, (ushort)values.Length, TestContext.Current.CancellationToken);
 
             registers.ShouldBe(values);
         }
@@ -81,7 +79,7 @@ namespace NModbus.BasicServer.Tests.Integration
                 clientServer.Storage.InputRegisters[(ushort)(startingAddress + x)] = values[x];
             }
 
-            var registers = await clientServer.Client.ReadInputRegistersAsync(clientServer.UnitIdentifier, startingAddress, (ushort)values.Length);
+            var registers = await clientServer.Client.ReadInputRegistersAsync(clientServer.UnitIdentifier, startingAddress, (ushort)values.Length, TestContext.Current.CancellationToken);
 
             registers.ShouldBe(values);
         }
