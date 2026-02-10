@@ -1,6 +1,5 @@
-﻿namespace NModbus.Interfaces
+﻿namespace NModbus.Interfaces;
+
+public interface IModbusServerNetworkTransport : IAsyncDisposable
 {
-    public interface IModbusServerNetworkTransport : IAsyncDisposable
-    {
-    }
 }

@@ -1,13 +1,12 @@
-﻿namespace NModbus.Endian
+﻿namespace NModbus.Endian;
+
+public static class EndianWriterExtensions
 {
-    public static class EndianWriterExtensions
+    public static void Write(this EndianWriter writer, ushort[] values)
     {
-        public static void Write(this EndianWriter writer, ushort[] values)
+        foreach (var value in values)
         {
-            foreach (var value in values)
-            {
-                writer.Write(value);
-            }
+            writer.Write(value);
         }
     }
 }

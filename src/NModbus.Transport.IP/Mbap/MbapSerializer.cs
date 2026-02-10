@@ -1,45 +1,44 @@
 ﻿using NModbus.Endian;
 
-namespace NModbus.Transport.IP.Mbap
+namespace NModbus.Transport.IP.Mbap;
+
+public static class MbapSerializer
+
 {
-    public static class MbapSerializer
+    public const ushort ProtocolIdentifier = 0x0000;
 
+    /// <summary>
+    /// The length of a MBAP header.
+    /// </summary>
+    public const ushort MbapHeaderLength = 7;
+
+    public static byte[] SerializeMbapHeader(
+        ushort transactionIdentifier,
+        ushort length,
+        byte unitIdentifier)
     {
-        public const ushort ProtocolIdentifier = 0x0000;
+        using var writer = new EndianWriter(Endianness.BigEndian);
 
-        /// <summary>
-        /// The length of a MBAP header.
-        /// </summary>
-        public const ushort MbapHeaderLength = 7;
+        writer.Write(transactionIdentifier);
+        writer.Write(ProtocolIdentifier);
+        writer.Write(length);
+        writer.Write(unitIdentifier);
 
-        public static byte[] SerializeMbapHeader(
-            ushort transactionIdentifier,
-            ushort length,
-            byte unitIdentifier)
-        {
-            using var writer = new EndianWriter(Endianness.BigEndian);
+        return writer.ToArray();
+    }
 
-            writer.Write(transactionIdentifier);
-            writer.Write(ProtocolIdentifier);
-            writer.Write(length);
-            writer.Write(unitIdentifier);
+    public static MbapHeader DeserializeMbapHeader(
+        byte[] buffer)
+    {
+        if (buffer.Length != MbapHeaderLength)
+            throw new InvalidOperationException($"Expected a buffer of size {MbapHeaderLength} but was given a buffer with {buffer.Length} elements.");
 
-            return writer.ToArray();
-        }
+        using var reader = new EndianReader(buffer, Endianness.BigEndian);
 
-        public static MbapHeader DeserializeMbapHeader(
-            byte[] buffer)
-        {
-            if (buffer.Length != MbapHeaderLength)
-                throw new InvalidOperationException($"Expected a buffer of size {MbapHeaderLength} but was given a buffer with {buffer.Length} elements.");
-
-            using var reader = new EndianReader(buffer, Endianness.BigEndian);
-
-            return new MbapHeader(
-                reader.ReadUInt16(),
-                reader.ReadUInt16(),
-                reader.ReadUInt16(),
-                reader.ReadByte());
-        }
+        return new MbapHeader(
+            reader.ReadUInt16(),
+            reader.ReadUInt16(),
+            reader.ReadUInt16(),
+            reader.ReadByte());
     }
 }

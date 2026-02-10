@@ -1,5 +1,5 @@
-namespace NModbus.Endian
-{
+namespace NModbus.Endian;
+
 	/// <summary>
 	/// Endianness of a converter
 	/// </summary>
@@ -15,4 +15,3 @@ namespace NModbus.Endian
 		/// </summary>
 		BigEndian
 	}
-}

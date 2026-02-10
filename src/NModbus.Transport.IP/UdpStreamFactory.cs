@@ -2,31 +2,30 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace NModbus.Transport.IP
+namespace NModbus.Transport.IP;
+
+public class UdpStreamFactory : IStreamFactory
 {
-    public class UdpStreamFactory : IStreamFactory
+    private readonly IPEndPoint endPoint;
+    private readonly Action<UdpClient>? configure;
+
+    public UdpStreamFactory(IPEndPoint endPoint, Action<UdpClient>? configure = null)
     {
-        private readonly IPEndPoint endPoint;
-        private readonly Action<UdpClient>? configure;
+        this.endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+        this.configure = configure;
+    }
 
-        public UdpStreamFactory(IPEndPoint endPoint, Action<UdpClient>? configure = null)
-        {
-            this.endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
-            this.configure = configure;
-        }
+    public Task<IModbusStream> CreateAndConnectAsync(CancellationToken cancellationToken)
+    {
+        var udpClient = new UdpClient();
 
-        public Task<IModbusStream> CreateAndConnectAsync(CancellationToken cancellationToken)
-        {
-            var udpClient = new UdpClient();
+        configure?.Invoke(udpClient);
 
-            configure?.Invoke(udpClient);
+        udpClient.Connect(endPoint);
 
-            udpClient.Connect(endPoint);
-
-            var stream = new UdpModbusStream(udpClient);
+        var stream = new UdpModbusStream(udpClient);
 
 
-            return Task.FromResult<IModbusStream>(stream);
-        }
+        return Task.FromResult<IModbusStream>(stream);
     }
 }

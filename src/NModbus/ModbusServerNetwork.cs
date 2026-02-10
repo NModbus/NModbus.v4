@@ -2,57 +2,56 @@
 using NModbus.Interfaces;
 using System.Collections.Concurrent;
 
-namespace NModbus
+namespace NModbus;
+
+public class ModbusServerNetwork : IModbusServerNetwork
 {
-    public class ModbusServerNetwork : IModbusServerNetwork
+    private readonly ConcurrentDictionary<byte, IModbusServer> servers = new();
+    private readonly ILogger logger;
+    private readonly ILoggerFactory loggerFactory;
+
+    public ModbusServerNetwork(ILoggerFactory loggerFactory)
     {
-        private readonly ConcurrentDictionary<byte, IModbusServer> servers = new();
-        private readonly ILogger logger;
-        private readonly ILoggerFactory loggerFactory;
+        this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        this.logger = loggerFactory.CreateLogger<ModbusServerNetwork>();
+    }
 
-        public ModbusServerNetwork(ILoggerFactory loggerFactory)
-        {
-            this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-            this.logger = loggerFactory.CreateLogger<ModbusServerNetwork>();
-        }
+    public bool TryAddServer(IModbusServer server)
+    {
+        return servers.TryAdd(server.UnitIdentifier, server);
+    }
 
-        public bool TryAddServer(IModbusServer server)
-        {
-            return servers.TryAdd(server.UnitIdentifier, server);
-        }
+    public bool TryRemoveServer(byte unitNumnber)
+    {
+        return servers.TryRemove(unitNumnber, out _);
+    }
 
-        public bool TryRemoveServer(byte unitNumnber)
+    public async Task ProcessRequestAsync(
+        IModbusDataUnit requestMessage, 
+        IModbusClientTransport clientTransport, 
+        CancellationToken cancellationToken = default)
+    {
+        if (requestMessage.UnitIdentifier == 0)
         {
-            return servers.TryRemove(unitNumnber, out _);
-        }
-
-        public async Task ProcessRequestAsync(
-            IModbusDataUnit requestMessage, 
-            IModbusClientTransport clientTransport, 
-            CancellationToken cancellationToken = default)
-        {
-            if (requestMessage.UnitIdentifier == 0)
+            foreach (var server in servers.Values)
             {
-                foreach (var server in servers.Values)
+                await server.ProcessRequestAsync(requestMessage.ProtocolDataUnit, cancellationToken);
+            }
+        }
+        else
+        {
+            if (servers.TryGetValue(requestMessage.UnitIdentifier, out var server))
+            {
+                var response = await server.ProcessRequestAsync(requestMessage.ProtocolDataUnit, cancellationToken);
+
+                if (response != null)
                 {
-                    await server.ProcessRequestAsync(requestMessage.ProtocolDataUnit, cancellationToken);
+                    await clientTransport.SendAsync(new ModbusDataUnit(requestMessage.UnitIdentifier, response), cancellationToken);
                 }
             }
             else
             {
-                if (servers.TryGetValue(requestMessage.UnitIdentifier, out var server))
-                {
-                    var response = await server.ProcessRequestAsync(requestMessage.ProtocolDataUnit, cancellationToken);
-
-                    if (response != null)
-                    {
-                        await clientTransport.SendAsync(new ModbusDataUnit(requestMessage.UnitIdentifier, response), cancellationToken);
-                    }
-                }
-                else
-                {
-                    //TODO: Send an exception message that the unit wasn't found. Or do we just timeout. Hmm. Look in the docs.
-                }
+                //TODO: Send an exception message that the unit wasn't found. Or do we just timeout. Hmm. Look in the docs.
             }
         }
     }

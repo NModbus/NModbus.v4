@@ -1,17 +1,16 @@
-﻿namespace NModbus.Transport.IP
-{
-    internal class TcpConnectionEventArgs : EventArgs
-    {
-        public TcpConnectionEventArgs(string endpoint)
-        {
-            if (string.IsNullOrEmpty(endpoint))
-            {
-                throw new ArgumentException($"'{nameof(endpoint)}' cannot be null or empty.", nameof(endpoint));
-            }
+﻿namespace NModbus.Transport.IP;
 
-            Endpoint = endpoint;
+internal class TcpConnectionEventArgs : EventArgs
+{
+    public TcpConnectionEventArgs(string endpoint)
+    {
+        if (string.IsNullOrEmpty(endpoint))
+        {
+            throw new ArgumentException($"'{nameof(endpoint)}' cannot be null or empty.", nameof(endpoint));
         }
 
-        public string Endpoint { get; }
+        Endpoint = endpoint;
     }
+
+    public string Endpoint { get; }
 }
