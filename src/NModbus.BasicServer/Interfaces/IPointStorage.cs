@@ -1,6 +1,5 @@
-﻿namespace NModbus.BasicServer.Interfaces
+﻿namespace NModbus.BasicServer.Interfaces;
+
+public interface IPointStorage<T> : IDevicePointStorage<T>, IApplicationPointStorage<T>
 {
-    public interface IPointStorage<T> : IDevicePointStorage<T>, IApplicationPointStorage<T>
-    {
-    }
 }

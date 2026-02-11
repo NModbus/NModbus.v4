@@ -3,23 +3,22 @@ using NModbus.BasicServer.Interfaces;
 using NModbus.Interfaces;
 using NModbus.Messages;
 
-namespace NModbus.BasicServer.Functions
+namespace NModbus.BasicServer.Functions;
+
+public class WriteSingleRegisterImplementation : IModbusFunctionImplementation<WriteSingleRegisterRequest, WriteSingleRegisterResponse>
 {
-    public class WriteSingleRegisterImplementation : IModbusFunctionImplementation<WriteSingleRegisterRequest, WriteSingleRegisterResponse>
+    private readonly IDevicePointStorage<ushort> storage;
+
+    public WriteSingleRegisterImplementation(ILoggerFactory loggerFactory, IDevicePointStorage<ushort> storage)
     {
-        private readonly IDevicePointStorage<ushort> storage;
+        if (loggerFactory is null) throw new ArgumentNullException(nameof(loggerFactory));
+        this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
+    }
 
-        public WriteSingleRegisterImplementation(ILoggerFactory loggerFactory, IDevicePointStorage<ushort> storage)
-        {
-            if (loggerFactory is null) throw new ArgumentNullException(nameof(loggerFactory));
-            this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
-        }
+    public Task<WriteSingleRegisterResponse> ProcessAsync(WriteSingleRegisterRequest request, CancellationToken cancellationToken)
+    {
+        storage.WritePoints(request.Address, new ushort[] { request.Value });
 
-        public Task<WriteSingleRegisterResponse> ProcessAsync(WriteSingleRegisterRequest request, CancellationToken cancellationToken)
-        {
-            storage.WritePoints(request.Address, new ushort[] { request.Value });
-
-            return Task.FromResult(new WriteSingleRegisterResponse(request.Address, request.Value));
-        }
+        return Task.FromResult(new WriteSingleRegisterResponse(request.Address, request.Value));
     }
 }

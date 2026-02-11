@@ -1,9 +1,8 @@
-﻿namespace NModbus.Messages
-{
-    public readonly struct ReadReferenceResponse
-    {
-        public ReferenceType Type { get; }
+﻿namespace NModbus.Messages;
 
-        public ushort[] RegisterData { get; }
-    }
+public readonly struct ReadReferenceResponse
+{
+    public ReferenceType Type { get; }
+
+    public ushort[] RegisterData { get; }
 }

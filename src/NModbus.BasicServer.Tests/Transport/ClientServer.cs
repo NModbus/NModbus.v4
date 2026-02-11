@@ -5,54 +5,53 @@ using NModbus.Transport.IP.ConnectionStrategies;
 using System.Net;
 using System.Net.Sockets;
 
-namespace NModbus.BasicServer.Tests.Transport
+namespace NModbus.BasicServer.Tests.Transport;
+
+public class ClientServer : IAsyncDisposable
 {
-    public class ClientServer : IAsyncDisposable
+    private readonly ModbusTcpServerNetworkTransport serverTransport;
+    private readonly IModbusClientTransport clientTransport;
+    private readonly IModbusServerNetwork serverNetwork;
+
+    public ClientServer(byte unitIdentifier, ILoggerFactory loggerFactory)
     {
-        private readonly ModbusTcpServerNetworkTransport serverTransport;
-        private readonly IModbusClientTransport clientTransport;
-        private readonly IModbusServerNetwork serverNetwork;
+        if (loggerFactory is null) throw new ArgumentNullException(nameof(loggerFactory));
 
-        public ClientServer(byte unitIdentifier, ILoggerFactory loggerFactory)
-        {
-            if (loggerFactory is null) throw new ArgumentNullException(nameof(loggerFactory));
+        UnitIdentifier = unitIdentifier;
 
-            UnitIdentifier = unitIdentifier;
+        //Create the server
+        serverNetwork = new ModbusServerNetwork(loggerFactory);
 
-            //Create the server
-            serverNetwork = new ModbusServerNetwork(loggerFactory);
+        var serverFunctions = ServerFunctionFactory.CreateBasicServerFunctions(Storage, loggerFactory);
 
-            var serverFunctions = ServerFunctionFactory.CreateBasicServerFunctions(Storage, loggerFactory);
+        var server = new ModbusServer(UnitIdentifier, serverFunctions, loggerFactory);
 
-            var server = new ModbusServer(UnitIdentifier, serverFunctions, loggerFactory);
+        if (!serverNetwork.TryAddServer(server))
+            throw new InvalidOperationException($"Unable to add server with unit number {server.UnitIdentifier}");
 
-            if (!serverNetwork.TryAddServer(server))
-                throw new InvalidOperationException($"Unable to add server with unit number {server.UnitIdentifier}");
+        var tcpListener = new TcpListener(IPAddress.Loopback, ModbusIPPorts.Insecure);
 
-            var tcpListener = new TcpListener(IPAddress.Loopback, ModbusIPPorts.Insecure);
+        serverTransport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
 
-            serverTransport = new ModbusTcpServerNetworkTransport(tcpListener, serverNetwork, loggerFactory);
+        var tcpClientFactory = new TcpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Insecure));
 
-            var tcpClientFactory = new TcpStreamFactory(new IPEndPoint(IPAddress.Loopback, ModbusIPPorts.Insecure));
+        //Create the client
+        var tcpClientLifetime = new SingletonStreamConnectionStrategy(tcpClientFactory, loggerFactory);
+        clientTransport = new ModbusIPClientTransport(tcpClientLifetime, loggerFactory);
+        Client = new ModbusClient(clientTransport, loggerFactory);
+    }
 
-            //Create the client
-            var tcpClientLifetime = new SingletonStreamConnectionStrategy(tcpClientFactory, loggerFactory);
-            clientTransport = new ModbusIPClientTransport(tcpClientLifetime, loggerFactory);
-            Client = new ModbusClient(clientTransport, loggerFactory);
-        }
+    public byte UnitIdentifier { get; }
 
-        public byte UnitIdentifier { get; }
+    public IModbusClient Client { get; }
 
-        public IModbusClient Client { get; }
+    public Storage Storage { get; } = new Storage();
 
-        public Storage Storage { get; } = new Storage();
+    public async ValueTask DisposeAsync()
+    {
+        await serverTransport.DisposeAsync();
+        await clientTransport.DisposeAsync();
 
-        public async ValueTask DisposeAsync()
-        {
-            await serverTransport.DisposeAsync();
-            await clientTransport.DisposeAsync();
-
-            GC.SuppressFinalize(this);
-        }
+        GC.SuppressFinalize(this);
     }
 }

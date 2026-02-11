@@ -1,13 +1,12 @@
-﻿namespace NModbus.BasicServer.Interfaces
+﻿namespace NModbus.BasicServer.Interfaces;
+
+public interface IDeviceStorage
 {
-    public interface IDeviceStorage
-    {
-        IDevicePointStorage<ushort> HoldingRegisters { get; }
+    IDevicePointStorage<ushort> HoldingRegisters { get; }
 
-        IDevicePointStorage<ushort> InputRegisters { get; }
+    IDevicePointStorage<ushort> InputRegisters { get; }
 
-        IDevicePointStorage<bool> Coils { get; }
+    IDevicePointStorage<bool> Coils { get; }
 
-        IDevicePointStorage<bool> DiscreteInputs { get; }
-    }
+    IDevicePointStorage<bool> DiscreteInputs { get; }
 }
