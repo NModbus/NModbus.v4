@@ -13,6 +13,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\NModbus.Transport.IP\NModbus.Transport.IP.csproj" />
+		<ProjectReference Include="..\NModbus.Transport.Serial\NModbus.Transport.Serial.csproj" />
 		<ProjectReference Include="..\NModbus\NModbus.csproj" />
 	</ItemGroup>
 
